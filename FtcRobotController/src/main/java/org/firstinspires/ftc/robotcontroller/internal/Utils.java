@@ -17,4 +17,7 @@ public class Utils {
         return df.format(d);
     }
 
+    public static double atan3(double y, double x) { //return angle on [0, 2π] given x and y coordinates
+        return (Math.atan2(y, x) + 2 * Math.PI) % (Math.PI * 2);
+    }
 }

@@ -44,14 +44,14 @@ public class Wheels {
         }
 
         double vel = Utils.getMagnitude(xVel, yVel), //unit vector
-                theta = Math.atan2(yVel, xVel); //angle [0, 2π]
+                theta = Utils.atan3(yVel, xVel); //angle [0, 2π]
 
         drive2(vel, theta, angularVel);
 
         return "vel: " + Utils.toString(vel) + ", theta: " + Utils.toString(theta) + ", angularVel: " + Utils.toString(angularVel) + ", mode: " + (isChannelMode ? "channel" : "precise");
     }
 
-    private void drive2(double robotVelocity, double robotAngle, double angularVelocity) { //drive robot given velocity, angle and angular velocity
+    private void drive2(double robotVelocity, double robotAngle, double angularVelocity) { //translate robot at given velocity and angle with given angular velocity
         setWheelPowers(scaleWheelPowers(new double[][]{
             {
                 compensationConstants[0][0] * (robotVelocity * Math.sin(robotAngle + Math.PI / 4) + angularVelocity), //front left wheel

@@ -36,6 +36,8 @@ public class DriverControlled extends LinearOpMode {
         //all components return a string with telemetry data when passed input
         telemetry.addData("WHEELS", wheels.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || (!gamepad1.right_bumper && isChannelMode)));
 
+
+        telemetry.addData("Hello", "Van");
         telemetry.update();
     }
 
