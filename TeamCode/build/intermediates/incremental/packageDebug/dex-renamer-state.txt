@@ -1,0 +1,7 @@
+#Tue Oct 25 19:21:08 EDT 2016
+base.0=/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/TeamCode/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_474faa5d3c3eccd0c89210e8675bbe26d855bb8c
+renamed.1=classes2.dex
+renamed.0=classes.dex
+file.1=/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/TeamCode/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_18df335c5bf91190ade741fa6ef06f4feccc1fb1/classes.dex
+base.1=/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/TeamCode/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_18df335c5bf91190ade741fa6ef06f4feccc1fb1
+file.0=/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/TeamCode/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_474faa5d3c3eccd0c89210e8675bbe26d855bb8c/classes.dex

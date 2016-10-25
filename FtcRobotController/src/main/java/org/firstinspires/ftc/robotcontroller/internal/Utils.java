@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.robotcontroller.internal;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 /**
  * Created by benorgera on 10/24/16.
@@ -20,4 +23,42 @@ public class Utils {
     public static double atan3(double y, double x) { //return angle on [0, 2π] given x and y coordinates
         return (Math.atan2(y, x) + 2 * Math.PI) % (Math.PI * 2);
     }
+
+    public static String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    private static String formatDegrees(double degrees){
+        return toString(
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                AngleUnit.DEGREES.normalize(degrees));
+    }
+
 }

@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.robotcontroller.internal.components;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import org.firstinspires.ftc.robotcontroller.internal.Utils;
+import java.util.Arrays;
 
 /**
  * Created by benorgera on 10/24/16.
@@ -23,6 +26,9 @@ public class Wheels {
                 {frontLeft, frontRight},
                 {backLeft, backRight}
         };
+
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) { //set up motors
             wheelBase[i][j].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -46,21 +52,23 @@ public class Wheels {
         double vel = Utils.getMagnitude(xVel, yVel), //unit vector
                 theta = Utils.atan3(yVel, xVel); //angle [0, 2π]
 
-        drive2(vel, theta, angularVel);
-
-        return "vel: " + Utils.toString(vel) + ", theta: " + Utils.toString(theta) + ", angularVel: " + Utils.toString(angularVel) + ", mode: " + (isChannelMode ? "channel" : "precise");
+        return drive2(vel, theta, angularVel) + "\t\tvel: " + Utils.toString(vel) + ", theta: " + Utils.toString(theta) + ", angularVel: " + Utils.toString(angularVel) + ", mode: " + (isChannelMode ? "channel" : "precise");
     }
 
-    private void drive2(double robotVelocity, double robotAngle, double angularVelocity) { //translate robot at given velocity and angle with given angular velocity
-        setWheelPowers(scaleWheelPowers(new double[][]{
+    private String drive2(double robotVelocity, double robotAngle, double angularVelocity) { //translate robot at given velocity and angle with given angular velocity
+        robotVelocity *= Math.sqrt(2);
+        double[][] powers = scaleWheelPowers(new double[][]{
             {
                 compensationConstants[0][0] * (robotVelocity * Math.sin(robotAngle + Math.PI / 4) + angularVelocity), //front left wheel
-                compensationConstants[0][1] * (robotVelocity * Math.cos(robotAngle + Math.PI / 4) - angularVelocity) //front right wheel
+                compensationConstants[0][1] * (robotVelocity * -1 * Math.cos(robotAngle + Math.PI / 4) - angularVelocity) //front right wheel
             }, {
-                compensationConstants[1][0] * (robotVelocity * Math.cos(robotAngle + Math.PI / 4) + angularVelocity), //back left wheel
+                compensationConstants[1][0] * (robotVelocity * -1 * Math.cos(robotAngle + Math.PI / 4) + angularVelocity), //back left wheel
                 compensationConstants[1][1] * (robotVelocity * Math.sin(robotAngle + Math.PI / 4) - angularVelocity) //back right wheel
             }
-        }));
+        });
+
+        setWheelPowers(powers);
+        return "{ " + Arrays.toString(powers[0]) + " } , { " + Arrays.toString(powers[1]) + " }";
     }
 
     private void setWheelPowers(double[][] wheelPowers) { //apply power to the motors
