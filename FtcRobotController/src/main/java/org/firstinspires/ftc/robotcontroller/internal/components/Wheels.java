@@ -48,7 +48,7 @@ public class Wheels {
 
         drive2(vel, theta, angularVel);
 
-        return "vel: " + Utils.toString(vel) + ", theta: " + Utils.toString(theta) + ", angularVel: " + Utils.toString(angularVel) + ", channelMode: " + isChannelMode;
+        return "vel: " + Utils.toString(vel) + ", theta: " + Utils.toString(theta) + ", angularVel: " + Utils.toString(angularVel) + ", mode: " + (isChannelMode ? "channel" : "precise");
     }
 
     private void drive2(double robotVelocity, double robotAngle, double angularVelocity) { //drive robot given velocity, angle and angular velocity
