@@ -2,6 +2,8 @@ package org.firstinspires.ftc.robotcontroller.internal.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+
 import org.firstinspires.ftc.robotcontroller.internal.components.Wheels;
 
 /**
