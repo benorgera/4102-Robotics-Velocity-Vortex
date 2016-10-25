@@ -24,12 +24,12 @@ public class DriverControlled extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        while (opModeIsActive()) listenForUserInput(); //control to robot using gamepad input while the opMode is active
+        while (opModeIsActive()) run(); //control to robot using gamepad input while the opMode is active
 
         wheels.stop(); //stop the robot once the opMode is disabled
     }
 
-    private void listenForUserInput() { //control to robot using gamepad input
+    private void run() { //control to robot using gamepad input
 
         //all components return a string with telemetry data when passed input
         telemetry.addData("WHEELS", wheels.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || (!gamepad1.right_bumper && isChannelMode)));
