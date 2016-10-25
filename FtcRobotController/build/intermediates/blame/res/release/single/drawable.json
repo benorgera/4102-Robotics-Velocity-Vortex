@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/res/merged/release/drawable/icon_menu.png",
+        "source": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/exploded-aar/Inspection-release/res/drawable/icon_menu.png"
+    },
+    {
+        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/res/merged/release/drawable/black_border.xml",
+        "source": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/exploded-aar/Blocks-release/res/drawable/black_border.xml"
+    },
+    {
+        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/res/merged/release/drawable/icon_robotcontroller.png",
+        "source": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/exploded-aar/Inspection-release/res/drawable/icon_robotcontroller.png"
+    },
+    {
+        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/res/merged/release/drawable/button_shape.xml",
+        "source": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/exploded-aar/FtcCommon-release/res/drawable/button_shape.xml"
+    }
+]
