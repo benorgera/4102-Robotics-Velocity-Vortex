@@ -30,7 +30,7 @@ public class Wheels {
         }
     }
 
-    public String drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //drive robot given x velocity vector, y velocity vector and angular velocity vector, accounting for
+    public String drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //drive robot given x velocity vector, y velocity vector and angular velocity vector, disregarding negligible
 
         //trim sticks to unit vectors
         xVel /= stickRadius;
@@ -84,7 +84,7 @@ public class Wheels {
         if (max <= 1) return wheelPowers; //return if no scaling is necessary
 
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) //scale the powers by the max value
-            wheelPowers[i][j] = wheelPowers[i][j] / max;
+            wheelPowers[i][j] /= max;
 
         return wheelPowers;
     }
