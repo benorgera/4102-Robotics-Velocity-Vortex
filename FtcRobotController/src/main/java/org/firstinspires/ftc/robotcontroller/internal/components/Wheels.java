@@ -10,12 +10,12 @@ public class Wheels {
     private DcMotor[][] wheelBase;
 
     //constants
+    private final double stickThreshold = 0.1;
+    private final double stickRadius = 1;
     private final double[][] compensationConstants = new double[][] {
             {1, 1},
             {1, 1}
     };
-    private final double stickThreshold = 0.1;
-    private final double stickRadius = 1;
 
     public Wheels(DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight) {
 

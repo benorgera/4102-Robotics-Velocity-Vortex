@@ -32,20 +32,18 @@ public class DriverControlled extends LinearOpMode {
     private void listenForUserInput() { //control to robot using gamepad input
 
         //all components return a string with telemetry data when passed input
-        telemetry.addData("WHEELS", wheels.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || !gamepad1.right_bumper && isChannelMode));
+        telemetry.addData("WHEELS", wheels.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || (!gamepad1.right_bumper && isChannelMode)));
 
         telemetry.update();
     }
 
     private void initializeHardware() { //initialize hardware according to hardware map
         wheels = new Wheels(
-                hardwareMap.dcMotor.get("front-left-wheel"),
-                hardwareMap.dcMotor.get("front-right-wheel"),
-                hardwareMap.dcMotor.get("back-left-wheel"),
-                hardwareMap.dcMotor.get("back-right-wheel")
+            hardwareMap.dcMotor.get("front-left-wheel"),
+            hardwareMap.dcMotor.get("front-right-wheel"),
+            hardwareMap.dcMotor.get("back-left-wheel"),
+            hardwareMap.dcMotor.get("back-right-wheel")
         );
     }
-    
-
 
 }

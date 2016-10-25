@@ -9,12 +9,6 @@ public class Utils {
 
     private static DecimalFormat df = new DecimalFormat("#.##");
 
-    public static double trim(double val, double min, double max) {
-        if (val > max) val = max;
-        if (val < min) val = min;
-        return val;
-    }
-
     public static double getMagnitude(double x, double y) {
         return Math.pow(Math.pow(x, 2) + Math.pow(y, 2), 0.5);
     }
