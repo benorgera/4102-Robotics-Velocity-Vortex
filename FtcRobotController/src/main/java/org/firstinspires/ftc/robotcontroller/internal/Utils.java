@@ -40,7 +40,7 @@ public class Utils {
         return max;
     }
 
-    public static double[][] multiplyValues(double coefficient, double[][] values) {
+    public static double[][] multiplyValues(double coefficient, double[][] values) { //multiply every value in a 2d array by a number
         for (int i = 0; i < values.length; i++) for (int j = 0; j < values[i].length; j++) //multiply each value by the coefficient
             values[i][j] *= coefficient;
 

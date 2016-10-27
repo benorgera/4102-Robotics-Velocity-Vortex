@@ -2,12 +2,7 @@ package org.firstinspires.ftc.robotcontroller.internal.components;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
 import org.firstinspires.ftc.robotcontroller.internal.Utils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by benorgera on 10/24/16.
@@ -38,7 +33,7 @@ public class Wheels {
         }
     }
 
-    public String drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //translate the robot given velocity and angular velocity, and return a string representation of this algorithm
+    public String drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //translate/rotate the robot given velocity and angular velocity, and return a string representation of this algorithm
 
         if (isChannelMode) { //in channel mode negligible velocities will be disregarded
             xVel = Math.abs(xVel) < stickThreshold ? 0 : xVel;
@@ -49,7 +44,7 @@ public class Wheels {
         double robotVel = Utils.trim(0, 1, Utils.getMagnitude(xVel, yVel)), //magnitude of robot velocity [0, 1]
                 theta = Utils.atan3(yVel, xVel); //robot translation angle [0, 2π]
 
-        double[][] relativeWheelVelocities = Utils.multiplyValues(robotVel, ////multiply the scaled values by the desired robot velocity
+        double[][] relativeWheelVels = Utils.multiplyValues(robotVel, ////multiply the scaled values by the desired robot velocity
                 Utils.scaleValues(0, new double[][] {{ //scale velocities to unit vectors [-1, 1]
                     Math.sin(theta - Math.PI / 4), //front left and back right wheel relative velocity (without angular velocity)
                     Math.cos(theta - Math.PI / 4) //front right and back left wheel relative velocity (without angular velocity)
@@ -60,19 +55,18 @@ public class Wheels {
             ", ngVel: " + Utils.toString(angularVel) +
             ", mode: " + (isChannelMode ? "chan" : "prec") +
             ", pow: " +
-                setWheelPowers( //apply power to the motors
-                    Utils.scaleValues(1, new double[][] { //scale the vectors to unit vectors, only if any of them are over one
+                setWheelPowers( //apply the scaled powers to the motors
+                    Utils.scaleValues(1, new double[][] { //scale the velocities to unit vectors, only if any of them are over one
                         {
-                            compensationConstants[0][0] * (relativeWheelVelocities[0][0] + angularVel), //front left wheel relative velocity (with angular velocity)
-                            compensationConstants[0][1] * (relativeWheelVelocities[0][1] - angularVel) //front right wheel relative velocity (with angular velocity)
+                            compensationConstants[0][0] * (relativeWheelVels[0][0] + angularVel), //front left wheel relative velocity (with angular velocity)
+                            compensationConstants[0][1] * (relativeWheelVels[0][1] - angularVel) //front right wheel relative velocity (with angular velocity)
                         }, {
-                            compensationConstants[1][0] * (relativeWheelVelocities[0][1] + angularVel), //back left wheel relative velocity (with angular velocity)
-                            compensationConstants[1][1] * (relativeWheelVelocities[0][0] - angularVel) //back right wheel relative velocity (with angular velocity)
+                            compensationConstants[1][0] * (relativeWheelVels[0][1] + angularVel), //back left wheel relative velocity (with angular velocity)
+                            compensationConstants[1][1] * (relativeWheelVels[0][0] - angularVel) //back right wheel relative velocity (with angular velocity)
                         }
                     })
                 );
     }
-
 
     private String setWheelPowers(double[][] wheelPowers) { //apply power to the motors, and return string representation of the wheel powers
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)

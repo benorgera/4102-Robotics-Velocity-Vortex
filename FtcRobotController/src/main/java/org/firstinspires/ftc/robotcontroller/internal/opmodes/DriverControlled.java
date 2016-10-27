@@ -2,9 +2,11 @@ package org.firstinspires.ftc.robotcontroller.internal.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-
 import org.firstinspires.ftc.robotcontroller.internal.components.Wheels;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by benorgera on 10/24/16.
@@ -19,29 +21,36 @@ public class DriverControlled extends LinearOpMode {
     private Wheels wheels;
 
     private String log = "";
+    private long startTime;
 
     @Override
     public void runOpMode() {
         initializeHardware();
 
-        telemetry.addData(">", "Press Start to run Motors." );
+        telemetry.addData("4102", "Let's kick up" );
         telemetry.update();
-        waitForStart();
+
+        waitForStart(); //wait for the driver station to
+
+        startTime = System.currentTimeMillis(); //store the start time, so we can print remaining match time
 
         while (opModeIsActive()) run(); //control to robot using gamepad input while the opMode is active
 
         wheels.stop(); //stop the robot once the opMode is disabled
+        telemetry.addData("Saving Log", saveLog() ? "Successful" : "Failed");
+        telemetry.update();
     }
 
     private void run() { //control to robot using gamepad input
 
         //all components return a string with telemetry data when passed input
         telemetry.addData("WHEELS", addToLog(wheels.drive(-1 * gamepad1.left_stick_x, -1 * gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || (!gamepad1.right_bumper && isChannelMode))));
+        telemetry.addData("TIME", addToLog(getTimeString()));
         telemetry.update();
     }
 
-    private String addToLog(String s) {
-        log += (s + "\n\n");
+    private String addToLog(String s) { //add string to log of robot actions
+//        log += (s + "\n\n"); if we want to actually log things this should be uncommented
         return s;
     }
 
@@ -53,5 +62,24 @@ public class DriverControlled extends LinearOpMode {
             hardwareMap.dcMotor.get("back-left-wheel"),
             hardwareMap.dcMotor.get("back-right-wheel")
         );
+    }
+
+    private boolean saveLog() { //write robot actions log to file
+        try {
+            FileOutputStream s = new FileOutputStream(new File(hardwareMap.appContext.getFilesDir(), new SimpleDateFormat("MM/dd/yy HH:mm:ss 'log'").format(new Date())));
+            s.write(log.getBytes());
+            s.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    private String getTimeString() { //get remaining match time as a string
+        int deltaSeconds = 120 - (int) (System.currentTimeMillis() - startTime) / 1000;
+        String seconds = "" + ((int) deltaSeconds % 60);
+
+        return "" + ((int) deltaSeconds / 60) + ":" + (seconds.length() == 1 ? "0" + seconds : seconds);
     }
 }
