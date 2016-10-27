@@ -27,7 +27,7 @@ public class DriverControlled extends LinearOpMode {
     public void runOpMode() {
         initializeHardware();
 
-        telemetry.addData("4102", "Let's kick up" );
+        telemetry.addData("4102", "Let's kick up");
         telemetry.update();
 
         waitForStart(); //wait for the driver station to

@@ -11,7 +11,7 @@ public class Wheels {
     private DcMotor[][] wheelBase;
 
     //constants
-    private final double stickThreshold = 0.1;
+    private final double channelModeStickThreshold = 0.1; //the max magnitude of a stick reading
     private final double[][] compensationConstants = {
             {1, 1},
             {1, 1}
@@ -24,6 +24,7 @@ public class Wheels {
                 {backLeft, backRight}
         };
 
+        //reverse the motors which face opposite directions
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -36,9 +37,9 @@ public class Wheels {
     public String drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //translate/rotate the robot given velocity and angular velocity, and return a string representation of this algorithm
 
         if (isChannelMode) { //in channel mode negligible velocities will be disregarded
-            xVel = Math.abs(xVel) < stickThreshold ? 0 : xVel;
-            yVel = Math.abs(yVel) < stickThreshold ? 0 : yVel;
-            angularVel = Math.abs(angularVel) < stickThreshold ? 0 : angularVel;
+            xVel = Math.abs(xVel) < channelModeStickThreshold ? 0 : xVel;
+            yVel = Math.abs(yVel) < channelModeStickThreshold ? 0 : yVel;
+            angularVel = Math.abs(angularVel) < channelModeStickThreshold ? 0 : angularVel;
         }
 
         double robotVel = Utils.trim(0, 1, Utils.getMagnitude(xVel, yVel)), //magnitude of robot velocity [0, 1]
@@ -50,6 +51,7 @@ public class Wheels {
                     Math.cos(theta - Math.PI / 4) //front right and back left wheel relative velocity (without angular velocity)
         }}));
 
+        //return a string representation of the algorithm, and power the wheels after scaling and accounting for angular velocity
         return "vel: " + Utils.toString(robotVel) +
             ", theta: " + Utils.toString(theta) +
             ", ngVel: " + Utils.toString(angularVel) +

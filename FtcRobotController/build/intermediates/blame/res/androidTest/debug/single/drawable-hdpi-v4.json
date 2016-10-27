@@ -4,6 +4,14 @@
         "source": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/exploded-aar/FtcCommon-release/res/drawable-hdpi-v4/button_shape.xml"
     },
     {
+        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/button_shape.xml",
+        "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/exploded-aar/FtcCommon-release/res/drawable-hdpi-v4/button_shape.xml"
+    },
+    {
+        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/ic_launcher.png",
+        "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/bundles/debug/res/drawable-hdpi-v4/ic_launcher.png"
+    },
+    {
         "merged": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/ic_launcher.png",
         "source": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/bundles/debug/res/drawable-hdpi-v4/ic_launcher.png"
     }
