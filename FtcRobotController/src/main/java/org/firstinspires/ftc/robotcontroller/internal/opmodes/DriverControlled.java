@@ -66,8 +66,8 @@ public class DriverControlled extends LinearOpMode {
 
     private String getTimeString() { //get remaining match time as a string
         int deltaSeconds = 120 - (int) (System.currentTimeMillis() - startTime) / 1000;
-        String seconds = "" + ((int) deltaSeconds % 60);
+        String seconds = "" + deltaSeconds % 60;
 
-        return "" + ((int) deltaSeconds / 60) + ":" + (seconds.length() == 1 ? "0" + seconds : seconds);
+        return "" + deltaSeconds / 60 + ":" + (seconds.length() == 1 ? "0" + seconds : seconds);
     }
 }
