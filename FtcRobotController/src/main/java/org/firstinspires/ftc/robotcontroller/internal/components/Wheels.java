@@ -58,7 +58,7 @@ public class Wheels {
             ", mode: " + (isChannelMode ? "chan" : "prec") +
             ", pow: " +
                 setWheelPowers( //apply the scaled powers to the motors
-                    Utils.scaleValues(1, new double[][] { //scale the velocities to unit vectors, only if any of them are over one
+                    Utils.scaleValues(1, new double[][] { //scale the velocities to unit vectors, only if any of them have a magnitude greater than one
                         {
                             compensationConstants[0][0] * (relativeWheelVels[0][0] + angularVel), //front left wheel relative velocity (with angular velocity)
                             compensationConstants[0][1] * (relativeWheelVels[0][1] - angularVel) //front right wheel relative velocity (with angular velocity)

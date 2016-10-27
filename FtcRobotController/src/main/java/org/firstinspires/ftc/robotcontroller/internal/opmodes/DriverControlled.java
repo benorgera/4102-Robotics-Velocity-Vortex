@@ -2,9 +2,9 @@ package org.firstinspires.ftc.robotcontroller.internal.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcontroller.internal.Utils;
 import org.firstinspires.ftc.robotcontroller.internal.components.Wheels;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,7 +37,7 @@ public class DriverControlled extends LinearOpMode {
         while (opModeIsActive()) run(); //control to robot using gamepad input while the opMode is active
 
         wheels.stop(); //stop the robot once the opMode is disabled
-        telemetry.addData("Saving Log", saveLog() ? "Successful" : "Failed");
+        telemetry.addData("Saving Log", Utils.writeToStringToFile(hardwareMap.appContext, log, new SimpleDateFormat("MM/dd/yy HH:mm:ss 'log'").format(new Date())) ? "Successful" : "Failed"); //save the robot actions log file
         telemetry.update();
     }
 
@@ -50,7 +50,7 @@ public class DriverControlled extends LinearOpMode {
     }
 
     private String addToLog(String s) { //add string to log of robot actions
-//        log += (s + "\n\n"); if we want to actually log things this should be uncommented
+        log += (s + "\n\n");
         return s;
     }
 
@@ -62,18 +62,6 @@ public class DriverControlled extends LinearOpMode {
             hardwareMap.dcMotor.get("back-left-wheel"),
             hardwareMap.dcMotor.get("back-right-wheel")
         );
-    }
-
-    private boolean saveLog() { //write robot actions log to file
-        try {
-            FileOutputStream s = new FileOutputStream(new File(hardwareMap.appContext.getFilesDir(), new SimpleDateFormat("MM/dd/yy HH:mm:ss 'log'").format(new Date())));
-            s.write(log.getBytes());
-            s.close();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-
     }
 
     private String getTimeString() { //get remaining match time as a string

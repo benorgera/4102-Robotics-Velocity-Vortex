@@ -1,9 +1,15 @@
 package org.firstinspires.ftc.robotcontroller.internal;
 
+import android.content.Context;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -56,5 +62,15 @@ public class Utils {
         return multiplyValues(1.0 / max, values); //divide each value by the maximum magnitude
     }
 
+    public static boolean writeToStringToFile(Context appContext, String s, String fileName) { //store string in text file in phone files directory, and return true if successful
+        try {
+            FileOutputStream o = new FileOutputStream(new File(appContext.getFilesDir(), fileName + ".txt"));
+            o.write(s.getBytes());
+            o.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
 }
