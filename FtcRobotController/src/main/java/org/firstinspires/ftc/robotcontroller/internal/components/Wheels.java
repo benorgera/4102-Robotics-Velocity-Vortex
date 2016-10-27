@@ -47,28 +47,28 @@ public class Wheels {
         }
 
         double robotVel = Utils.trim(0, 1, Utils.getMagnitude(xVel, yVel)), //magnitude of robot velocity [0, 1]
-                theta = Utils.atan3(yVel, xVel), //robot translation angle [0, 2π]
-                frontLeftAndBackRight = Math.sin(theta + Math.PI / 4), //front left and back right wheel relative velocity [-1, 1] (without angular velocity)
-                frontRightAndBackLeft = -1 * Math.cos(theta + Math.PI / 4), //front right and back left wheel relative velocity [-1, 1] (without angular velocity)
-                maxRelativeVelMagnitude = Utils.getMaxMagnitude(new double[] {frontLeftAndBackRight, frontRightAndBackLeft}); //maximum magnitude of the relative wheel velocities
+                theta = Utils.atan3(yVel, xVel); //robot translation angle [0, 2π]
 
-        //scale the relative velocities to unit vectors, and them multiply by the desired robot velocity
-        frontLeftAndBackRight *= robotVel / maxRelativeVelMagnitude;
-        frontRightAndBackLeft *= robotVel / maxRelativeVelMagnitude;
+        double[][] relativeWheelVelocities = scaleToUnitVectors(new double[][] {{
+                Math.sin(theta - Math.PI / 4), //front left and back right wheel relative velocity [-1, 1] (without angular velocity)
+                Math.cos(theta - Math.PI / 4)
+        }});
+
+        for (int i = 0; i < 2; i++) relativeWheelVelocities[0][i] *= robotVel;
 
         return "vel: " + Utils.toString(robotVel) +
                 ", theta: " + Utils.toString(theta) +
                 ", ngVel: " + Utils.toString(angularVel) +
                 ", mode: " + (isChannelMode ? "chan" : "prec") +
-                ", pow: " + setWheelPowers(scaleWheelPowers(new double[][] {
+                ", pow: " + setWheelPowers(scaleToUnitVectors(new double[][] {
                     {
-                        compensationConstants[0][0] * (frontLeftAndBackRight + angularVel), //front left wheel relative velocity (with angular velocity)
-                        compensationConstants[0][1] * (frontRightAndBackLeft - angularVel) //front right wheel relative velocity (with angular velocity)
+                        compensationConstants[0][0] * (relativeWheelVelocities[0][0] + angularVel), //front left wheel relative velocity (with angular velocity)
+                        compensationConstants[0][1] * (relativeWheelVelocities[0][1] - angularVel) //front right wheel relative velocity (with angular velocity)
                     }, {
-                        compensationConstants[1][0] * (frontRightAndBackLeft + angularVel), //back left wheel relative velocity (with angular velocity)
-                        compensationConstants[1][1] * (frontLeftAndBackRight - angularVel) //back right wheel relative velocity (with angular velocity)
+                        compensationConstants[1][0] * (relativeWheelVelocities[0][1] + angularVel), //back left wheel relative velocity (with angular velocity)
+                        compensationConstants[1][1] * (relativeWheelVelocities[0][0] - angularVel) //back right wheel relative velocity (with angular velocity)
                     }
-                }));
+        }));
     }
 
 
@@ -85,11 +85,9 @@ public class Wheels {
             wheelBase[i][j].setPower(0);
     }
 
-    private double[][] scaleWheelPowers(double[][] wheelPowers) { //scale wheel powers so robot can use maximum powers with any combination of rotation and translation
+    private double[][] scaleToUnitVectors(double[][] wheelPowers) { //scale wheel powers so robot can use maximum powers with any combination of rotation and translation
 
         double max = Utils.getMaxMagnitude(wheelPowers); //maximum magnitude of the relative wheel velocities
-
-        if (max >= 1) return wheelPowers; //return original values if none are out of range
 
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) //convert the relative velocities into wheel voltage multipliers with a maximum magnitude of the robot velocity
             wheelPowers[i][j] /= max;

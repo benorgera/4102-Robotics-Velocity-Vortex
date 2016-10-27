@@ -18,6 +18,8 @@ public class DriverControlled extends LinearOpMode {
     //components
     private Wheels wheels;
 
+    private String log = "";
+
     @Override
     public void runOpMode() {
         initializeHardware();
@@ -34,9 +36,15 @@ public class DriverControlled extends LinearOpMode {
     private void run() { //control to robot using gamepad input
 
         //all components return a string with telemetry data when passed input
-        telemetry.addData("WHEELS", wheels.drive(gamepad1.left_stick_x, -1 * gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || (!gamepad1.right_bumper && isChannelMode)));
+        telemetry.addData("WHEELS", addToLog(wheels.drive(gamepad1.left_stick_x, -1 * gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || (!gamepad1.right_bumper && isChannelMode))));
         telemetry.update();
     }
+
+    private String addToLog(String s) {
+        log += (s + "\n\n");
+        return s;
+    }
+
 
     private void initializeHardware() { //initialize hardware according to hardware map
         wheels = new Wheels(
