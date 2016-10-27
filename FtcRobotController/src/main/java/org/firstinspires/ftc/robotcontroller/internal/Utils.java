@@ -3,6 +3,7 @@ package org.firstinspires.ftc.robotcontroller.internal;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 /**
@@ -24,41 +25,31 @@ public class Utils {
         return (Math.atan2(y, x) + 2 * Math.PI) % (Math.PI * 2);
     }
 
-    public static String formatAngle(AngleUnit angleUnit, double angle) {
-        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    public static double trim(double min, double max, double val) { //returns val, trimmed to [min, max]
+        return val > max ? max : val < min ? min : val;
     }
 
-    private static String formatDegrees(double degrees){
-        return toString(
+    public static double getMaxMagnitude(double[] vals) {
+        double max = 0;
 
+        for (double d : vals) {
+            d = Math.abs(d);
+            if (d > max) max = d;
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                AngleUnit.DEGREES.normalize(degrees));
+        return max;
     }
+
+    public static double getMaxMagnitude(double[][] vals) {
+        double max = 0;
+
+        for (double[] d2 : vals) for (double d : d2) {
+            d = Math.abs(d);
+            if (d > max) max = d;
+        }
+
+        return max;
+    }
+
 
 }
