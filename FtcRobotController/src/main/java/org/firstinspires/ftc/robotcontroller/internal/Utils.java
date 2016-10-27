@@ -41,7 +41,7 @@ public class Utils {
     }
 
     public static double[][] multiplyValues(double coefficient, double[][] values) {
-        for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) //multiply each value by the coefficient
+        for (int i = 0; i < values.length; i++) for (int j = 0; j < values[i].length; j++) //multiply each value by the coefficient
             values[i][j] *= coefficient;
 
         return values;
@@ -53,7 +53,7 @@ public class Utils {
 
         if (max <= ceiling) return values; //if none of the values are over the specified ceiling, don't scale anything
 
-        return multiplyValues(values, 1 / max); //divide each value by the maximum magnitude
+        return multiplyValues(1.0 / max, values); //divide each value by the maximum magnitude
     }
 
 

@@ -29,8 +29,8 @@ public class Wheels {
                 {backLeft, backRight}
         };
 
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) { //set up motors
             wheelBase[i][j].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

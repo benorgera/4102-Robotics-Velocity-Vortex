@@ -67,7 +67,8 @@ public class Sensors {
     }
 
     private String getData() {
-        return "gyro: (" + Utils.formatAngle(angles.angleUnit, angles.firstAngle) + ", " + Utils.formatAngle(angles.angleUnit, angles.secondAngle) + ", " + Utils.formatAngle(angles.angleUnit, angles.thirdAngle) + ")";
+        return "";
+//        return "gyro: (" + Utils.formatAngle(angles.angleUnit, angles.firstAngle) + ", " + Utils.formatAngle(angles.angleUnit, angles.secondAngle) + ", " + Utils.formatAngle(angles.angleUnit, angles.thirdAngle) + ")";
     }
 
 //
