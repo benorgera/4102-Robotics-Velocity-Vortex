@@ -14,7 +14,6 @@ public class Wheels {
 
     //constants
     private final double stickThreshold = 0.1;
-    private final double stickRadius = 1;
     private final double[][] compensationConstants = new double[][] {
             {1, 1},
             {1, 1}
@@ -36,45 +35,41 @@ public class Wheels {
         }
     }
 
-    public String drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //drive robot given x velocity vector, y velocity vector and angular velocity vector, disregarding negligible
-
-        //trim sticks to unit vectors
-        xVel /= stickRadius;
-        yVel /= stickRadius;
-        angularVel /= stickRadius;
+    public String drive(double xVelocity, double yVelocity, double angularVel, boolean isChannelMode) { //translate the robot given velocity and angular velocity, and return a string representation of this algorithm
 
         if (isChannelMode) { //in channel mode negligible velocities will be disregarded
-            xVel = Math.abs(xVel) < stickThreshold ? 0 : xVel;
-            yVel = Math.abs(yVel) < stickThreshold ? 0 : yVel;
+            xVelocity = Math.abs(xVelocity) < stickThreshold ? 0 : xVelocity;
+            yVelocity = Math.abs(yVelocity) < stickThreshold ? 0 : yVelocity;
             angularVel = Math.abs(angularVel) < stickThreshold ? 0 : angularVel;
         }
 
-        double vel = Utils.getMagnitude(xVel, yVel), //unit vector
-                theta = Utils.atan3(yVel, xVel); //angle [0, 2π]
+        double robotVelocity = Utils.getMagnitude(xVelocity, yVelocity), //magnitude of robot velocity [0, 1]
+                theta = Utils.atan3(yVelocity, xVelocity), //robot translation angle [0, 2π]
+                frontLeftAndBackRight = Math.sin(theta + Math.PI / 4), //front left and back right wheel relative velocity [-1, 1] (without angular velocity)
+                frontRightAndBackLeft = -1 * Math.cos(theta + Math.PI / 4); //front right and back left wheel relative velocity [-1, 1] (without angular velocity)
 
-        return drive2(vel, theta, angularVel) + "\t\tvel: " + Utils.toString(vel) + ", theta: " + Utils.toString(theta) + ", angularVel: " + Utils.toString(angularVel) + ", mode: " + (isChannelMode ? "channel" : "precise");
+        return "vel: " + Utils.toString(robotVelocity) +
+                ", theta: " + Utils.toString(theta) +
+                ", ngVel: " + Utils.toString(angularVel) +
+                ", mode: " + (isChannelMode ? "chan" : "prec") +
+                ", pow: " + setWheelPowers(scaleWheelPowers(new double[][]{
+                    {
+                        compensationConstants[0][0] * (frontLeftAndBackRight + angularVel), //front left wheel relative velocity (with angular velocity)
+                        compensationConstants[0][1] * (frontRightAndBackLeft - angularVel) //front right wheel relative velocity (with angular velocity)
+                    }, {
+                        compensationConstants[1][0] * (frontRightAndBackLeft + angularVel), //back left wheel relative velocity (with angular velocity)
+                        compensationConstants[1][1] * (frontLeftAndBackRight - angularVel) //back right wheel relative velocity (with angular velocity)
+                    }
+                }, robotVelocity));
     }
 
-    private String drive2(double robotVelocity, double robotAngle, double angularVelocity) { //translate robot at given velocity and angle with given angular velocity
-        robotVelocity *= Math.sqrt(2);
-        double[][] powers = scaleWheelPowers(new double[][]{
-            {
-                compensationConstants[0][0] * (robotVelocity * Math.sin(robotAngle + Math.PI / 4) + angularVelocity), //front left wheel
-                compensationConstants[0][1] * (robotVelocity * -1 * Math.cos(robotAngle + Math.PI / 4) - angularVelocity) //front right wheel
-            }, {
-                compensationConstants[1][0] * (robotVelocity * -1 * Math.cos(robotAngle + Math.PI / 4) + angularVelocity), //back left wheel
-                compensationConstants[1][1] * (robotVelocity * Math.sin(robotAngle + Math.PI / 4) - angularVelocity) //back right wheel
-            }
-        });
 
-        setWheelPowers(powers);
-        return "{ " + Arrays.toString(powers[0]) + " } , { " + Arrays.toString(powers[1]) + " }";
-    }
-
-    private void setWheelPowers(double[][] wheelPowers) { //apply power to the motors
+    private String setWheelPowers(double[][] wheelPowers) { //apply power to the motors, and return string representation of the wheel powers
         for (int i = 0; i < 2; i++)
             for (int j = 0; j < 2; j++)
                 wheelBase[i][j].setPower(wheelPowers[i][j]);
+
+        return "{ [" + Utils.toString(wheelPowers[0][0]) + ", " + Utils.toString(wheelPowers[0][1]) + "], [" + Utils.toString(wheelPowers[1][0]) + ", " + Utils.toString(wheelPowers[1][1]) + "] }";
     }
 
     public void stop() { //stop the robot
@@ -82,17 +77,15 @@ public class Wheels {
             wheelBase[i][j].setPower(0);
     }
 
-    private double[][] scaleWheelPowers(double[][] wheelPowers) { //scale wheel powers so robot can use maximum powers with any combination of rotation and translation
+    private double[][] scaleWheelPowers(double[][] wheelPowers, double robotVelocity) { //scale wheel powers so robot can use maximum powers with any combination of rotation and translation
         double max = 0;
 
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) //find max wheel power
             if (Math.abs(wheelPowers[i][j]) > max)
                 max = Math.abs(wheelPowers[i][j]);
 
-        if (max <= 1) return wheelPowers; //return if no scaling is necessary
-
-        for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) //scale the powers by the max value
-            wheelPowers[i][j] /= max;
+        for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) //convert the relative velocities into wheel voltage multipliers with a maximum magnitude of the robot velocity
+            wheelPowers[i][j] *= (robotVelocity / max);
 
         return wheelPowers;
     }
