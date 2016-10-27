@@ -29,18 +29,7 @@ public class Utils {
         return val > max ? max : val < min ? min : val;
     }
 
-    public static double getMaxMagnitude(double[] vals) {
-        double max = 0;
-
-        for (double d : vals) {
-            d = Math.abs(d);
-            if (d > max) max = d;
-        }
-
-        return max;
-    }
-
-    public static double getMaxMagnitude(double[][] vals) {
+    public static double getMaxMagnitude(double[][] vals) { //return the double stored in the arrays with the greatest absolute value
         double max = 0;
 
         for (double[] d2 : vals) for (double d : d2) {
@@ -49,6 +38,22 @@ public class Utils {
         }
 
         return max;
+    }
+
+    public static double[][] multiplyValues(double coefficient, double[][] values) {
+        for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) //multiply each value by the coefficient
+            values[i][j] *= coefficient;
+
+        return values;
+    }
+
+    public static double[][] scaleValues(double ceiling, double[][] values) { //divide each value by the maximum magnitude of any of the values, if the maximum magnitude is over the ceiling
+
+        double max = Utils.getMaxMagnitude(values); //maximum magnitude
+
+        if (max <= ceiling) return values; //if none of the values are over the specified ceiling, don't scale anything
+
+        return multiplyValues(values, 1 / max); //divide each value by the maximum magnitude
     }
 
 
