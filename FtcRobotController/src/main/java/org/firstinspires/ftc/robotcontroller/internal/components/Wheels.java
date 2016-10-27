@@ -50,11 +50,11 @@ public class Wheels {
                 theta = Utils.atan3(yVel, xVel), //robot translation angle [0, 2π]
                 frontLeftAndBackRight = Math.sin(theta + Math.PI / 4), //front left and back right wheel relative velocity [-1, 1] (without angular velocity)
                 frontRightAndBackLeft = -1 * Math.cos(theta + Math.PI / 4), //front right and back left wheel relative velocity [-1, 1] (without angular velocity)
-                maxRelativeVelocityMagnitude = Utils.getMaxMagnitude(new double[] {frontLeftAndBackRight, frontRightAndBackLeft});
+                maxRelativeVelMagnitude = Utils.getMaxMagnitude(new double[] {frontLeftAndBackRight, frontRightAndBackLeft}); //maximum magnitude of the relative wheel velocities
 
-        //scale the relative velocities to unit vectors, and then multiply by the desired robot velocity
-        frontLeftAndBackRight *= robotVel / maxRelativeVelocityMagnitude;
-        frontRightAndBackLeft *= robotVel / maxRelativeVelocityMagnitude;
+        //scale the relative velocities to unit vectors, and them multiply by the desired robot velocity
+        frontLeftAndBackRight *= robotVel / maxRelativeVelMagnitude;
+        frontRightAndBackLeft *= robotVel / maxRelativeVelMagnitude;
 
         return "vel: " + Utils.toString(robotVel) +
                 ", theta: " + Utils.toString(theta) +
@@ -87,7 +87,7 @@ public class Wheels {
 
     private double[][] scaleWheelPowers(double[][] wheelPowers) { //scale wheel powers so robot can use maximum powers with any combination of rotation and translation
 
-        double max = Utils.getMaxMagnitude(wheelPowers);
+        double max = Utils.getMaxMagnitude(wheelPowers); //maximum magnitude of the relative wheel velocities
 
         if (max >= 1) return wheelPowers; //return original values if none are out of range
 
