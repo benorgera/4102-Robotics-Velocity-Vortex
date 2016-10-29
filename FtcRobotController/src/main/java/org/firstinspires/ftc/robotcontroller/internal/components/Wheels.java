@@ -53,26 +53,26 @@ public class Wheels {
 
         //return a string representation of the algorithm, and power the wheels after scaling and accounting for angular velocity
         return "vel: " + Utils.toString(robotVel) +
-            ", theta: " + Utils.toString(theta) +
-            ", ngVel: " + Utils.toString(angularVel) +
-            ", mode: " + (isChannelMode ? "chan" : "prec") +
-            ", pow: " +
+                ", theta: " + Utils.toString(theta) +
+                ", ngVel: " + Utils.toString(angularVel) +
+                ", mode: " + (isChannelMode ? "chan" : "prec") +
+                ", pow: " +
                 setWheelPowers( //apply the scaled powers to the motors
-                    Utils.scaleValues(1, new double[][] { //scale the velocities to unit vectors, only if any of them have a magnitude greater than one
-                        {
-                            compensationConstants[0][0] * (relativeWheelVels[0][0] + angularVel), //front left wheel relative velocity (with angular velocity)
-                            compensationConstants[0][1] * (relativeWheelVels[0][1] - angularVel) //front right wheel relative velocity (with angular velocity)
-                        }, {
-                            compensationConstants[1][0] * (relativeWheelVels[0][1] + angularVel), //back left wheel relative velocity (with angular velocity)
-                            compensationConstants[1][1] * (relativeWheelVels[0][0] - angularVel) //back right wheel relative velocity (with angular velocity)
-                        }
-                    })
+                        Utils.scaleValues(1, new double[][] { //scale the velocities to unit vectors, only if any of them have a magnitude greater than one
+                                {
+                                        compensationConstants[0][0] * (relativeWheelVels[0][0] + angularVel), //front left wheel relative velocity (with angular velocity)
+                                        compensationConstants[0][1] * (relativeWheelVels[0][1] - angularVel) //front right wheel relative velocity (with angular velocity)
+                                }, {
+                                        compensationConstants[1][0] * (relativeWheelVels[0][1] + angularVel), //back left wheel relative velocity (with angular velocity)
+                                        compensationConstants[1][1] * (relativeWheelVels[0][0] - angularVel) //back right wheel relative velocity (with angular velocity) 
+                                }
+                        })
                 );
     }
 
     private String setWheelPowers(double[][] wheelPowers) { //apply power to the motors, and return string representation of the wheel powers
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
-                wheelBase[i][j].setPower(wheelPowers[i][j]);
+            wheelBase[i][j].setPower(wheelPowers[i][j]);
 
         return "{ [" + Utils.toString(wheelPowers[0][0]) + ", " + Utils.toString(wheelPowers[0][1]) + "], [" + Utils.toString(wheelPowers[1][0]) + ", " + Utils.toString(wheelPowers[1][1]) + "] }";
     }
