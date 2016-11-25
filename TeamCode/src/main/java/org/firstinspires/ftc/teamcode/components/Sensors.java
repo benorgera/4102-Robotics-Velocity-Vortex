@@ -38,11 +38,9 @@ public class Sensors {
         this.lineSensors = lineSensors;
         this.ods = ods;
         this.beaconSensor = beaconSensor;
-
-        centerGyro();
     }
 
-    private void initImu() {
+    public void initImu() {
 
         BNO055IMU.Parameters p = new BNO055IMU.Parameters();
 
@@ -55,14 +53,25 @@ public class Sensors {
         p.loggingEnabled = true;
         p.loggingTag = "IMU";
 
-        p.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-//        p.calibrationData
-//        p.calibrationDataFile
+        p.accelerationIntegrationAlgorithm = new Integrator();
+
+        //        p.calibrationData
+        //        p.calibrationDataFile
 
         imu.initialize(p);
+
+        while (imu.getSystemStatus() != BNO055IMU.SystemStatus.RUNNING_FUSION) Utils.sleep(10); //wait for initialization to complete
     }
 
-    public double[][] getLineData() {
+    public void integrateAcceleration(boolean shouldIntegrate) { //start or stop integrating the linear acceleration of the imu
+        if (shouldIntegrate)
+            imu.startAccelerationIntegration(new Position(), new Velocity(), 100);
+        else
+            imu.stopAccelerationIntegration();
+    }
+
+
+    public double[][] getLineData() { //get a 2d array representing the readins
         double[][] res = new double[2][2];
 
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; i++)
@@ -71,13 +80,12 @@ public class Sensors {
         return res;
     }
 
-    public void centerGyro() { //fold the gyro into the center of the robot
+    public void centerIMU() { //swing the imu in to the center of the robot
         gyroArm.setPosition(gyroPositions[0]);
     }
 
-    public void foldGyro() { //fold the gyro out of the center of the robot
+    public void foldIMU() { //swing the imu out of the center of the robot
         gyroArm.setPosition(gyroPositions[1]);
     }
-
 
 }

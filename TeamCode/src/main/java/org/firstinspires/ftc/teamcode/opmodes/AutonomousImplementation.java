@@ -41,36 +41,44 @@ public class AutonomousImplementation {
                 break;
             case PUSHING_BUTTON:
                 break;
+            case KNOCKING_BALL:
+                break;
             case PARKING:
                 break;
         }
     }
 
     private void shoot() {
-        shooter.run(1); //get the shooters up to speed
-        sensors.foldGyro(); //move the gyro out of the way of the intake
-
+        //get the shooters up to speed
+        shooter.run(1);
         Utils.sleep(1500);
+
+        //take the shot
         intake.run();
         Utils.sleep(1500);
+
+        //stop the intake and shooter
         intake.stop();
         shooter.stop();
-
-        sensors.centerGyro();
         Utils.sleep(1500);
+
+        setUpIMU(); //ready the IMU
 
         s = Stage.FINDING_FIRST_BEACON;
     }
 
-    private void orientSensors() {
-        sensors.centerGyro();
-        intake.holdGyro();
+    private void setUpIMU() {
+        sensors.centerIMU();
+        intake.holdIMU();
         Utils.sleep(1500);
-        sensors.resetGyroHeading();
+        sensors.initImu();
     }
 
-    private void orientShooter() {
-        sensors.foldGyro();
+    private void setUpShooter() {
+        sensors.foldIMU();
+        intake.releaseIMU();
+        Utils.sleep(1500);
+        intake.stop();
     }
 
     public void stop() {
@@ -80,7 +88,7 @@ public class AutonomousImplementation {
     }
 
     private enum Stage {
-        SHOOTING, FINDING_FIRST_BEACON, PUSHING_BUTTON, FINDING_SECOND_BEACON, PARKING
+        SHOOTING, FINDING_FIRST_BEACON, PUSHING_BUTTON, FINDING_SECOND_BEACON, KNOCKING_BALL, PARKING
     }
 
     public boolean isActive() { //returns true until all stages have been completed

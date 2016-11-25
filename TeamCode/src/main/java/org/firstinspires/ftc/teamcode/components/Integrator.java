@@ -17,8 +17,8 @@ public class Integrator implements BNO055IMU.AccelerationIntegrator {
     private Velocity velocity;
     private Position position;
 
-    private Acceleration previousAcceleration;
-    private Velocity previousVelocity;
+    private Acceleration previousAcceleration = new Acceleration();
+    private Velocity previousVelocity = new Velocity();
 
     private BNO055IMU.Parameters params;
 
