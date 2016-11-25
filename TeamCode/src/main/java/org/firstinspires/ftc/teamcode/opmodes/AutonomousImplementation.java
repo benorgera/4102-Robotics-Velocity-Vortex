@@ -22,6 +22,8 @@ public class AutonomousImplementation {
     private Intake intake;
     private Stage s = Stage.SHOOTING;
 
+    private boolean isActive = true;
+
     public AutonomousImplementation(boolean isRed) {
         this.wheels = Hardware.getWheels();
         this.sensors = Hardware.getSensors();
@@ -55,8 +57,20 @@ public class AutonomousImplementation {
         shooter.stop();
 
         sensors.centerGyro();
+        Utils.sleep(1500);
 
         s = Stage.FINDING_FIRST_BEACON;
+    }
+
+    private void orientSensors() {
+        sensors.centerGyro();
+        intake.holdGyro();
+        Utils.sleep(1500);
+        sensors.resetGyroHeading();
+    }
+
+    private void orientShooter() {
+        sensors.foldGyro();
     }
 
     public void stop() {
@@ -67,6 +81,10 @@ public class AutonomousImplementation {
 
     private enum Stage {
         SHOOTING, FINDING_FIRST_BEACON, PUSHING_BUTTON, FINDING_SECOND_BEACON, PARKING
+    }
+
+    public boolean isActive() { //returns true until all stages have been completed
+        return isActive;
     }
 
 }

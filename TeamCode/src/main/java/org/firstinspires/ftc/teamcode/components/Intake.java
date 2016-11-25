@@ -24,4 +24,9 @@ public class Intake {
     public void stop() {
         intake.setPower(0);
     }
+
+    public void holdGyro() { //slowly run the intake, so that the conveyor paddles press up against the gyro plate and hold it steady
+        intake.setPower(0.2);
+    }
+
 }

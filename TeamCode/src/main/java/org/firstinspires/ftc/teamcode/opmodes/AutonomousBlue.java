@@ -22,7 +22,7 @@ public class AutonomousBlue extends LinearOpMode {
 
         waitForStart();
 
-        while (opModeIsActive()) a.loop();
+        while (opModeIsActive() && a.isActive()) a.loop();
 
         a.stop();
 

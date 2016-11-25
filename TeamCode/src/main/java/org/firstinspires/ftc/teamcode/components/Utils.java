@@ -75,4 +75,8 @@ public class Utils {
         }
     }
 
+    public static double average(double a, double b) {
+        return (a + b) / 2;
+    }
+
 }

@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -23,7 +24,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
  */
 public class Sensors {
 
-    private ModernRoboticsI2cGyro gyro;
+    private AdafruitBNO055IMU imu;
     private Servo gyroArm;
     private ColorSensor[][] lineSensors;
     private ModernRoboticsAnalogOpticalDistanceSensor ods;
@@ -31,16 +32,34 @@ public class Sensors {
 
     private final double[] gyroPositions = new double[] {0, 0.5}; //gyro positions (centered and folded respectively)
 
-    public Sensors(ModernRoboticsI2cGyro gyro, Servo gyroArm, ColorSensor[][] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor) {
-        this.gyro = gyro;
+    public Sensors(AdafruitBNO055IMU imu, Servo gyroArm, ColorSensor[][] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor) {
+        this.imu = imu;
         this.gyroArm = gyroArm;
         this.lineSensors = lineSensors;
         this.ods = ods;
         this.beaconSensor = beaconSensor;
 
-        //center and calibrate the gyro upon initialization
         centerGyro();
-        gyro.calibrate();
+    }
+
+    private void initImu() {
+
+        BNO055IMU.Parameters p = new BNO055IMU.Parameters();
+
+        p.mode = BNO055IMU.SensorMode.NDOF; //ndof and imu are the two fusion modes, but ndof uses magnetometer too
+        p.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        p.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        p.pitchMode = BNO055IMU.PitchMode.ANDROID; //counterclockwise rotation is positive
+        p.temperatureUnit = BNO055IMU.TempUnit.CELSIUS;
+
+        p.loggingEnabled = true;
+        p.loggingTag = "IMU";
+
+        p.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+//        p.calibrationData
+//        p.calibrationDataFile
+
+        imu.initialize(p);
     }
 
     public double[][] getLineData() {
@@ -59,7 +78,6 @@ public class Sensors {
     public void foldGyro() { //fold the gyro out of the center of the robot
         gyroArm.setPosition(gyroPositions[1]);
     }
-
 
 
 }
