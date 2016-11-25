@@ -36,14 +36,14 @@ public class DriverControlled extends LinearOpMode {
         telemetry.addData("4102", "Let's kick up");
         telemetry.update();
 
-        waitForStart(); //wait for the driver station to
+        waitForStart(); //wait for the match to start
 
         startTime = System.currentTimeMillis(); //store the start time, so we can print remaining match time
 
         while (opModeIsActive()) run(); //control to robot using gamepad input while the opMode is active
 
         wheels.stop(); //stop the robot once the opMode is disabled
-        telemetry.addData("Saving Log", Utils.writeToStringToFile(hardwareMap.appContext, log, new SimpleDateFormat("MM/dd/yy HH:mm:ss 'log'").format(new Date())) ? "Successful" : "Failed"); //save the robot actions log file
+        telemetry.addData("Saving Log", Utils.writeStringToFile(hardwareMap.appContext, log, new SimpleDateFormat("MM/dd/yy HH:mm:ss 'log'").format(new Date())) ? "Successful" : "Failed"); //save the robot actions log file
         telemetry.update();
     }
 

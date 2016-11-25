@@ -56,7 +56,7 @@ public class Utils {
         return multiplyValues(1.0 / max, values); //divide each value by the maximum magnitude
     }
 
-    public static boolean writeToStringToFile(Context appContext, String s, String fileName) { //store string in text file in phone files directory, and return true if successful
+    public static boolean writeStringToFile(Context appContext, String s, String fileName) { //store string in text file in phone's files directory, and return true if successful
         try {
             FileOutputStream o = new FileOutputStream(new File(appContext.getFilesDir(), fileName + ".txt"));
             o.write(s.getBytes());
@@ -77,6 +77,11 @@ public class Utils {
 
     public static double average(double a, double b) {
         return (a + b) / 2;
+    }
+
+    public static double angleDifference(double a, double b) { //finds signed difference between two angles [-π,π]
+        double dif = a - b;
+        return dif < -Math.PI ? dif + 2 * Math.PI : dif > Math.PI ? dif - Math.PI * 2 : dif;
     }
 
 }

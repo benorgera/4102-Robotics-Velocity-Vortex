@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.components;
 
+import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
+import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
@@ -38,7 +40,7 @@ public class Hardware {
 
     public static Sensors getSensors() {
         return new Sensors(
-                (ModernRoboticsI2cGyro) map.gyroSensor.get("gyro"),
+                new AdafruitBNO055IMU(map.i2cDeviceSynch.get("imu")),
                 map.servo.get("gyro-arm"),
                 new ColorSensor[][] {
                         {
@@ -54,9 +56,6 @@ public class Hardware {
                 (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-sensor")
         );
 
-
-
-        //    new AdafruitBNO055IMU(hardwareMap.i2cDeviceSynch.get("imu"));
     }
 
     public static Shooter getShooter() {
