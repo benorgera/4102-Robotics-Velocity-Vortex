@@ -23,11 +23,11 @@ public class AutonomousImplementation {
     private Intake intake;
     private Stage s = Stage.SHOOTING;
 
-    private double initialHeading;
-
     private final boolean isRed;
 
     private boolean isActive = true;
+
+    private final double k = 1;
 
     private final double whiteLineSignalThreshold = 7; //the minimum color sensor reading required to signify finding the white line
 
@@ -76,7 +76,7 @@ public class AutonomousImplementation {
         Utils.sleep(1500);
         sensors.initImu();
 
-        initialHeading = sensors.getHeading();
+        sensors.resetHeading();
         s = Stage.FINDING_FIRST_WHITE_LINE;
 
     }
@@ -91,14 +91,13 @@ public class AutonomousImplementation {
             wheels.stop();
             s = Stage.FINDING_FIRST_BEACON;
         } else {
-            //ratio of y position to x position could be used to see if the robot is translating properly
-            wheels.drive(0.2 * (isRed ? 1 : -1), 0.5, Utils.angleDifference(initialHeading, sensors.getHeading()) / Math.PI, false);
+            translate(Math.PI / 4 + (isRed ? Math.PI : 0));
         }
     }
 
 
     private void findFirstBeacon() {
-
+        double[][] readings = sensors.getLineData();
     }
 
     private void setUpShooter() {
@@ -116,6 +115,15 @@ public class AutonomousImplementation {
 
     private enum Stage {
         SHOOTING, FINDING_FIRST_WHITE_LINE, FINDING_FIRST_BEACON, PUSHING_BUTTON, FINDING_SECOND_WHITE_LINE, FINDING_SECOND_BEACON, KNOCKING_BALL, PARKING
+    }
+
+    private void translate(double thetaDesired) { //translate the robot at desired angle [0, 2π], and compensate for unwanted rotation/drift our orientation and estimated position
+        double ngVel = sensors.getHeading() / Math.PI, //compensate for rotation by accounting for change in heading
+            thetaActual = Utils.atan3(sensors.getPosition().y, sensors.getPosition().x), //the direction of displacement thus far
+                thetaDif = thetaDesired - thetaActual, //the difference between desired and actual displacement direction
+                thetaNew = thetaDesired + thetaDif * k; //compensate for drift by accounting for the difference in desired and actual direction
+
+        wheels.drive(Math.cos(thetaNew), Math.sin(thetaNew), ngVel, false);
     }
 
     public boolean isActive() { //returns true until all stages have been completed

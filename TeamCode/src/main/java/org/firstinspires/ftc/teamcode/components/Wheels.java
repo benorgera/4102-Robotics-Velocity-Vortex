@@ -75,7 +75,7 @@ public class Wheels {
     }
 
     public void stop() { //stop the robot
-        for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
-            wheelBase[i][j].setPower(0);
+        for (DcMotor[] a : wheelBase) for (DcMotor b : a)
+            b.setPower(0);
     }
 }

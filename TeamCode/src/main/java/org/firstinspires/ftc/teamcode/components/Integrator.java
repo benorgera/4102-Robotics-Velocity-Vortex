@@ -46,7 +46,7 @@ public class Integrator implements BNO055IMU.AccelerationIntegrator {
     }
 
     @Override
-    public void update(Acceleration linearAcceleration) { //calculate velocity and position using riemann sums
+    public void update(Acceleration linearAcceleration) { //calculate velocity and position using midpoint riemann sums
         acceleration = linearAcceleration;
 
         if (acceleration.acquisitionTime == 0) return; //zero means we don't know when this was acquired

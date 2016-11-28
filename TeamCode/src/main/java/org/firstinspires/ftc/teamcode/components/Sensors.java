@@ -28,6 +28,10 @@ public class Sensors {
     private ModernRoboticsAnalogOpticalDistanceSensor ods;
     private ModernRoboticsI2cColorSensor beaconSensor;
 
+    private Integrator integrator;
+
+    private double initialHeading;
+
     private final double[] gyroPositions = new double[] {0, 0.5}; //gyro positions (centered and folded respectively)
 
     public Sensors(AdafruitBNO055IMU imu, Servo gyroArm, ColorSensor[][] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor) {
@@ -51,13 +55,17 @@ public class Sensors {
         p.loggingEnabled = true;
         p.loggingTag = "IMU";
 
-        p.accelerationIntegrationAlgorithm = new Integrator();
+        integrator = new Integrator();
+
+        p.accelerationIntegrationAlgorithm = integrator;
 
         p.calibrationDataFile = "AdafruitIMUCalibration.json"; //load saved calibration data
 
         imu.initialize(p);
 
         while (imu.getSystemStatus() != BNO055IMU.SystemStatus.RUNNING_FUSION) Utils.sleep(50); //wait for initialization to complete
+
+        resetHeading();
     }
 
     public void integrateAcceleration() { //start integrating linear acceleration to find position and velocity
@@ -86,7 +94,22 @@ public class Sensors {
     }
 
     public double getHeading() {
-        return imu.getAngularOrientation().toAxesReference(AxesReference.EXTRINSIC).toAxesOrder(AxesOrder.XYZ).secondAngle;
+        return Utils.angleDifference(getRawHeading(), initialHeading);
     }
 
+    public void resetHeading() {
+        initialHeading = getRawHeading();
+    }
+
+    private double getRawHeading() {
+        return imu.getAngularOrientation().toAxesReference(AxesReference.EXTRINSIC).toAxesOrder(AxesOrder.XYZ).thirdAngle;
+    }
+
+    public Velocity getVelocity() {
+        return imu.getVelocity();
+    }
+
+    public Position getPosition() {
+        return imu.getPosition();
+    }
 }
