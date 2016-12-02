@@ -24,13 +24,4 @@ public class Intake {
     public void stop() {
         intake.setPower(0);
     }
-
-    public void holdIMU() { //slowly run the intake, so that the conveyor paddles press up against the gyro plate and hold it steady
-        intake.setPower(0.2);
-    }
-
-    public void releaseIMU() {
-        intake.setPower(-0.2);
-    }
-
 }

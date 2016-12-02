@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.teamcode.components.Hardware;
 import org.firstinspires.ftc.teamcode.components.Intake;
+import org.firstinspires.ftc.teamcode.components.Integrator;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
 import org.firstinspires.ftc.teamcode.components.Utils;
 import org.firstinspires.ftc.teamcode.components.Wheels;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by benorgera on 11/24/16.
@@ -30,6 +31,14 @@ public class AutonomousImplementation {
     private final double k = 1;
 
     private final double whiteLineSignalThreshold = 7; //the minimum color sensor reading required to signify finding the white line
+
+
+    //color sensor representations
+    private final int[] frontLeft = {0, 0};
+    private final int[] frontRight = {0, 1};
+    private final int[] backLeft = {1, 0};
+    private final int[] backRight = {1, 1};
+
 
     public AutonomousImplementation(boolean isRed) {
         this.wheels = Hardware.getWheels();
@@ -69,11 +78,9 @@ public class AutonomousImplementation {
         //stop the intake and shooter
         intake.stop();
         shooter.stop();
-        Utils.sleep(1500);
 
         sensors.centerIMU();
-        intake.holdIMU();
-        Utils.sleep(1500);
+        Utils.sleep(1500); //wait for things to steady before taking readings
         sensors.initImu();
 
         sensors.resetHeading();
@@ -89,6 +96,7 @@ public class AutonomousImplementation {
 
         if (foundLine) {
             wheels.stop();
+            if (!isRed) rotate(Math.random() > 0.5 ? -Math.PI : Math.PI); //turn around if we're blue (one way or another)
             s = Stage.FINDING_FIRST_BEACON;
         } else {
             translate(Math.PI / 4 + (isRed ? Math.PI : 0));
@@ -97,14 +105,34 @@ public class AutonomousImplementation {
 
 
     private void findFirstBeacon() {
-        double[][] readings = sensors.getLineData();
-    }
 
-    private void setUpShooter() {
-        sensors.foldIMU();
-        intake.releaseIMU();
-        Utils.sleep(1500);
-        intake.stop();
+
+//        if (sensors.get)
+
+        double[][] readings = sensors.getLineData(); //the array stores the readings on the button pusher side as the front
+
+        ArrayList<Integer[]> maxReadingIndexes = Utils.findTwoMaxIndexes(readings);
+
+//        if (maxReadingIndexes.contains(frontLeft)) {
+//            if (maxReadingIndexes.contains(frontRight)) {
+//                translate(Math.PI);
+//            } else if (maxReadingIndexes.contains())
+//        }
+
+        if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(frontRight)) {
+
+        } else if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(backRight)) {
+
+        } else if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(backLeft)) {
+
+        } else if (maxReadingIndexes.contains(frontRight) && maxReadingIndexes.contains(backLeft)) {
+
+        } else if (maxReadingIndexes.contains(frontRight) && maxReadingIndexes.contains(backRight)) {
+
+        } else if (maxReadingIndexes.contains(backLeft) && maxReadingIndexes.contains(backRight)) {
+
+        }
+
     }
 
     public void stop() {
@@ -124,6 +152,15 @@ public class AutonomousImplementation {
                 thetaNew = thetaDesired + thetaDif * k; //compensate for drift by accounting for the difference in desired and actual direction
 
         wheels.drive(Math.cos(thetaNew), Math.sin(thetaNew), ngVel, false);
+    }
+
+    private void rotate(double theta) { //rotate [-π, π]
+        sensors.resetHeading();
+
+        while (Math.abs(sensors.getHeading()) < Math.abs(theta))
+            wheels.drive(0, 0, theta > 0 ? -0.3 : 0.3, false);
+
+        wheels.stop();
     }
 
     public boolean isActive() { //returns true until all stages have been completed

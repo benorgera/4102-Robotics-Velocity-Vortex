@@ -17,16 +17,15 @@ public class Integrator implements BNO055IMU.AccelerationIntegrator {
     private Velocity velocity;
     private Position position;
 
-    private Acceleration previousAcceleration = new Acceleration();
-    private Velocity previousVelocity = new Velocity();
-
-    private BNO055IMU.Parameters params;
+    private Acceleration previousAcceleration;
+    private Velocity previousVelocity;
 
     @Override
     public void initialize(BNO055IMU.Parameters params, Position initialPosition, Velocity initialVelocity) {
         this.position = initialPosition;
         this.velocity = initialVelocity;
-        this.params = params;
+        previousVelocity = new Velocity();
+        previousAcceleration = new Acceleration();
     }
 
     @Override

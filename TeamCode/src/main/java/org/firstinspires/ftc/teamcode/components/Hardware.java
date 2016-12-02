@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.components;
 
-import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -40,20 +38,21 @@ public class Hardware {
 
     public static Sensors getSensors() {
         return new Sensors(
-                new AdafruitBNO055IMU(map.i2cDeviceSynch.get("imu")),
-                map.servo.get("gyro-arm"),
+                map.get(BNO055IMU.class, "imu"),
+                map.servo.get("imu-arm"),
+                map.servo.get("imu-latch"),
                 new ColorSensor[][] {
                         {
-                                map.colorSensor.get("front-left-sensor"),
-                                map.colorSensor.get("front-right-sensor")
+                                map.colorSensor.get("front-left-color-sensor"),
+                                map.colorSensor.get("front-right-color-sensor")
                         },
                         {
-                                map.colorSensor.get("back-left-sensor"),
-                                map.colorSensor.get("back-right-sensor")
+                                map.colorSensor.get("back-left-color-sensor"),
+                                map.colorSensor.get("back-right-color-sensor")
                         }
                 },
                 (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
-                (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-sensor")
+                (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor")
         );
 
     }

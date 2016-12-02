@@ -5,6 +5,7 @@ import android.content.Context;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 /**
  * Created by benorgera on 10/24/16.
@@ -82,6 +83,32 @@ public class Utils {
     public static double angleDifference(double a, double b) { //finds signed difference between two angles [-π,π]
         double dif = a - b;
         return dif < -Math.PI ? dif + 2 * Math.PI : dif > Math.PI ? dif - Math.PI * 2 : dif;
+    }
+
+    public static ArrayList<Integer[]> findTwoMaxIndexes(double[][] readings) {
+
+        Integer[] maxIndex = findMaxIndex(readings);
+        readings[maxIndex[0]][maxIndex[1]] = 0;
+
+        Integer[] secondHighestIndex = findMaxIndex(readings);
+
+        ArrayList<Integer[]> maxes = new ArrayList<Integer[]>();
+
+        maxes.add(maxIndex);
+        maxes.add(secondHighestIndex);
+
+        return maxes;
+    }
+
+    private static Integer[] findMaxIndex(double[][] readings) {
+        Integer[] maxIndex = {0, 0}; // [0, 1]
+
+        for (int i = 0; i < readings.length; i++)
+            for (int j = 0; j < readings[i].length; j++)
+                if (readings[i][j] > readings[maxIndex[0]][maxIndex[1]])
+                    maxIndex = new Integer[] {i, j};
+
+        return maxIndex;
     }
 
 }

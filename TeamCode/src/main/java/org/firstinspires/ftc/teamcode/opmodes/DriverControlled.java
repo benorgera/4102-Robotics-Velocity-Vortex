@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.components.Hardware;
+import org.firstinspires.ftc.teamcode.components.Intake;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Utils;
 import org.firstinspires.ftc.teamcode.components.Wheels;
@@ -31,6 +32,7 @@ public class DriverControlled extends LinearOpMode {
     @Override
     public void runOpMode() {
         Hardware.setMap(hardwareMap);
+
         wheels = Hardware.getWheels();
 
         telemetry.addData("4102", "Let's kick up");
