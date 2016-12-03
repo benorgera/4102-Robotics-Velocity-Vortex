@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.components;
 
+import android.graphics.Path;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.components.Utils;
@@ -8,7 +10,7 @@ import org.firstinspires.ftc.teamcode.components.Utils;
  * Created by benorgera on 10/24/16.
  */
 public class Wheels {
-    private DcMotor[][] wheelBase;
+    private DcMotor[][] wheelbase;
 
     //constants
     private final double channelModeStickThreshold = 0.1; //the max magnitude of a stick reading
@@ -19,19 +21,21 @@ public class Wheels {
 
     public Wheels(DcMotor[][] wheelBase) {
 
-        this.wheelBase = wheelBase; //initialize wheel motors
+        this.wheelbase = wheelBase; //initialize wheel motors
 
         //reverse the motors which face opposite directions (the right motors)
-        wheelBase[0][1].setDirection(DcMotorSimple.Direction.REVERSE);
+        wheelbase[0][1].setDirection(DcMotorSimple.Direction.REVERSE);
         wheelBase[1][1].setDirection(DcMotorSimple.Direction.REVERSE);
 
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) { //set up motors
-            wheelBase[i][j].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            wheelBase[i][j].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            wheelbase[i][j].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            wheelbase[i][j].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
     }
 
     public String drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //translate/rotate the robot given velocity and angular velocity, and return a string representation of this algorithm
+
+        xVel = -xVel; //this is a fix for some trig bug
 
         if (isChannelMode) { //in channel mode negligible velocities will be disregarded
             xVel = Math.abs(xVel) < channelModeStickThreshold ? 0 : xVel;
@@ -54,7 +58,7 @@ public class Wheels {
                 ", ngVel: " + Utils.toString(angularVel) +
                 ", mode: " + (isChannelMode ? "chan" : "prec") +
                 ", pow: " +
-                setWheelPowers( //apply the scaled powers to the motors
+                setMotorPowers( //apply the scaled powers to the motors
                         Utils.scaleValues(1, new double[][] { //scale the velocities to unit vectors, only if any of them have a magnitude greater than one
                                 {
                                         compensationConstants[0][0] * (relativeWheelVels[0][0] + angularVel), //front left wheel relative velocity (with angular velocity)
@@ -67,15 +71,41 @@ public class Wheels {
                 );
     }
 
-    private String setWheelPowers(double[][] wheelPowers) { //apply power to the motors, and return string representation of the wheel powers
+    private String setMotorPowers(double[][] wheelPowers) { //apply power to the motors, and return string representation of the wheel powers
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
-            wheelBase[i][j].setPower(wheelPowers[i][j]);
+            wheelbase[i][j].setPower(wheelPowers[i][j]);
 
         return "{ [" + Utils.toString(wheelPowers[0][0]) + ", " + Utils.toString(wheelPowers[0][1]) + "], [" + Utils.toString(wheelPowers[1][0]) + ", " + Utils.toString(wheelPowers[1][1]) + "] }";
     }
 
     public void stop() { //stop the robot
-        for (DcMotor[] a : wheelBase) for (DcMotor b : a)
+        for (DcMotor[] a : wheelbase) for (DcMotor b : a)
             b.setPower(0);
     }
+
+    public void softStop() {
+        while (stillMovingSignificantly()) {
+            setMotorPowers(Utils.multiplyValues(0.8, getMotorPowers()));
+            Utils.sleep(50);
+        }
+    }
+
+    public void softStart() {
+        
+    }
+
+    private boolean stillMovingSignificantly() {
+        return Utils.getMaxMagnitude(getMotorPowers()) > 0.1;
+    }
+
+    private double[][] getMotorPowers() {
+        double[][] powers = new double[2][2];
+
+        for (int i = 0; i < wheelbase.length; i++)
+            for (int j = 0; j < wheelbase[i].length; j++)
+                powers[i][j] = wheelbase[i][j].getPower();
+
+        return powers;
+    }
+
 }

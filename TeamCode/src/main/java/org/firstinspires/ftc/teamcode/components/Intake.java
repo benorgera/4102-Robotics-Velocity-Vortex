@@ -17,8 +17,8 @@ public class Intake {
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void run() {
-        intake.setPower(1);
+    public void run(double power) {
+        intake.setPower(power);
     }
 
     public void stop() {

@@ -28,7 +28,7 @@ public class AutonomousImplementation {
 
     private boolean isActive = true;
 
-    private final double k = 1;
+    private final double odsThreshold = 0.02;
 
     private final double whiteLineSignalThreshold = 7; //the minimum color sensor reading required to signify finding the white line
 
@@ -55,7 +55,7 @@ public class AutonomousImplementation {
                 shoot();
                 break;
             case FINDING_FIRST_WHITE_LINE:
-                findFirstWhiteLine();
+                findWhiteLine();
                 break;
             case PUSHING_BUTTON:
                 break;
@@ -72,7 +72,7 @@ public class AutonomousImplementation {
         Utils.sleep(1500);
 
         //take the shot
-        intake.run();
+        intake.run(0.2);
         Utils.sleep(1500);
 
         //stop the intake and shooter
@@ -83,12 +83,10 @@ public class AutonomousImplementation {
         Utils.sleep(1500); //wait for things to steady before taking readings
         sensors.initImu();
 
-        sensors.resetHeading();
         s = Stage.FINDING_FIRST_WHITE_LINE;
-
     }
 
-    private void findFirstWhiteLine() {
+    private void findWhiteLine() {
         double[][] readings = sensors.getLineData();
         boolean foundLine = false;
 
@@ -104,33 +102,32 @@ public class AutonomousImplementation {
     }
 
 
-    private void findFirstBeacon() {
+    private void findBeacon() {
 
 
-//        if (sensors.get)
+        if (sensors.getOpticalDistance() > odsThreshold) { //we've found the beacon
+            s = Stage.PUSHING_BUTTON;
+            wheels.stop();
+            return;
+        }
 
         double[][] readings = sensors.getLineData(); //the array stores the readings on the button pusher side as the front
 
         ArrayList<Integer[]> maxReadingIndexes = Utils.findTwoMaxIndexes(readings);
 
-//        if (maxReadingIndexes.contains(frontLeft)) {
-//            if (maxReadingIndexes.contains(frontRight)) {
-//                translate(Math.PI);
-//            } else if (maxReadingIndexes.contains())
-//        }
 
         if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(frontRight)) {
-
+            wheels.drive(-0.2, 0, 0, false);
         } else if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(backRight)) {
-
+            wheels.drive(-0.2, 0, -0.1, false);
         } else if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(backLeft)) {
-
+            wheels.drive(-0.2, -0.1, 0, false);
         } else if (maxReadingIndexes.contains(frontRight) && maxReadingIndexes.contains(backLeft)) {
-
+            wheels.drive(-0.2, 0, 0.1, false);
         } else if (maxReadingIndexes.contains(frontRight) && maxReadingIndexes.contains(backRight)) {
-
+            wheels.drive(-0.2, 0.1, 0, false);
         } else if (maxReadingIndexes.contains(backLeft) && maxReadingIndexes.contains(backRight)) {
-
+            wheels.drive(-0.2, 0, 0, false);
         }
 
     }
@@ -146,21 +143,36 @@ public class AutonomousImplementation {
     }
 
     private void translate(double thetaDesired) { //translate the robot at desired angle [0, 2π], and compensate for unwanted rotation/drift our orientation and estimated position
-        double ngVel = sensors.getHeading() / Math.PI, //compensate for rotation by accounting for change in heading
-            thetaActual = Utils.atan3(sensors.getPosition().y, sensors.getPosition().x), //the direction of displacement thus far
-                thetaDif = thetaDesired - thetaActual, //the difference between desired and actual displacement direction
-                thetaNew = thetaDesired + thetaDif * k; //compensate for drift by accounting for the difference in desired and actual direction
+        double ngVel = sensors.getHeading() / Math.PI; //compensate for rotation by accounting for change in heading
 
-        wheels.drive(Math.cos(thetaNew), Math.sin(thetaNew), ngVel, false);
+
+//            thetaActual = Utils.atan3(sensors.getPosition().y, sensors.getPosition().x), //the direction of displacement thus far
+//                thetaDif = thetaDesired - thetaActual, //the difference between desired and actual displacement direction
+//                thetaNew = thetaDesired + thetaDif * k; //compensate for drift by accounting for the difference in desired and actual direction
+
+        wheels.drive(Math.cos(thetaDesired), Math.sin(thetaDesired), ngVel, false);
     }
 
     private void rotate(double theta) { //rotate [-π, π]
+        double initialHeading = sensors.getInitialHeading();
+
         sensors.resetHeading();
 
         while (Math.abs(sensors.getHeading()) < Math.abs(theta))
             wheels.drive(0, 0, theta > 0 ? -0.3 : 0.3, false);
 
         wheels.stop();
+
+        sensors.setInitialHeading(initialHeading);
+    }
+
+    private void alignOnZero() {
+//
+//        double heading;
+//
+//        while (Math.abs(heading = sensors.getHeading()) > Math.PI / 180) {
+//            wheels.drive(0, 0, heading * )
+//        }
     }
 
     public boolean isActive() { //returns true until all stages have been completed

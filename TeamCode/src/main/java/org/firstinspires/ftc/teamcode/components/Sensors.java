@@ -6,15 +6,22 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceS
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+
+import java.util.Locale;
 
 /**
  * Created by benorgera on 10/25/16.
  */
 public class Sensors {
+
+    private Orientation angles;
 
     private BNO055IMU imu;
     private Servo gyroArm;
@@ -23,9 +30,11 @@ public class Sensors {
     private ModernRoboticsAnalogOpticalDistanceSensor ods;
     private ModernRoboticsI2cColorSensor beaconSensor;
 
+    private Integrator integrator;
+
     private double initialHeading = 0;
 
-    private final double[] latchPositions = new double[] {0, 0.7}; //gyro latch positions (latched and unlatched respectively)
+    private final double[] latchPositions = new double[] {0.05, 1}; //gyro latch positions (latched and unlatched respectively)
     private final double[] gyroPositions = new double[] {0.2, 1}; //gyro positions (centered and folded respectively)
 
     public Sensors(BNO055IMU imu, Servo gyroArm, Servo latchServo, ColorSensor[][] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor) {
@@ -36,7 +45,7 @@ public class Sensors {
         this.ods = ods;
         this.beaconSensor = beaconSensor;
 
-        foldIMU(); //fold imu out of shooter's path upon initialization
+//        foldIMU(); //fold imu out of shooter's path upon initialization
     }
 
     public void initImu() {
@@ -49,7 +58,7 @@ public class Sensors {
 //        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
-//        parameters.accelerationIntegrationAlgorithm = new Integrator();
+        parameters.accelerationIntegrationAlgorithm = integrator = new Integrator();
 
         imu.initialize(parameters);
 
@@ -57,14 +66,8 @@ public class Sensors {
         imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN, 0x03);
 
         resetHeading();
-    }
 
-    public void integrateAcceleration() { //start integrating linear acceleration to find position and velocity
-        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
-    }
-
-    public void stopIntegratingAcceleration() { //stop integrating linear acceleration
-        imu.stopAccelerationIntegration();
+//        imu.startAccelerationIntegration(new Position(), new Velocity(), 100);
     }
 
     public double[][] getLineData() { //get a 2d array representing the readings (where the front is the side with the button pusher)
@@ -95,8 +98,9 @@ public class Sensors {
         initialHeading = getRawHeading();
     }
 
-    private double getRawHeading() {
-        return imu.getAngularOrientation().toAxesOrder(AxesOrder.XYZ).toAxesReference(AxesReference.INTRINSIC).thirdAngle;
+    public double getRawHeading() {
+        angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        return -AngleUnit.RADIANS.normalize(AngleUnit.RADIANS.fromUnit(angles.angleUnit, angles.firstAngle));
     }
 
     public Velocity getVelocity() {
@@ -113,5 +117,17 @@ public class Sensors {
 
     public int[] getBeaconColor() {
         return new int[] {beaconSensor.blue(), beaconSensor.red()};
+    }
+
+    public void resetIntegrator() {
+        integrator.reset();
+    }
+
+    public double getInitialHeading() {
+        return initialHeading;
+    }
+
+    public void setInitialHeading(double heading) {
+        initialHeading = heading;
     }
 }

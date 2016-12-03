@@ -101,7 +101,7 @@ public class Utils {
     }
 
     private static Integer[] findMaxIndex(double[][] readings) {
-        Integer[] maxIndex = {0, 0}; // [0, 1]
+        Integer[] maxIndex = {0, 0}; //array index 0 and array index 1, resepctively
 
         for (int i = 0; i < readings.length; i++)
             for (int j = 0; j < readings[i].length; j++)
@@ -109,6 +109,10 @@ public class Utils {
                     maxIndex = new Integer[] {i, j};
 
         return maxIndex;
+    }
+
+    public static double toDegrees(double rads) {
+        return rads * 180 / Math.PI;
     }
 
 }

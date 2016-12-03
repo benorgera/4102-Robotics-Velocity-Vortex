@@ -3,16 +3,17 @@ package org.firstinspires.ftc.teamcode.components;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import org.firstinspires.ftc.robotcore.internal.opengl.shaders.PositionAttributeShader;
 
 /**
- * Created by benorgera on 11/25/16.
+ * {@link Integrator} is an integrator that doesn't actually
+ * integrate accelerations, but merely reports them in the logcat log. This is a debugging
+ * and demonstration tool, little more.
  */
-
-public class Integrator implements BNO055IMU.AccelerationIntegrator {
-
+public class Integrator implements BNO055IMU.AccelerationIntegrator
+{
     private Acceleration acceleration;
     private Velocity velocity;
     private Position position;
@@ -20,32 +21,28 @@ public class Integrator implements BNO055IMU.AccelerationIntegrator {
     private Acceleration previousAcceleration;
     private Velocity previousVelocity;
 
-    @Override
-    public void initialize(BNO055IMU.Parameters params, Position initialPosition, Velocity initialVelocity) {
+    private BNO055IMU.Parameters parameters;
+
+    @Override public void initialize(BNO055IMU.Parameters parameters, Position initialPosition, Velocity initialVelocity)
+    {
+        this.parameters = parameters;
         this.position = initialPosition;
         this.velocity = initialVelocity;
+
         previousVelocity = new Velocity();
         previousAcceleration = new Acceleration();
+        acceleration = new Acceleration();
     }
 
-    @Override
-    public Position getPosition() {
-        return position;
-
+    @Override public Position getPosition() { return position == null ? new Position() : position.toUnit(DistanceUnit.METER); }
+    @Override public Velocity getVelocity() { return velocity == null ? new Velocity() : velocity.toUnit(DistanceUnit.METER); }
+    @Override public Acceleration getAcceleration()
+    {
+        return this.acceleration == null ? new Acceleration() : this.acceleration.toUnit(DistanceUnit.METER);
     }
 
-    @Override
-    public Velocity getVelocity() {
-        return velocity;
-    }
-
-    @Override
-    public Acceleration getAcceleration() {
-        return acceleration;
-    }
-
-    @Override
-    public void update(Acceleration linearAcceleration) { //calculate velocity and position using midpoint riemann sums
+    @Override public void update(Acceleration linearAcceleration)
+    {
         acceleration = linearAcceleration;
 
         if (acceleration.acquisitionTime == 0) return; //zero means we don't know when this was acquired
@@ -62,5 +59,10 @@ public class Integrator implements BNO055IMU.AccelerationIntegrator {
 
         previousAcceleration = acceleration;
         previousVelocity = velocity;
+    }
+
+    public void reset() {
+        velocity = new Velocity();
+        position = new Position();
     }
 }
