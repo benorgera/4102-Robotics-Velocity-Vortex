@@ -36,7 +36,7 @@ public class Hardware {
         );
     }
 
-    public static Sensors getSensors() {
+    public static Sensors getSensors(Wheels wheels) {
         return new Sensors(
                 map.get(BNO055IMU.class, "imu"),
                 map.servo.get("imu-arm"),
@@ -52,7 +52,8 @@ public class Hardware {
                         }
                 },
                 (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
-                (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor")
+                (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor"),
+                wheels
         );
 
     }

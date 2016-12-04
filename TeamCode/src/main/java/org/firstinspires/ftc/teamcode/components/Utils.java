@@ -2,10 +2,13 @@ package org.firstinspires.ftc.teamcode.components;
 
 import android.content.Context;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by benorgera on 10/24/16.
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 public class Utils {
 
     private static DecimalFormat df = new DecimalFormat("#.##");
+    private static Telemetry telemetry;
 
     public static double getMagnitude(double x, double y) {
         return Math.pow(Math.pow(x, 2) + Math.pow(y, 2), 0.5);
@@ -85,19 +89,14 @@ public class Utils {
         return dif < -Math.PI ? dif + 2 * Math.PI : dif > Math.PI ? dif - Math.PI * 2 : dif;
     }
 
-    public static ArrayList<Integer[]> findTwoMaxIndexes(double[][] readings) {
+    public static String findTwoMaxIndexesAsString(double[][] readings) {
 
         Integer[] maxIndex = findMaxIndex(readings);
         readings[maxIndex[0]][maxIndex[1]] = 0;
 
         Integer[] secondHighestIndex = findMaxIndex(readings);
 
-        ArrayList<Integer[]> maxes = new ArrayList<Integer[]>();
-
-        maxes.add(maxIndex);
-        maxes.add(secondHighestIndex);
-
-        return maxes;
+        return "" + Arrays.asList(maxIndex) + Arrays.asList(secondHighestIndex);
     }
 
     private static Integer[] findMaxIndex(double[][] readings) {

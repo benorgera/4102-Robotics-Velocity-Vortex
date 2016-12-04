@@ -14,6 +14,13 @@ public class Wheels {
 
     //constants
     private final double channelModeStickThreshold = 0.1; //the max magnitude of a stick reading
+    private final double significantMovementThreshold = 0.05; //the wheel power required to be considered significant movement
+    private final double softStopPercentage = 0.8;
+
+    private final double softStartIterations = 10;
+
+    private final long softStopSleepTime = 100;
+
     private final double[][] compensationConstants = {
             {1, 1},
             {1, 1}
@@ -33,9 +40,25 @@ public class Wheels {
         }
     }
 
+    public void softStart(double xVel, double yVel, double angularVel) {
+        xVel /= 100;
+        yVel /= 100;
+        angularVel /= 100;
+
+        for (int i = 0; i < softStartIterations; i++) {
+            xVel *= Math.pow(100, 1 / softStartIterations);
+            yVel *= Math.pow(100, 1 / softStartIterations);
+            angularVel *= Math.pow(100, 1 / softStartIterations);
+
+            drive(xVel, yVel, angularVel, false);
+
+            Utils.sleep(softStopSleepTime);
+        }
+    }
+
     public String drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //translate/rotate the robot given velocity and angular velocity, and return a string representation of this algorithm
 
-        xVel = -xVel; //this is a fix for some trig bug
+        xVel = -xVel; //this is a fix for some trig bug (deleting this statement and changing 'Math.cos(theta - Math.PI / 4)' to 'Math.cos(theta + Math.PI / 4)' should do the trick
 
         if (isChannelMode) { //in channel mode negligible velocities will be disregarded
             xVel = Math.abs(xVel) < channelModeStickThreshold ? 0 : xVel;
@@ -85,17 +108,14 @@ public class Wheels {
 
     public void softStop() {
         while (stillMovingSignificantly()) {
-            setMotorPowers(Utils.multiplyValues(0.8, getMotorPowers()));
-            Utils.sleep(50);
+            setMotorPowers(Utils.multiplyValues(softStopPercentage, getMotorPowers()));
+            Utils.sleep(softStopSleepTime);
         }
-    }
-
-    public void softStart() {
-        
+        stop();
     }
 
     private boolean stillMovingSignificantly() {
-        return Utils.getMaxMagnitude(getMotorPowers()) > 0.1;
+        return Utils.getMaxMagnitude(getMotorPowers()) > significantMovementThreshold;
     }
 
     private double[][] getMotorPowers() {

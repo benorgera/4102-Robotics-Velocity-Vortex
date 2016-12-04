@@ -26,23 +26,18 @@ public class AutonomousImplementation {
 
     private final boolean isRed;
 
+    private boolean startOfTranslate = true;
+
     private boolean isActive = true;
 
-    private final double odsThreshold = 0.02;
+    private final double odsThreshold = 0.04;
 
     private final double whiteLineSignalThreshold = 7; //the minimum color sensor reading required to signify finding the white line
 
 
-    //color sensor representations
-    private final int[] frontLeft = {0, 0};
-    private final int[] frontRight = {0, 1};
-    private final int[] backLeft = {1, 0};
-    private final int[] backRight = {1, 1};
-
-
     public AutonomousImplementation(boolean isRed) {
         this.wheels = Hardware.getWheels();
-        this.sensors = Hardware.getSensors();
+        this.sensors = Hardware.getSensors(wheels);
         this.shooter = Hardware.getShooter();
         this.intake = Hardware.getIntake();
         this.isRed = isRed;
@@ -56,6 +51,9 @@ public class AutonomousImplementation {
                 break;
             case FINDING_FIRST_WHITE_LINE:
                 findWhiteLine();
+                break;
+            case FINDING_FIRST_BEACON:
+                findBeacon();
                 break;
             case PUSHING_BUTTON:
                 break;
@@ -93,17 +91,19 @@ public class AutonomousImplementation {
         for (double[] a : readings) for (double b : a) if (b > whiteLineSignalThreshold) foundLine = true;
 
         if (foundLine) {
-            wheels.stop();
-            if (!isRed) rotate(Math.random() > 0.5 ? -Math.PI : Math.PI); //turn around if we're blue (one way or another)
+            wheels.softStop();
+            if (!isRed) sensors.turnAround(); //turn around if we're blue (one way or another)
+            startOfTranslate = true;
             s = Stage.FINDING_FIRST_BEACON;
         } else {
-            translate(Math.PI / 4 + (isRed ? Math.PI : 0));
+            sensors.compensatedTranslate(Math.PI / 4 + (isRed ? Math.PI : 0), startOfTranslate, false);
         }
+
+        startOfTranslate = false;
     }
 
 
     private void findBeacon() {
-
 
         if (sensors.getOpticalDistance() > odsThreshold) { //we've found the beacon
             s = Stage.PUSHING_BUTTON;
@@ -111,25 +111,7 @@ public class AutonomousImplementation {
             return;
         }
 
-        double[][] readings = sensors.getLineData(); //the array stores the readings on the button pusher side as the front
-
-        ArrayList<Integer[]> maxReadingIndexes = Utils.findTwoMaxIndexes(readings);
-
-
-        if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(frontRight)) {
-            wheels.drive(-0.2, 0, 0, false);
-        } else if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(backRight)) {
-            wheels.drive(-0.2, 0, -0.1, false);
-        } else if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(backLeft)) {
-            wheels.drive(-0.2, -0.1, 0, false);
-        } else if (maxReadingIndexes.contains(frontRight) && maxReadingIndexes.contains(backLeft)) {
-            wheels.drive(-0.2, 0, 0.1, false);
-        } else if (maxReadingIndexes.contains(frontRight) && maxReadingIndexes.contains(backRight)) {
-            wheels.drive(-0.2, 0.1, 0, false);
-        } else if (maxReadingIndexes.contains(backLeft) && maxReadingIndexes.contains(backRight)) {
-            wheels.drive(-0.2, 0, 0, false);
-        }
-
+        sensors.followLine();
     }
 
     public void stop() {
@@ -140,39 +122,6 @@ public class AutonomousImplementation {
 
     private enum Stage {
         SHOOTING, FINDING_FIRST_WHITE_LINE, FINDING_FIRST_BEACON, PUSHING_BUTTON, FINDING_SECOND_WHITE_LINE, FINDING_SECOND_BEACON, KNOCKING_BALL, PARKING
-    }
-
-    private void translate(double thetaDesired) { //translate the robot at desired angle [0, 2π], and compensate for unwanted rotation/drift our orientation and estimated position
-        double ngVel = sensors.getHeading() / Math.PI; //compensate for rotation by accounting for change in heading
-
-
-//            thetaActual = Utils.atan3(sensors.getPosition().y, sensors.getPosition().x), //the direction of displacement thus far
-//                thetaDif = thetaDesired - thetaActual, //the difference between desired and actual displacement direction
-//                thetaNew = thetaDesired + thetaDif * k; //compensate for drift by accounting for the difference in desired and actual direction
-
-        wheels.drive(Math.cos(thetaDesired), Math.sin(thetaDesired), ngVel, false);
-    }
-
-    private void rotate(double theta) { //rotate [-π, π]
-        double initialHeading = sensors.getInitialHeading();
-
-        sensors.resetHeading();
-
-        while (Math.abs(sensors.getHeading()) < Math.abs(theta))
-            wheels.drive(0, 0, theta > 0 ? -0.3 : 0.3, false);
-
-        wheels.stop();
-
-        sensors.setInitialHeading(initialHeading);
-    }
-
-    private void alignOnZero() {
-//
-//        double heading;
-//
-//        while (Math.abs(heading = sensors.getHeading()) > Math.PI / 180) {
-//            wheels.drive(0, 0, heading * )
-//        }
     }
 
     public boolean isActive() { //returns true until all stages have been completed
