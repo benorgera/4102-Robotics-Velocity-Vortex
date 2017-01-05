@@ -25,9 +25,8 @@ public class Sensors {
     private Orientation angles;
 
     private BNO055IMU imu;
-    private Servo gyroArm;
-    private Servo latchServo;
-    private ColorSensor[][] lineSensors;
+    private ColorSensor leftColorSensor;
+    private ColorSensor rightColorSensor;
     private ModernRoboticsAnalogOpticalDistanceSensor ods;
     private ModernRoboticsI2cColorSensor beaconSensor;
 
@@ -59,18 +58,14 @@ public class Sensors {
     private final String backLeft = "[1, 0]";
     private final String backRight = "[1, 1]";
 
-    private final double[] latchPositions = new double[] {0.05, 0.8}; //gyro latch positions (latched and unlatched respectively)
-    private final double[] gyroPositions = new double[] {0.2, 1}; //gyro positions (centered and folded respectively)
-
-    public Sensors(BNO055IMU imu, Servo gyroArm, Servo latchServo, ColorSensor[][] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor, Wheels wheels) {
+    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor) {
         this.imu = imu;
-        this.gyroArm = gyroArm;
-        this.latchServo = latchServo;
-        this.lineSensors = lineSensors;
+        this.leftColorSensor = leftColorSensor;
+        this.rightColorSensor = rightColorSensor;
         this.ods = ods;
-        this.beaconSensor = beaconSensor;
-        beaconSensor.enableLed(false);
-        this.wheels = wheels;
+        this.wheels = Hardware.getWheels();
+//        this.beaconSensor = beaconSensor;
+//        beaconSensor.enableLed(false);
     }
 
     public void initImu() {
@@ -94,26 +89,6 @@ public class Sensors {
         resetHeading();
 
 //        imu.startAccelerationIntegration(new Position(), new Velocity(), 100);
-    }
-
-    public double[][] getLineData() { //get a 2d array representing the readings (where the front is the side with the button pusher)
-        double[][] res = new double[2][2];
-
-        for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
-            res[i][j] = lineSensors[i][j].green();
-
-        return res;
-    }
-
-    public void centerIMU() { //swing the imu in to the center of the robot
-        gyroArm.setPosition(gyroPositions[0]);
-        Utils.sleep(1000);
-        latchServo.setPosition(latchPositions[0]);
-    }
-
-    public void foldIMU() { //swing the imu out of the center of the robot
-        latchServo.setPosition(latchPositions[1]);
-        gyroArm.setPosition(gyroPositions[1]);
     }
 
     public double getHeading() { // [-π, π]
@@ -197,10 +172,10 @@ public class Sensors {
         double heading = getHeading();
 
         if (Math.abs(heading) > headingAccuracyThreshold) {
-            double power = Utils.trim(0.03, 0.06, .02 * -heading);
+            double power = Utils.trim(0.05, 0.08, .04 * heading);
 
-            wheels.drive(0, 0, power, false);
-            Utils.sleep(10);
+            wheels.drive(0, 0, power * (heading > 0 ? -1 : 1), false);
+            Utils.sleep(15);
             wheels.stop();
             Utils.sleep(70);
         }
@@ -213,7 +188,7 @@ public class Sensors {
         resetHeading();
 
         while (getHeading() > (-Math.PI / 2)) {
-            wheels.drive(0, 0, -0.06, false);
+            wheels.drive(0, 0, -0.08, false);
         }
 
         wheels.stop();
@@ -253,26 +228,26 @@ public class Sensors {
         ngSignChangesPerCycleDownThreshold = t;
     }
 
-    public void followLine() {
-        double[][] readings = getLineData(); //the array stores the readings on the button pusher side as the front
-
-        String maxReadingIndexes = Utils.findTwoMaxIndexesAsString(readings);
-
-
-        if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(frontRight)) {
-            wheels.drive(-0.4, 0, 0, false);
-        } else if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(backRight)) {
-            wheels.drive(-0.4, 0, -0.1, false);
-        } else if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(backLeft)) {
-            wheels.drive(-0.4, -0.1, 0, false);
-        } else if (maxReadingIndexes.contains(frontRight) && maxReadingIndexes.contains(backLeft)) {
-            wheels.drive(-0.4, 0, 0.1, false);
-        } else if (maxReadingIndexes.contains(frontRight) && maxReadingIndexes.contains(backRight)) {
-            wheels.drive(-0.4, 0.1, 0, false);
-        } else if (maxReadingIndexes.contains(backLeft) && maxReadingIndexes.contains(backRight)) {
-            wheels.drive(-0.4, 0, 0, false);
-        }
-    }
+//    public void followLine() {
+//        double[][] readings = getLineData(); //the array stores the readings on the button pusher side as the front
+//
+//        String maxReadingIndexes = Utils.findTwoMaxIndexesAsString(readings);
+//
+//
+//        if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(frontRight)) {
+//            wheels.drive(-0.3, 0, readings[0][0] > readings[0][1] ? -0.1 : 0.1  , false);
+//        } else if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(backRight)) {
+//            wheels.drive(-0.3, 0, -0.2, false);
+//        } else if (maxReadingIndexes.contains(frontLeft) && maxReadingIndexes.contains(backLeft)) {
+//            wheels.drive(-0.3, -0.2, 0, false);
+//        } else if (maxReadingIndexes.contains(frontRight) && maxReadingIndexes.contains(backLeft)) {
+//            wheels.drive(-0.3, 0, 0.2, false);
+//        } else if (maxReadingIndexes.contains(frontRight) && maxReadingIndexes.contains(backRight)) {
+//            wheels.drive(-0.3, 0.2, 0, false);
+//        } else if (maxReadingIndexes.contains(backLeft) && maxReadingIndexes.contains(backRight)) {
+//            wheels.drive(-0.3, 0, readings[0][0] > readings[0][1] ? -0.1 : 0.1, false);
+//        }
+//    }
 
     public void findBeaconButton(boolean isRed) {
 
@@ -311,6 +286,7 @@ public class Sensors {
         }
 
     }
+
 
 
 }

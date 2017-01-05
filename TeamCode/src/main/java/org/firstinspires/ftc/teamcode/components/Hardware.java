@@ -17,12 +17,18 @@ public class Hardware {
 
     private static HardwareMap map;
 
+    private static Lift lift;
+    private static Wheels wheels;
+    private static Sensors sensors;
+    private static Shooter shooter;
+    private static Intake intake;
+
     public static void setMap(HardwareMap m) {
         map = m;
     }
 
     public static Wheels getWheels() {
-        return new Wheels(
+        return wheels == null ? wheels = new Wheels(
                 new DcMotor[][] {
                         {
                                 map.dcMotor.get("front-left-wheel"),
@@ -33,42 +39,50 @@ public class Hardware {
                                 map.dcMotor.get("back-right-wheel")
                         }
                 }
-        );
+        ) : wheels;
     }
 
-    public static Sensors getSensors(Wheels wheels) {
-        return new Sensors(
+    public static Sensors getSensors() {
+        return sensors == null ? sensors = new Sensors(
                 map.get(BNO055IMU.class, "imu"),
-                map.servo.get("imu-arm"),
-                map.servo.get("imu-latch"),
-                new ColorSensor[][] {
-                        {
-                                map.colorSensor.get("front-left-color-sensor"),
-                                map.colorSensor.get("front-right-color-sensor")
-                        },
-                        {
-                                map.colorSensor.get("back-left-color-sensor"),
-                                map.colorSensor.get("back-right-color-sensor")
-                        }
-                },
+                map.colorSensor.get("left-color-sensor"),
+                map.colorSensor.get("right-color-sensor"),
                 (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
-                (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor"),
-                wheels
-        );
+//                (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor"),
+                null
+        ) : sensors;
 
     }
 
     public static Shooter getShooter() {
-        return new Shooter(
+        return shooter == null ? shooter = new Shooter(
                 new DcMotor[] {
                         map.dcMotor.get("shooter-left"),
                         map.dcMotor.get("shooter-right")
-                }
-        );
+                },
+                map.servo.get("door")
+        ) : shooter;
     }
 
     public static Intake getIntake() {
-        return new Intake(map.dcMotor.get("intake"));
+        return intake == null ? intake = new Intake(map.dcMotor.get("intake"), map.servo.get("ramp")) : intake;
     }
 
+    public static Lift getLift() {
+        return lift == null ? lift = new Lift(map.dcMotor.get("lift"), map.servo.get("door")) : lift;
+    }
+
+    public static void freezeAllMotorFunctions() {
+        if (shooter != null)
+            shooter.stop();
+
+        if (intake != null)
+            intake.stopElevator();
+
+        if (wheels != null)
+            wheels.stop();
+
+        if (lift != null)
+            lift.stop();
+    }
 }

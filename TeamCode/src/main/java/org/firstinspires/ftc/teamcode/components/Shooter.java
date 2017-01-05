@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.components;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by benorgera on 11/24/16.
@@ -9,22 +11,46 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class Shooter {
 
     private DcMotor[] disks;
+    private Servo door;
 
-    public Shooter(DcMotor[] disks) {
+    private double[] doorPositions = {0, 1}; //open closed respectively
+
+    public Shooter(DcMotor[] disks, Servo door) {
+        this.door = door;
         this.disks = disks;
+
+        door.setPosition(doorPositions[1]);
 
         for (DcMotor m : disks) {
             m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
+
+        disks[0].setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public void run(double initialVelocity) { //run shooter with desired initial shot velocity
-        setDiskMotorPowers(Utils.trim(0, 1, initialVelocityToMotorPower(initialVelocity)));
-    }
+    public void shoot(double power) {
 
-    public void stop() {
-        setDiskMotorPowers(0);
+        setDiskMotorPowers(Utils.trim(0, 1, power)); //bring motors up to speed
+
+        Utils.sleep(500);
+
+        door.setPosition(doorPositions[0]); //drop door
+
+        Utils.sleep(500);
+
+        Hardware.getIntake().startElevator(); //feed shots through shooter
+
+        Utils.sleep(100); //wait for first shot
+
+        Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
+
+        Utils.sleep(300); //wait for other shots
+
+        //stop everything
+        stop();
+        Hardware.getIntake().stopElevator();
+        door.setPosition(doorPositions[1]);
     }
 
     private void setDiskMotorPowers(double power) {
@@ -32,8 +58,8 @@ public class Shooter {
             m.setPower(power);
     }
 
-    private double initialVelocityToMotorPower(double initialVelocity) { //convert desired initial velocity for ball into motor speed on shooter
-        return initialVelocity;
+    public void stop() {
+        setDiskMotorPowers(0);
     }
 
 }

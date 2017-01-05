@@ -12,12 +12,12 @@
         "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/res/raw/texture_fragment_shader.glsl"
     },
     {
-        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/raw/chimedisconnect.wav",
-        "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/res/raw/chimedisconnect.wav"
-    },
-    {
         "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/raw/color_fragment_shader.glsl",
         "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/res/raw/color_fragment_shader.glsl"
+    },
+    {
+        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/raw/chimedisconnect.wav",
+        "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/res/raw/chimedisconnect.wav"
     },
     {
         "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/raw/cube_mesh_vertex_shader.glsl",

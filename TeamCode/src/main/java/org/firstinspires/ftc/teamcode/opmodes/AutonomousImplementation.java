@@ -18,6 +18,8 @@ import java.util.Collection;
 
 public class AutonomousImplementation {
 
+    boolean hasGottenFirstBeacon = false;
+
     private Wheels wheels;
     private Sensors sensors;
     private Shooter shooter;
@@ -37,7 +39,7 @@ public class AutonomousImplementation {
 
     public AutonomousImplementation(boolean isRed) {
         this.wheels = Hardware.getWheels();
-        this.sensors = Hardware.getSensors(wheels);
+        this.sensors = Hardware.getSensors();
         this.shooter = Hardware.getShooter();
         this.intake = Hardware.getIntake();
         this.isRed = isRed;
@@ -55,7 +57,17 @@ public class AutonomousImplementation {
             case FINDING_FIRST_BEACON:
                 findBeacon();
                 break;
-            case PUSHING_BUTTON:
+            case PUSHING_FIRST_BUTTON:
+                pushButton();
+                break;
+            case FINDING_SECOND_WHITE_LINE:
+                findWhiteLine();
+                break;
+            case FINDING_SECOND_BEACON:
+                findBeacon();
+                break;
+            case PUSHING_SECOND_BUTTON:
+                pushButton();
                 break;
             case KNOCKING_BALL:
                 break;
@@ -77,7 +89,6 @@ public class AutonomousImplementation {
         intake.stop();
         shooter.stop();
 
-        sensors.centerIMU();
         Utils.sleep(1500); //wait for things to steady before taking readings
         sensors.initImu();
 
@@ -85,43 +96,42 @@ public class AutonomousImplementation {
     }
 
     private void findWhiteLine() {
-        double[][] readings = sensors.getLineData();
+//        double[][] readings = sensors.getLineData();
         boolean foundLine = false;
 
-        for (double[] a : readings) for (double b : a) if (b > whiteLineSignalThreshold) foundLine = true;
+//        for (double[] a : readings) for (double b : a) if (b > whiteLineSignalThreshold) foundLine = true;
 
         if (foundLine) {
             wheels.softStop();
-            if (!isRed) sensors.turnAround(); //turn around if we're blue (one way or another)
-            startOfTranslate = true;
-            s = Stage.FINDING_FIRST_BEACON;
+            if (!isRed && !hasGottenFirstBeacon) sensors.turnAround(); //turn around if we're blue (one way or another)
+            s = hasGottenFirstBeacon ? Stage.FINDING_SECOND_BEACON : Stage.FINDING_FIRST_BEACON;
         } else {
-            sensors.compensatedTranslate(Math.PI / 4 + (isRed ? Math.PI : 0), startOfTranslate, false);
+            sensors.compensatedTranslate(hasGottenFirstBeacon ? (Math.PI / 2 + (isRed ? 0 : Math.PI)) : (Math.PI / 4 + (isRed ? Math.PI : 0)), startOfTranslate, false);
         }
 
-        startOfTranslate = false;
+    }
+
+    private void pushButton() {
+        wheels.softStart(0.4, 0, 0);
+        Utils.sleep(500);
+        wheels.stop();
+        sensors.centerOnZero();
+        s = hasGottenFirstBeacon ? Stage.KNOCKING_BALL : Stage.FINDING_SECOND_WHITE_LINE;
+        hasGottenFirstBeacon = true;
     }
 
 
     private void findBeacon() {
 
         if (sensors.getOpticalDistance() > odsThreshold) { //we've found the beacon
-            s = Stage.PUSHING_BUTTON;
+            s = hasGottenFirstBeacon ? Stage.PUSHING_SECOND_BUTTON : Stage.PUSHING_FIRST_BUTTON;
             wheels.stop();
             return;
         }
-
-        sensors.followLine();
+        
     }
-
-    public void stop() {
-        wheels.stop();
-        intake.stop();
-        shooter.stop();
-    }
-
     private enum Stage {
-        SHOOTING, FINDING_FIRST_WHITE_LINE, FINDING_FIRST_BEACON, PUSHING_BUTTON, FINDING_SECOND_WHITE_LINE, FINDING_SECOND_BEACON, KNOCKING_BALL, PARKING
+        SHOOTING, FINDING_FIRST_WHITE_LINE, FINDING_FIRST_BEACON, PUSHING_FIRST_BUTTON, FINDING_SECOND_WHITE_LINE, FINDING_SECOND_BEACON, PUSHING_SECOND_BUTTON, KNOCKING_BALL, PARKING
     }
 
     public boolean isActive() { //returns true until all stages have been completed

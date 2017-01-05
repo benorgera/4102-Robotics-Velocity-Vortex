@@ -61,17 +61,6 @@ public class Utils {
         return multiplyValues(1.0 / max, values); //divide each value by the maximum magnitude
     }
 
-    public static boolean writeStringToFile(Context appContext, String s, String fileName) { //store string in text file in phone's files directory, and return true if successful
-        try {
-            FileOutputStream o = new FileOutputStream(new File(appContext.getFilesDir(), fileName + ".txt"));
-            o.write(s.getBytes());
-            o.close();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     public static void sleep(long ms) {
         try {
             Thread.sleep(ms);
@@ -87,27 +76,6 @@ public class Utils {
     public static double angleDifference(double a, double b) { //finds signed difference between two angles [-π,π]
         double dif = a - b;
         return dif < -Math.PI ? dif + 2 * Math.PI : dif > Math.PI ? dif - Math.PI * 2 : dif;
-    }
-
-    public static String findTwoMaxIndexesAsString(double[][] readings) {
-
-        Integer[] maxIndex = findMaxIndex(readings);
-        readings[maxIndex[0]][maxIndex[1]] = 0;
-
-        Integer[] secondHighestIndex = findMaxIndex(readings);
-
-        return "" + Arrays.asList(maxIndex) + Arrays.asList(secondHighestIndex);
-    }
-
-    private static Integer[] findMaxIndex(double[][] readings) {
-        Integer[] maxIndex = {0, 0}; //array index 0 and array index 1, resepctively
-
-        for (int i = 0; i < readings.length; i++)
-            for (int j = 0; j < readings[i].length; j++)
-                if (readings[i][j] > readings[maxIndex[0]][maxIndex[1]])
-                    maxIndex = new Integer[] {i, j};
-
-        return maxIndex;
     }
 
     public static double toDegrees(double rads) {

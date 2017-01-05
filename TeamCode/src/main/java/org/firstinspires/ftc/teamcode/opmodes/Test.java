@@ -42,8 +42,6 @@ public class Test extends LinearOpMode {
     private boolean gamePad2DpadRightState = false;
     private boolean gamePad2DpadLeftState = false;
 
-
-
     private Sensors sensors;
 
     private Intake intake;
@@ -58,7 +56,6 @@ public class Test extends LinearOpMode {
         wheels = Hardware.getWheels();
         sensors = Hardware.getSensors(wheels);
 
-        sensors.centerIMU();
         sensors.resetHeading();
 
         waitForStart();
@@ -70,12 +67,6 @@ public class Test extends LinearOpMode {
             //drive if no autonomous driving is occurring
             if (!gamepad1.dpad_down && ! gamepad1.dpad_right && !gamepad1.dpad_left && !gamepad1.dpad_up && !gamepad2.dpad_down && ! gamepad2.dpad_right && !gamepad2.dpad_left && !gamepad2.dpad_up && (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0))
                 wheels.drive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, false);
-
-            if (gamepad2.a) sensors.centerIMU();
-
-            if (gamepad2.b) sensors.foldIMU();
-
-            if (gamepad1.a) sensors.followLine();
 
             if (gamepad1.b) sensors.findBeaconButton(gamepad1.y);
 
@@ -204,13 +195,16 @@ public class Test extends LinearOpMode {
                 intake.stop();
             }
 
+            if (gamepad2.b)
+                sensors.turnAround();
+
             if (gamepad2.x) sensors.centerOnZero();
 
             telemetry.addData("rH | iH | head", Utils.toString(Utils.toDegrees(sensors.getRawHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getInitialHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getHeading())));
             telemetry.addData("ng | strafe", Utils.toString(sensors.getNgConstant()) + " | " + Utils.toString(sensors.getStrafeConstant()));
             telemetry.addData("ngRateUp | ngRateDown", sensors.getNgSignChangesPerCycleUpThreshold() + " | " + sensors.getNgSignChangesPerCycleDownThreshold());
             telemetry.addData("blue | red | distance",  Utils.toString(sensors.getBeaconColor()[0]) + " | " + Utils.toString(sensors.getBeaconColor()[1]) + Utils.toString(sensors.getOpticalDistance()));
-            telemetry.addData("line readings", Utils.toString(sensors.getLineData()[0][0]) + " " + Utils.toString(sensors.getLineData()[0][1]) + " " + Utils.toString(sensors.getLineData()[1][0]) + " " + Utils.toString(sensors.getLineData()[1][1]));
+//            telemetry.addData("line readings", Utils.toString(sensors.getLineData()[0][0]) + " " + Utils.toString(sensors.getLineData()[0][1]) + " " + Utils.toString(sensors.getLineData()[1][0]) + " " + Utils.toString(sensors.getLineData()[1][1]));
 
             telemetry.update();
         }
