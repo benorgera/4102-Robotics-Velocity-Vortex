@@ -17,11 +17,17 @@ public class Hardware {
 
     private static HardwareMap map;
 
+    private static boolean isAuton = false;
+
     private static Lift lift;
     private static Wheels wheels;
     private static Sensors sensors;
     private static Shooter shooter;
     private static Intake intake;
+
+    public static void setIsAuton(boolean a) {
+        isAuton = a;
+    }
 
     public static void setMap(HardwareMap m) {
         map = m;
@@ -48,8 +54,7 @@ public class Hardware {
                 map.colorSensor.get("left-color-sensor"),
                 map.colorSensor.get("right-color-sensor"),
                 (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
-//                (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor"),
-                null
+                (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor")
         ) : sensors;
 
     }
@@ -65,11 +70,11 @@ public class Hardware {
     }
 
     public static Intake getIntake() {
-        return intake == null ? intake = new Intake(map.dcMotor.get("intake"), map.servo.get("ramp")) : intake;
+        return intake == null ? intake = new Intake(map.dcMotor.get("intake"), map.servo.get("ramp"), isAuton) : intake;
     }
 
     public static Lift getLift() {
-        return lift == null ? lift = new Lift(map.dcMotor.get("lift"), map.servo.get("door")) : lift;
+        return lift == null ? lift = new Lift(map.dcMotor.get("lift"), map.servo.get("latch")) : lift;
     }
 
     public static void freezeAllMotorFunctions() {

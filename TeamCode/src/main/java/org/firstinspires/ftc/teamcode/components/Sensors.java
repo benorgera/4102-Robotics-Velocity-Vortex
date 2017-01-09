@@ -4,6 +4,7 @@ import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.teamcode.opmodes.AutonomousImplementation;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -168,19 +170,20 @@ public class Sensors {
         return "" + ngVel;
     }
 
-    public void centerOnZero() {
+    public void centerOnZero(LinearOpMode opMode) {
         double heading = getHeading();
+        while (Math.abs(heading) > headingAccuracyThreshold && opMode.opModeIsActive()) {
+            heading = getHeading();
 
-        if (Math.abs(heading) > headingAccuracyThreshold) {
-            double power = Utils.trim(0.05, 0.08, .04 * heading);
-
-            wheels.drive(0, 0, power * (heading > 0 ? -1 : 1), false);
+            wheels.drive(0, 0, Utils.trim(0.05, 0.08, .04 * heading) * (heading > 0 ? -1 : 1), false);
             Utils.sleep(15);
             wheels.stop();
             Utils.sleep(70);
         }
         wheels.stop();
     }
+
+
 
     public void turnAround() { //must call center on zero after
         double storedHeading = initialHeading;
@@ -228,6 +231,29 @@ public class Sensors {
         ngSignChangesPerCycleDownThreshold = t;
     }
 
+    public double[] getLineReadings() {
+        return new double[] {
+                leftColorSensor.green(), //green is a measure of white
+                rightColorSensor.green()
+        };
+    }
+
+
+
+
+
+    public void followLine(boolean isFirstRun) {
+        double[] readings = getLineReadings();
+        double left = readings[0],
+                right = readings[1];
+
+        if (Math.abs(left - right) <= 2) { //both sensors equally on the white line
+            compensatedTranslate(0, isFirstRun, true);
+        } else { //left more on the white line turn left, right turn right
+            compensatedTranslate(Math.PI / 4 * (left > right ? 1 : -1), isFirstRun, true);
+        }
+    }
+
 //    public void followLine() {
 //        double[][] readings = getLineData(); //the array stores the readings on the button pusher side as the front
 //
@@ -249,7 +275,7 @@ public class Sensors {
 //        }
 //    }
 
-    public void findBeaconButton(boolean isRed) {
+    public void findBeaconButton(boolean isRed, LinearOpMode opMode) {
 
         boolean goingForward = false;
 
@@ -260,7 +286,7 @@ public class Sensors {
                 directionSwitches = 0;
 
 
-        while (true) {
+        while (opMode.opModeIsActive()) {
 
             if ((currentReading = getBeaconColor()[isRed ? 1: 0]) >  maxColor)
                 maxColor = currentReading;
@@ -275,7 +301,7 @@ public class Sensors {
                 directionSwitches++;
             }
 
-            if (directionSwitches > 6) { //we got an outlier maximum and can't recreate it, lower the threshold`
+            if (directionSwitches > 6) { //we got an outlier maximum and can't recreate it, lower the threshold
                 maxColor--;
                 directionSwitches = 0;
             }

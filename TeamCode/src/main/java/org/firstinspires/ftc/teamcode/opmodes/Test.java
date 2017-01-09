@@ -19,6 +19,9 @@ import java.util.Arrays;
 @TeleOp (name = "Test", group = "4102")
 public class Test extends LinearOpMode {
 
+    private boolean gamePad1AState = false;
+    private boolean gamePad1BState = false;
+
     private boolean isUppingNgConstant = false;
     private boolean isDroppingNgConstant = false;
 
@@ -52,9 +55,9 @@ public class Test extends LinearOpMode {
 
         Hardware.setMap(hardwareMap);
 
-        intake = Hardware.getIntake();
         wheels = Hardware.getWheels();
-        sensors = Hardware.getSensors(wheels);
+        intake = Hardware.getIntake();
+        sensors = Hardware.getSensors();
 
         sensors.resetHeading();
 
@@ -63,12 +66,26 @@ public class Test extends LinearOpMode {
         sensors.initImu();
 
         while (opModeIsActive()) {
+
+            if (gamepad1.a && !gamePad1AState) {
+                intake.startIntaking();
+            }
+
+            gamePad1AState = gamepad1.a;
+
+
+
+            if (gamepad1.a && !gamePad1BState) {
+                intake.stopIntaking();
+            }
+
+            gamePad1BState = gamepad1.b;
             
             //drive if no autonomous driving is occurring
             if (!gamepad1.dpad_down && ! gamepad1.dpad_right && !gamepad1.dpad_left && !gamepad1.dpad_up && !gamepad2.dpad_down && ! gamepad2.dpad_right && !gamepad2.dpad_left && !gamepad2.dpad_up && (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0))
                 wheels.drive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, false);
 
-            if (gamepad1.b) sensors.findBeaconButton(gamepad1.y);
+            if (gamepad1.b) sensors.findBeaconButton(gamepad1.y, this);
 
             if (gamepad1.x) sensors.resetHeading();
 
@@ -187,18 +204,10 @@ public class Test extends LinearOpMode {
 
             isDroppingNgConstantRateDownThreshold = gamepad1.back;
 
-
-            intake.run(gamepad2.right_stick_x);
-
-            if (gamepad1.y || gamepad2.y) {
-                wheels.stop();
-                intake.stop();
-            }
-
             if (gamepad2.b)
                 sensors.turnAround();
 
-            if (gamepad2.x) sensors.centerOnZero();
+            if (gamepad2.x) sensors.centerOnZero(this);
 
             telemetry.addData("rH | iH | head", Utils.toString(Utils.toDegrees(sensors.getRawHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getInitialHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getHeading())));
             telemetry.addData("ng | strafe", Utils.toString(sensors.getNgConstant()) + " | " + Utils.toString(sensors.getStrafeConstant()));

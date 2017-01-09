@@ -13,7 +13,7 @@ public class Shooter {
     private DcMotor[] disks;
     private Servo door;
 
-    private double[] doorPositions = {0, 1}; //open closed respectively
+    private final double[] doorPositions = {0.2, 1}; //open closed respectively
 
     public Shooter(DcMotor[] disks, Servo door) {
         this.door = door;
@@ -26,7 +26,7 @@ public class Shooter {
             m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        disks[0].setDirection(DcMotorSimple.Direction.REVERSE);
+        disks[1].setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void shoot(double power) {
@@ -39,13 +39,10 @@ public class Shooter {
 
         Utils.sleep(500);
 
+        Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
         Hardware.getIntake().startElevator(); //feed shots through shooter
 
-        Utils.sleep(100); //wait for first shot
-
-        Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
-
-        Utils.sleep(300); //wait for other shots
+        Utils.sleep(500); //wait for shots
 
         //stop everything
         stop();

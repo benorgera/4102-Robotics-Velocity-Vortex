@@ -12,7 +12,7 @@ public class Lift {
     private DcMotor lift;
     private Servo latch;
 
-    private double[] latchPositions = {0, 1}; //latched and unlatched respectively
+    private final double[] latchPositions = {1, 0}; //latched and unlatched respectively
 
     public Lift(DcMotor lift, Servo latch) {
         this.lift = lift;
@@ -31,7 +31,7 @@ public class Lift {
     }
 
     public void raise() {
-        lift.setPower(0.5);
+        lift.setPower(1);
     }
 
     public void stop() {

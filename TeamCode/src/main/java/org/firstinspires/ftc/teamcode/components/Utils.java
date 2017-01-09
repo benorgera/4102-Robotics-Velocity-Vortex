@@ -34,6 +34,16 @@ public class Utils {
         return val > max ? max : val < min ? min : val;
     }
 
+    public static double getMaxMagnitude(double[] vals) {
+        double max = 0;
+
+        for (double a : vals) if (Math.abs(a) > max)
+                max = Math.abs(a);
+
+        return max;
+    }
+
+
     public static double getMaxMagnitude(double[][] vals) { //return the double stored in the arrays with the greatest absolute value
         double max = 0;
 
