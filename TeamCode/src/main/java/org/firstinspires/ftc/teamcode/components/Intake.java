@@ -13,15 +13,17 @@ public class Intake {
     private DcMotor intake;
     private Servo ramp;
 
+    private boolean isRampDown;
+
     private boolean isRunning = false;
 
-    private final double[] rampPositions = {0.4, 0.7, 1}; //open, holding and closed respectively
+    private final double[] rampPositions = {0.45, 0.8, 1}; //down, holding and closed respectively
 
     public Intake(DcMotor intake, Servo ramp, boolean isAuton) {
         this.intake = intake;
         this.ramp = ramp;
 
-        ramp.setPosition(rampPositions[isAuton ? 1 : 0]);
+        ramp.setPosition(rampPositions[(isRampDown = !isAuton) ? 0 : 1]);
 
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -30,22 +32,32 @@ public class Intake {
 
     public void startIntaking() {
         isRunning = true;
-        ramp.setPosition(rampPositions[0]);
-        intake.setPower(-1); //run intake backwards so it doesn't fight the ramp
 
-        new Thread(new DelayedAction(intake, 500, 1)).start(); //concurrently change intake direction after ramp door drops
+        if (isRampDown)
+            intake.setPower(1);
+        else
+            dropRamp(true);
     }
 
     public void stopIntaking() {
         ramp.setPosition(rampPositions[1]);
         intake.setPower(1); //run intake so it doesn't fight the ramp
 
-        isRunning = false;
+        isRunning = isRampDown = false;
         new Thread(new DelayedAction(intake, 500, 0)).start(); //concurrently stop intake after door is brought up
     }
 
     public void moveRampForShot() {
+        isRampDown = false;
         ramp.setPosition(rampPositions[2]);
+    }
+
+    public void dropRamp(boolean shouldStartIntake) {
+        ramp.setPosition(rampPositions[0]);
+        isRampDown = true;
+        intake.setPower(-1); //run intake backwards so it doesn't fight the ramp
+
+        new Thread(new DelayedAction(intake, 500, shouldStartIntake ? 1 : 0)).start(); //concurrently change intake direction after ramp door drops
     }
 
     public void startElevator() {
