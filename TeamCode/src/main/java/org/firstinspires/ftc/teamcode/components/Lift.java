@@ -43,6 +43,6 @@ public class Lift {
     }
 
     public void hold() {
-        lift.setPower(0.3);
+        lift.setPower(0.6);
     }
 }
