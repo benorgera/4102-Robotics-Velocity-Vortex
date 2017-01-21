@@ -43,9 +43,7 @@ public class AutonomousImplementation {
     public void run() {
         shooter.shoot(0.6);
 
-        if (isRed) {
-            sensors.turnAround();
-        }
+        if (isRed) sensors.turnAround();
 
         driveUntilLine(Math.PI / 4);
 

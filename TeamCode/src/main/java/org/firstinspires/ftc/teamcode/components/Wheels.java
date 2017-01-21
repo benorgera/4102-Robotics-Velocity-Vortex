@@ -30,14 +30,14 @@ public class Wheels {
 
         this.wheelbase = wheelBase; //initialize wheel motors
 
-        //reverse the motors which face opposite directions (the right motors)
-        wheelbase[0][1].setDirection(DcMotorSimple.Direction.REVERSE);
-        wheelBase[1][1].setDirection(DcMotorSimple.Direction.REVERSE);
-
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) { //set up motors
             wheelbase[i][j].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             wheelbase[i][j].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
+
+        //reverse the motors which face opposite directions (the right motors)
+        wheelbase[0][1].setDirection(DcMotorSimple.Direction.REVERSE);
+        wheelBase[1][1].setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void softStart(double xVel, double yVel, double angularVel) {

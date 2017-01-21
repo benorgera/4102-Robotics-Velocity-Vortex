@@ -17,7 +17,7 @@ public class Intake {
 
     private boolean isRunning = false;
 
-    private final double[] rampPositions = {0.45, 0.8, 1}; //down, holding and closed respectively
+    private final double[] rampPositions = {0.49, 0.7, 1}; //down, holding and closed respectively
 
     public Intake(DcMotor intake, Servo ramp, boolean isAuton) {
         this.intake = intake;
@@ -25,9 +25,9 @@ public class Intake {
 
         ramp.setPosition(rampPositions[(isRampDown = !isAuton) ? 0 : 1]);
 
-        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void startIntaking() {

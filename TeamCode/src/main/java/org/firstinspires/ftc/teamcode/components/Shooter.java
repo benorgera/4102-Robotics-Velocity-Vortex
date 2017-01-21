@@ -13,7 +13,7 @@ public class Shooter {
     private DcMotor[] disks;
     private Servo door;
 
-    private final double[] doorPositions = {0.5, 0.95}; //open and closed respectively
+    private final double[] doorPositions = {0.75, 0.95}; //open and closed respectively
 
     public Shooter(DcMotor[] disks, Servo door) {
         this.door = door;

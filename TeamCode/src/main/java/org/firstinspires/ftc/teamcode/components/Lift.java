@@ -42,5 +42,7 @@ public class Lift {
         lift.setPower(-0.5);
     }
 
-
+    public void hold() {
+        lift.setPower(0.3);
+    }
 }

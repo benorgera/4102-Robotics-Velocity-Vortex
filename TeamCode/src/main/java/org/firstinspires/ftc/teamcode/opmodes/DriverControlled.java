@@ -30,9 +30,15 @@ public class DriverControlled extends LinearOpMode {
     private Shooter shooter;
     private Wheels wheels;
     private Intake intake;
-    private Sensors sensors;
 
-    double shotPower = 0;
+    double shotPower = 0.6;
+
+    private boolean wasTogglingDirection = false;
+
+    private boolean intakeIsFront = true;
+
+    private boolean isHoldingLift = false;
+    private boolean wasTogglingHoldingLift = false;
 
     private boolean wasUppingShotPower = false;
     private boolean wasDowningShotPower = false;
@@ -53,7 +59,6 @@ public class DriverControlled extends LinearOpMode {
         wheels = Hardware.getWheels();
         intake = Hardware.getIntake();
         shooter = Hardware.getShooter();
-        sensors = Hardware.getSensors();
 
         telemetry.addData("4102", "Let's kick up");
         telemetry.update();
@@ -73,8 +78,14 @@ public class DriverControlled extends LinearOpMode {
     private void run() { //control to robot using gamepad input
 
         //all components return a string with telemetry data when passed input
-        telemetry.addData("WHEELS", wheels.drive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || (!gamepad1.right_bumper && isChannelMode)));
+        telemetry.addData("WHEELS", wheels.drive((intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || (!gamepad1.right_bumper && isChannelMode)));
         telemetry.addData("SHOT", shotPower);
+
+        if (gamepad1.a && !wasTogglingDirection)
+            intakeIsFront = !intakeIsFront;
+
+        wasTogglingDirection = gamepad1.a;
+
 
         //--------------------------SHOOTER-------------------------------
 
@@ -116,23 +127,31 @@ public class DriverControlled extends LinearOpMode {
         if (!hasDroppedFork && (hasDroppedFork = gamepad2.x))
             lift.dropFork();
 
+        if (gamepad2.y && !wasTogglingHoldingLift && hasDroppedFork)
+            isHoldingLift = !isHoldingLift;
+
+        wasTogglingHoldingLift = gamepad2.y;
+
         if (gamepad2.dpad_up && hasDroppedFork) //raise the lift if we've dropped the fork
             lift.raise();
         else if (gamepad2.dpad_down && hasDroppedFork) //lower the lift if we've dropped the fork
             lift.lower();
+        else if (isHoldingLift)
+            lift.hold();
         else
             lift.stop();
 
-
-
+        telemetry.addData("FRONT", intakeIsFront ? "INTAKE" : "SHOOTER");
+        if (isHoldingLift) telemetry.addData("LIFT", "HOLDING");
         telemetry.addData("TIME", getTimeString());
         telemetry.update();
     }
 
     private String getTimeString() { //get remaining match time as a string
-        int deltaSeconds = 120 - (int) (System.currentTimeMillis() - startTime) / 1000;
-        String seconds = "" + deltaSeconds % 60;
+        int deltaSeconds = 120 - (int) (System.currentTimeMillis() - startTime) / 1000,
+                deltaMin = deltaSeconds / 60,
+                seconds = deltaSeconds % 60;
 
-        return "" + deltaSeconds / 60 + ":" + (seconds.length() == 1 ? "0" + seconds : seconds);
+        return "" + deltaMin + ":" + (("" + seconds).length() == 1 ? "0" + seconds : seconds) + (seconds <= 30 && deltaMin == 0 ? "  END GAME" : "");
     }
 }
