@@ -36,8 +36,8 @@ public class Wheels {
         }
 
         //reverse the motors which face opposite directions (the right motors)
-        wheelbase[0][1].setDirection(DcMotorSimple.Direction.REVERSE);
-        wheelBase[1][1].setDirection(DcMotorSimple.Direction.REVERSE);
+        wheelbase[0][1].setDirection(DcMotor.Direction.REVERSE);
+        wheelBase[1][1].setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void softStart(double xVel, double yVel, double angularVel) {

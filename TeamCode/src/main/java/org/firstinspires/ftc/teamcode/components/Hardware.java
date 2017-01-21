@@ -30,6 +30,7 @@ public class Hardware {
     }
 
     public static void setMap(HardwareMap m) {
+        clean();
         map = m;
     }
 
@@ -89,5 +90,14 @@ public class Hardware {
 
         if (lift != null)
             lift.stop();
+    }
+
+    private static void clean() {
+        map = null;
+        lift = null;
+        wheels = null;
+        sensors = null;
+        shooter = null;
+        intake = null;
     }
 }

@@ -26,7 +26,7 @@ public class Shooter {
             m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        disks[1].setDirection(DcMotorSimple.Direction.REVERSE);
+        disks[1].setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void shoot(double power) {
