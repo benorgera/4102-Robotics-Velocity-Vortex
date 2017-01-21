@@ -30,9 +30,6 @@ public class Shooter {
     }
 
     public void shoot(double power) {
-        //unjam any shots in shooter
-        setDiskMotorPowers(-0.5);
-        Utils.sleep(200);
 
         setDiskMotorPowers(Utils.trim(0, 1, power)); //bring motors up to speed
 
@@ -50,6 +47,8 @@ public class Shooter {
         //stop everything
         stop();
         Hardware.getIntake().stopElevator();
+
+        //reset ramp for next intaking
         door.setPosition(doorPositions[1]);
         Hardware.getIntake().dropRamp(false);
     }

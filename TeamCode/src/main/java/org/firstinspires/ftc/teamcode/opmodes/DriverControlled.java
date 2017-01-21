@@ -79,7 +79,6 @@ public class DriverControlled extends LinearOpMode {
 
         //all components return a string with telemetry data when passed input
         telemetry.addData("WHEELS", wheels.drive((intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || (!gamepad1.right_bumper && isChannelMode)));
-        telemetry.addData("SHOT", shotPower);
 
         if (gamepad1.a && !wasTogglingDirection)
             intakeIsFront = !intakeIsFront;
@@ -142,6 +141,7 @@ public class DriverControlled extends LinearOpMode {
             lift.stop();
 
         telemetry.addData("FRONT", intakeIsFront ? "INTAKE" : "SHOOTER");
+        telemetry.addData("SHOT", shotPower);
         if (isHoldingLift) telemetry.addData("LIFT", "HOLDING");
         telemetry.addData("TIME", getTimeString());
         telemetry.update();
