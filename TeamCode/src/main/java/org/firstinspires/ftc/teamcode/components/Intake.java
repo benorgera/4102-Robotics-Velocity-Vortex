@@ -17,7 +17,7 @@ public class Intake {
 
     private boolean isRunning = false;
 
-    private final double[] rampPositions = {0.56, 0.7, 0.9}; //down, holding and closed respectively
+    private final double[] rampPositions = {0.49, 0.7, 0.9}; //down, holding and closed respectively
 
     public Intake(DcMotor intake, Servo ramp, boolean isAuton) {
         this.intake = intake;
@@ -30,13 +30,13 @@ public class Intake {
         intake.setDirection(DcMotor.Direction.REVERSE);
     }
 
-    public void startIntaking() {
+    public void startIntaking(boolean shouldRunForwards) {
         isRunning = true;
 
         if (isRampDown)
-            intake.setPower(1);
+            intake.setPower(shouldRunForwards ? 1 : -1);
         else
-            dropRamp(true);
+            dropRamp(shouldRunForwards ? 1 : -1);
     }
 
     public void stopIntaking() {
@@ -52,12 +52,12 @@ public class Intake {
         ramp.setPosition(rampPositions[2]);
     }
 
-    public void dropRamp(boolean shouldStartIntake) {
+    public void dropRamp(double intakePower) {
         ramp.setPosition(rampPositions[0]);
         isRampDown = true;
         intake.setPower(-1); //run intake backwards so it doesn't fight the ramp
 
-        new Thread(new DelayedAction(intake, 500, shouldStartIntake ? 1 : 0)).start(); //concurrently change intake direction after ramp door drops
+        new Thread(new DelayedAction(intake, 500, intakePower)).start(); //concurrently change intake direction after ramp door drops
     }
 
     public void startElevator() {
@@ -71,4 +71,6 @@ public class Intake {
     public boolean isRunning() {
         return isRunning;
     }
+
+
 }

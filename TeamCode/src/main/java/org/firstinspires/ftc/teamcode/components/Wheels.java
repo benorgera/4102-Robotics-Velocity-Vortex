@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.components;
 
 import android.graphics.Path;
+import android.provider.Settings;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,12 +15,6 @@ public class Wheels {
 
     //constants
     private final double channelModeStickThreshold = 0.1; //the max magnitude of a stick reading
-    private final double significantMovementThreshold = 0.05; //the wheel power required to be considered significant movement
-    private final double softStopPercentage = 0.8;
-
-    private final double softStartIterations = 10;
-
-    private final long softStopSleepTime = 100;
 
     private final double[][] compensationConstants = {
             {1, 1},
@@ -40,19 +35,15 @@ public class Wheels {
         wheelBase[1][1].setDirection(DcMotor.Direction.REVERSE);
     }
 
-    public void softStart(double xVel, double yVel, double angularVel) {
-        xVel /= 100;
-        yVel /= 100;
-        angularVel /= 100;
+    public void softStart(double xVel, double yVel, double angularVel, long time) {
 
-        for (int i = 0; i < softStartIterations; i++) {
-            xVel *= Math.pow(100, 1 / softStartIterations);
-            yVel *= Math.pow(100, 1 / softStartIterations);
-            angularVel *= Math.pow(100, 1 / softStartIterations);
+        long start = System.currentTimeMillis(),
+                stop = start + time;
 
-            drive(xVel, yVel, angularVel, false);
-
-            Utils.sleep(softStopSleepTime);
+        while (System.currentTimeMillis() < stop) {
+            double scalar = (System.currentTimeMillis() - start) / time;
+            drive(xVel * scalar, yVel * scalar, angularVel * scalar, false);
+            Utils.sleep(10);
         }
     }
 
@@ -106,16 +97,18 @@ public class Wheels {
             b.setPower(0);
     }
 
-    public void softStop() {
-        while (stillMovingSignificantly()) {
-            setMotorPowers(Utils.multiplyValues(softStopPercentage, getMotorPowers()));
-            Utils.sleep(softStopSleepTime);
-        }
-        stop();
-    }
+    public void softStop(long time) {
 
-    private boolean stillMovingSignificantly() {
-        return Utils.getMaxMagnitude(getMotorPowers()) > significantMovementThreshold;
+        long start = System.currentTimeMillis(),
+                stop = start + time;
+
+        while (System.currentTimeMillis() < stop) {
+            double scalar = 1 - ((System.currentTimeMillis() - start) / time);
+            setMotorPowers(Utils.multiplyValues(scalar, getMotorPowers()));
+            Utils.sleep(10);
+        }
+
+        stop();
     }
 
     private double[][] getMotorPowers() {

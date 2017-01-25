@@ -31,8 +31,8 @@ public class DriverControlled extends LinearOpMode {
     private Wheels wheels;
     private Intake intake;
 
-    int shotPower = 6;
-
+    private int shotPower = 6;
+    
     private boolean wasTogglingDirection = false;
 
     private boolean intakeIsFront = false;
@@ -54,6 +54,7 @@ public class DriverControlled extends LinearOpMode {
     @Override
     public void runOpMode() {
         Hardware.setMap(hardwareMap);
+        Hardware.setIsAuton(false);
 
         lift = Hardware.getLift();
         wheels = Hardware.getWheels();
@@ -99,7 +100,7 @@ public class DriverControlled extends LinearOpMode {
         wasDowningShotPower = gamepad2.dpad_left;
 
         if (gamepad2.b && !intake.isRunning() && !wasShooting)
-            shooter.shoot((double) shotPower / 10);
+            shooter.shoot(shotPower);
 
         wasShooting = gamepad2.b;
 
@@ -112,12 +113,9 @@ public class DriverControlled extends LinearOpMode {
             if (intake.isRunning())
                 intake.stopIntaking();
             else
-                intake.startIntaking();
+                intake.startIntaking(!gamepad2.left_bumper);
 
         wasTogglingIntake = gamepad2.a;
-
-
-
 
 
         //--------------------------LIFT-------------------------------
@@ -141,7 +139,7 @@ public class DriverControlled extends LinearOpMode {
             lift.stop();
 
         telemetry.addData("FRONT", intakeIsFront ? "INTAKE" : "SHOOTER");
-        telemetry.addData("SHOT", (double) shotPower / 10);
+        telemetry.addData("SHOT", shotPower);
         if (isHoldingLift) telemetry.addData("LIFT", "HOLDING");
         telemetry.addData("TIME", getTimeString());
         telemetry.update();

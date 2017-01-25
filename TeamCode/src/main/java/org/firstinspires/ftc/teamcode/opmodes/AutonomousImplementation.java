@@ -29,6 +29,7 @@ public class AutonomousImplementation {
 
 
     public AutonomousImplementation(boolean isRed, LinearOpMode opMode) {
+        Hardware.setIsAuton(true);
         this.wheels = Hardware.getWheels();
         this.sensors = Hardware.getSensors();
         this.shooter = Hardware.getShooter();
@@ -41,19 +42,19 @@ public class AutonomousImplementation {
     }
 
     public void run() {
-        shooter.shoot(0.6);
+        shooter.shoot(6);
 
         if (isRed) sensors.turnAround();
 
         driveUntilLine(Math.PI / 4);
 
-        wheels.stop();
+        wheels.softStop(500);
 
         followLine();
 
-        wheels.stop();
+        wheels.softStop(500);
 
-        sensors.findBeaconButton(isRed, opMode);
+        sensors.findBeaconButton(isRed, opMode, 500);
 
         pushButton();
 
@@ -69,7 +70,7 @@ public class AutonomousImplementation {
 
         wheels.stop();
 
-        sensors.findBeaconButton(isRed, opMode);
+        sensors.findBeaconButton(isRed, opMode, 500);
 
         pushButton();
 
@@ -84,15 +85,15 @@ public class AutonomousImplementation {
 
     private void followLine() {
         //drive until we reach the beacon
-        sensors.followLine(true);
+        sensors.followLine(true, 500);
         while (opMode.opModeIsActive() && sensors.getOpticalDistance() < odsThreshold)
-            sensors.followLine(false);
+            sensors.followLine(false, 500);
     }
 
     private void driveUntilLine(double theta) {
-        sensors.compensatedTranslate(theta * (isRed ? -1 : 1), true, false);
+        sensors.compensatedTranslate(theta * (isRed ? -1 : 1), true, false, 500);
         while (opMode.opModeIsActive() && Utils.getMaxMagnitude(sensors.getLineReadings()) < whiteLineSignalThreshold)
-            sensors.compensatedTranslate(theta * (isRed ? -1 : 1), false, false);
+            sensors.compensatedTranslate(theta * (isRed ? -1 : 1), false, false, 500);
     }
 
 }

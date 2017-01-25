@@ -68,7 +68,7 @@ public class Test extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (gamepad1.a && !gamePad1AState) {
-                intake.startIntaking();
+                intake.startIntaking(true);
             }
 
             gamePad1AState = gamepad1.a;
