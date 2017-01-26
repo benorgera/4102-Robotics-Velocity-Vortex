@@ -14,12 +14,8 @@ import org.firstinspires.ftc.teamcode.components.Wheels;
 
 public class AutonomousImplementation {
 
-    private Wheels wheels;
     private Sensors sensors;
     private Shooter shooter;
-    private Intake intake;
-
-    private LinearOpMode opMode;
 
     private final boolean isRed;
 
@@ -32,23 +28,21 @@ public class AutonomousImplementation {
 
     public AutonomousImplementation(boolean isRed, LinearOpMode opMode) {
         Hardware.setIsAuton(true);
-        this.wheels = Hardware.getWheels();
         this.sensors = Hardware.getSensors();
         this.shooter = Hardware.getShooter();
-        this.intake = Hardware.getIntake();
-        this.opMode = opMode;
+
+        sensors.setOpMode(opMode);
 
         this.isRed = isRed;
 
         sensors.initImu();
-        sensors.setOpMode(opMode);
     }
 
     public void run() {
         shooter.shoot(6);
 
         if (isRed) {
-
+            //must drive forward a hair to clear wall
             sensors.turnAround();
         }
 
