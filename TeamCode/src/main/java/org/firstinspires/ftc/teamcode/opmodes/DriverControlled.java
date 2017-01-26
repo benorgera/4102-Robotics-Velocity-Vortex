@@ -1,25 +1,18 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
 import org.firstinspires.ftc.teamcode.components.Hardware;
 import org.firstinspires.ftc.teamcode.components.Intake;
 import org.firstinspires.ftc.teamcode.components.Lift;
-import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
 import org.firstinspires.ftc.teamcode.components.Utils;
 import org.firstinspires.ftc.teamcode.components.Wheels;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * Created by benorgera on 10/24/16.
  */
-@TeleOp(name="Shmoney Yerd L17", group="4102")
+@TeleOp(name = "Shmoney Yerd L17", group = "4102")
 public class DriverControlled extends LinearOpMode {
 
     //modes
@@ -53,8 +46,7 @@ public class DriverControlled extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Hardware.setMap(hardwareMap);
-        Hardware.setIsAuton(false);
+        Hardware.init(hardwareMap, this, false);
 
         lift = Hardware.getLift();
         wheels = Hardware.getWheels();

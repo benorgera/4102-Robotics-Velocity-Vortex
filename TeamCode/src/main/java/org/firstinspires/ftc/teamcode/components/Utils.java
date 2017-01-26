@@ -1,14 +1,6 @@
 package org.firstinspires.ftc.teamcode.components;
 
-import android.content.Context;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by benorgera on 10/24/16.
@@ -16,7 +8,6 @@ import java.util.Arrays;
 public class Utils {
 
     private static DecimalFormat df = new DecimalFormat("#.##");
-    private static Telemetry telemetry;
 
     public static double getMagnitude(double x, double y) {
         return Math.pow(Math.pow(x, 2) + Math.pow(y, 2), 0.5);

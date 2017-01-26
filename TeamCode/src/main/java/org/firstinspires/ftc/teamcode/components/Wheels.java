@@ -1,11 +1,6 @@
 package org.firstinspires.ftc.teamcode.components;
 
-import android.graphics.Path;
-import android.provider.Settings;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import org.firstinspires.ftc.teamcode.components.Utils;
 
 /**
  * Created by benorgera on 10/24/16.

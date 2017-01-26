@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.components;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.opmodes.AutonomousImplementation;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Created by benorgera on 11/24/16.
@@ -17,6 +17,8 @@ public class Hardware {
 
     private static HardwareMap map;
 
+    private static LinearOpMode opMode;
+
     private static boolean isAuton = false;
 
     private static Lift lift;
@@ -25,13 +27,11 @@ public class Hardware {
     private static Shooter shooter;
     private static Intake intake;
 
-    public static void setIsAuton(boolean a) {
-        isAuton = a;
-    }
-
-    public static void setMap(HardwareMap m) {
+    public static void init(HardwareMap map, LinearOpMode opMode, boolean isAuton) {
         clean();
-        map = m;
+        Hardware.opMode = opMode;
+        Hardware.isAuton = isAuton;
+        Hardware.map = map;
     }
 
     public static Wheels getWheels() {
@@ -92,6 +92,10 @@ public class Hardware {
             lift.stop();
     }
 
+    public static boolean active() {
+        return opMode.opModeIsActive();
+    }
+
     private static void clean() {
         map = null;
         lift = null;
@@ -99,5 +103,7 @@ public class Hardware {
         sensors = null;
         shooter = null;
         intake = null;
+        opMode = null;
+        isAuton = false;
     }
 }

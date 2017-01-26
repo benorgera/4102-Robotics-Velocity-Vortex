@@ -18,8 +18,7 @@ public class AutonomousRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Hardware.setMap(hardwareMap);
-        Hardware.setIsAuton(true);
+        Hardware.init(hardwareMap, this, true);
 
         a = new AutonomousImplementation(true, this);
 

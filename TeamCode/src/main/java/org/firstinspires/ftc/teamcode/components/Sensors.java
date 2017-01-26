@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.components;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -28,8 +27,6 @@ public class Sensors {
     private Integrator integrator;
 
     private Wheels wheels;
-
-    private LinearOpMode opMode;
 
     private double initialHeading = 0;
 
@@ -74,10 +71,6 @@ public class Sensors {
         resetHeading();
 
 //        imu.startAccelerationIntegration(new Position(), new Velocity(), 100);
-    }
-
-    public void setOpMode(LinearOpMode opMode) {
-        this.opMode = opMode;
     }
 
     public double getHeading() { // [-π, π]
@@ -128,7 +121,7 @@ public class Sensors {
 
     public void centerOnZero() {
         double heading = getHeading();
-        while (Math.abs(heading) > headingAccuracyThreshold && opMode.opModeIsActive()) {
+        while (Math.abs(heading) > headingAccuracyThreshold && Hardware.active()) {
             heading = getHeading();
 
             wheels.drive(0, 0, Utils.trim(0.05, 0.08, .04 * heading) * (heading > 0 ? -1 : 1), false);
@@ -216,7 +209,7 @@ public class Sensors {
                 directionSwitches = 0;
 
 
-        while (opMode.opModeIsActive()) {
+        while (Hardware.active()) {
 
             if ((currentReading = getBeaconColor()[isRed ? 1 : 0]) >  maxColor)
                 maxColor = currentReading;
@@ -246,7 +239,7 @@ public class Sensors {
     public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isMax) {
         //drive until we reach the beacon
         wheels.readySoftStart(500);
-        while (opMode.opModeIsActive() && isMax ? (getOpticalDistance() < odsThreshold) : (getOpticalDistance() > odsThreshold))
+        while (Hardware.active() && isMax ? (getOpticalDistance() < odsThreshold) : (getOpticalDistance() > odsThreshold))
             compensatedTranslate(theta, true);
         wheels.softStop(500);
     }
@@ -254,14 +247,14 @@ public class Sensors {
     public void followLineUntilOdsThreshold(double odsThreshold) {
         //drive until we reach the beacon
         wheels.readySoftStart(500);
-        while (opMode.opModeIsActive() && getOpticalDistance() < odsThreshold)
+        while (Hardware.active() && getOpticalDistance() < odsThreshold)
             followLine();
         wheels.softStop(500);
     }
 
     public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold) {
         wheels.readySoftStart(500);
-        while (opMode.opModeIsActive() && Utils.getMaxMagnitude(getLineReadings()) < whiteLineReadingThreshold)
+        while (Hardware.active() && Utils.getMaxMagnitude(getLineReadings()) < whiteLineReadingThreshold)
             compensatedTranslate(theta, false);
         wheels.softStop(500);
     }

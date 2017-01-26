@@ -2,10 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.RobotLog;
-
 import org.firstinspires.ftc.teamcode.components.Hardware;
-import org.firstinspires.ftc.teamcode.components.Intake;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Utils;
 import org.firstinspires.ftc.teamcode.components.Wheels;
@@ -54,7 +51,7 @@ public class Test extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Hardware.setMap(hardwareMap);
+        Hardware.init(hardwareMap, this, false);
 
         wheels = Hardware.getWheels();
         sensors = Hardware.getSensors();

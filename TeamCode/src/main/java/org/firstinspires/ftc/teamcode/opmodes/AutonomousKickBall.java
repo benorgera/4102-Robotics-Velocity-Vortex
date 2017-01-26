@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.firstinspires.ftc.teamcode.components.Hardware;
 import org.firstinspires.ftc.teamcode.components.Utils;
 import org.firstinspires.ftc.teamcode.components.Wheels;
@@ -12,14 +10,14 @@ import org.firstinspires.ftc.teamcode.components.Wheels;
  * Created by benorgera on 11/5/16.
  */
 
-@Autonomous(name="Kick Ball", group="4102")
+@Autonomous(name = "Kick Ball", group = "4102")
 public class AutonomousKickBall extends LinearOpMode {
 
     private Wheels wheels;
 
     @Override
     public void runOpMode() {
-        Hardware.setMap(hardwareMap);
+        Hardware.init(hardwareMap, this, true);
         wheels = Hardware.getWheels();
 
         telemetry.addData("4102", "Let's kick up");

@@ -2,11 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.components.Hardware;
-import org.firstinspires.ftc.teamcode.components.Intake;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
-import org.firstinspires.ftc.teamcode.components.Utils;
-import org.firstinspires.ftc.teamcode.components.Wheels;
 
 /**
  * Created by benorgera on 11/24/16.
@@ -27,12 +24,8 @@ public class AutonomousImplementation {
 
 
     public AutonomousImplementation(boolean isRed, LinearOpMode opMode) {
-        Hardware.setIsAuton(true);
         this.sensors = Hardware.getSensors();
         this.shooter = Hardware.getShooter();
-
-        sensors.setOpMode(opMode);
-
         this.isRed = isRed;
 
         sensors.initImu();

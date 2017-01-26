@@ -2,10 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
 import org.firstinspires.ftc.teamcode.components.Hardware;
-import org.firstinspires.ftc.teamcode.components.Wheels;
 
 /**
  * Created by benorgera on 11/24/16.
@@ -18,8 +15,7 @@ public class AutonomousBlue extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Hardware.setMap(hardwareMap);
-        Hardware.setIsAuton(true);
+        Hardware.init(hardwareMap, this, true);
 
         a = new AutonomousImplementation(false, this);
 

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.teamcode.components.Hardware;
 import org.firstinspires.ftc.teamcode.components.Utils;
 import org.firstinspires.ftc.teamcode.components.Wheels;
@@ -11,15 +10,14 @@ import org.firstinspires.ftc.teamcode.components.Wheels;
  * Created by benorgera on 11/5/16.
  */
 
-@Autonomous(name="Auton Shoot Blue", group="4102")
+@Autonomous(name = "Auton Shoot Blue", group = "4102")
 public class AutonShootBlue extends LinearOpMode {
 
     private Wheels wheels;
 
     @Override
     public void runOpMode() {
-        Hardware.setMap(hardwareMap);
-        Hardware.setIsAuton(true);
+        Hardware.init(hardwareMap, this, true);
         Hardware.getLift();
         Hardware.getShooter();
         wheels = Hardware.getWheels();
