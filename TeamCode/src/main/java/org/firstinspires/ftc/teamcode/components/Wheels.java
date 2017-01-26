@@ -109,13 +109,11 @@ public class Wheels {
 
     public void softStop(long time) {
 
-        long start = System.currentTimeMillis(),
-                stop = start + time;
+        long stop = System.currentTimeMillis() + time;
+        double[][] motorPowers = getMotorPowers();
 
-        while (System.currentTimeMillis() < stop) {
-            double scalar = 1 - ((System.currentTimeMillis() - start) / time);
-            setMotorPowers(Utils.multiplyValues(scalar, getMotorPowers()));
-        }
+        while (System.currentTimeMillis() < stop)
+            setMotorPowers(Utils.multiplyValues((stop - System.currentTimeMillis()) / time, motorPowers));
 
         stop();
     }
