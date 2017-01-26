@@ -30,7 +30,7 @@ public class Shooter {
 
     public void shoot(int speed) {
 
-        setDiskMotorPowers(Utils.trim(0, 7 / 9, speed * (7 / 90))); //bring motors up to speed
+        setDiskMotorPowers(Utils.trim(0, 7 / 9, speed * 7 / 90)); //bring motors up to speed
 
         Utils.sleep(500);
 

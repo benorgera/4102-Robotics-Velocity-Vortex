@@ -45,12 +45,12 @@ public class AutonomousImplementation {
 
         sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold);
 
-        sensors.centerOnZero();
-
         captureBeacon();
     }
 
     private void captureBeacon() {
+        sensors.centerOnZero();
+
         sensors.followLineUntilOdsThreshold(odsThresholdFindButton); //pull up to beacon
 
         sensors.findBeaconButton(isRed); //align on button

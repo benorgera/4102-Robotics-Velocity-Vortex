@@ -200,9 +200,8 @@ public class Sensors {
 
     public void findBeaconButton(boolean isRed) {
 
-        boolean goingForward = false;
-
-
+        boolean goingForward = true;
+        
         double previousReading = getBeaconColor()[isRed ? 1 : 0],
                 currentReading,
                 maxColor = 0,
