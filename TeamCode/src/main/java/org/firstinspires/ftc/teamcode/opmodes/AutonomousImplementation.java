@@ -39,11 +39,11 @@ public class AutonomousImplementation {
             sensors.turnAround();
         }
 
-        sensors.driveUntilLineReadingThreshold(Math.PI / 4 * (isRed ? -1 : 1), whiteLineSignalThreshold);
+        sensors.driveUntilLineReadingThreshold(Math.PI / 4 * (isRed ? -1 : 1), whiteLineSignalThreshold); //translate to line in front of first beacon
 
         captureBeacon();
 
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold);
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold); //translate to line in front of second beacon
 
         captureBeacon();
     }

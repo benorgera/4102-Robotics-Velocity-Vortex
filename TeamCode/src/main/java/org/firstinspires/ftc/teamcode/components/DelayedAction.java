@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class DelayedAction implements Runnable {
 
     private Object o;
-    private Long delay;
+    private long delay;
     private double setting;
 
     public DelayedAction(Object o, long delay, double setting) {
