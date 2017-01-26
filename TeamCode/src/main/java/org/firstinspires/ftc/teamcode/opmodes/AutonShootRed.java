@@ -27,7 +27,7 @@ public class AutonShootRed extends LinearOpMode {
 
         waitForStart(); //wait for the driver station to
 
-        Hardware.getShooter().shoot(6);
+        Hardware.getShooter().shoot(6, telemetry);
 
         Utils.sleep(6500);
 

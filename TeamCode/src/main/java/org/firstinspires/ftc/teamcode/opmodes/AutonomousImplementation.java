@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.components.Hardware;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
@@ -16,6 +18,8 @@ public class AutonomousImplementation {
 
     private final boolean isRed;
 
+    private Telemetry t;
+
     private final double odsThresholdFindButton = 0.04;
 
     private final double odsThresholdPushButton = 0.1;
@@ -23,7 +27,10 @@ public class AutonomousImplementation {
     private final double whiteLineSignalThreshold = 7; //the minimum color sensor reading required to signify finding the white line
 
 
-    public AutonomousImplementation(boolean isRed, LinearOpMode opMode) {
+    public AutonomousImplementation(boolean isRed, Telemetry t) {
+        Hardware.getLift();
+        Hardware.getIntake();
+        this.t = t;
         this.sensors = Hardware.getSensors();
         this.shooter = Hardware.getShooter();
         this.isRed = isRed;
@@ -32,7 +39,7 @@ public class AutonomousImplementation {
     }
 
     public void run() {
-        shooter.shoot(6);
+        shooter.shoot(6, t);
 
         if (isRed) {
             //must drive forward a hair to clear wall

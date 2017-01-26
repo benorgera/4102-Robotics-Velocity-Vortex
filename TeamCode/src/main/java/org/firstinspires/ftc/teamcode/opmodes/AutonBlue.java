@@ -17,7 +17,7 @@ public class AutonBlue extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Hardware.init(hardwareMap, this, true);
 
-        a = new AutonomousImplementation(false, this);
+        a = new AutonomousImplementation(false, telemetry);
 
         waitForStart();
 

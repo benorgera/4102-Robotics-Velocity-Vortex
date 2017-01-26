@@ -92,7 +92,7 @@ public class DriverControlled extends LinearOpMode {
         wasDowningShotPower = gamepad2.dpad_left;
 
         if (gamepad2.b && !intake.isRunning() && !wasShooting)
-            shooter.shoot(shotPower);
+            shooter.shoot(shotPower, telemetry);
 
         wasShooting = gamepad2.b;
 
