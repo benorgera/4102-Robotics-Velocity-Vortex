@@ -58,13 +58,15 @@ public class AutonomousImplementation {
     }
 
     private void captureBeacon() {
-        sensors.followLineUntilOdsThreshold(odsThresholdFindButton);
+        sensors.followLineUntilOdsThreshold(odsThresholdFindButton); //pull up to beacon
 
-        sensors.findBeaconButton(isRed);
+        sensors.findBeaconButton(isRed); //align on button
 
-        sensors.driveUntilOdsThreshold(0, odsThresholdPushButton);
+        sensors.driveUntilOdsThreshold(0, odsThresholdPushButton, true); //press button
 
-        sensors.centerOnZero();
+        sensors.driveUntilOdsThreshold(Math.PI, odsThresholdFindButton, false); //pull away from beacon
+
+        sensors.centerOnZero(); //align orientation
     }
 
 }

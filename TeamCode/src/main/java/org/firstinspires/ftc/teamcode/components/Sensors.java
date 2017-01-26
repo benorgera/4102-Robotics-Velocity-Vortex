@@ -210,7 +210,7 @@ public class Sensors {
         boolean goingForward = false;
 
 
-        double previousReading = getBeaconColor()[isRed ? 1: 0],
+        double previousReading = getBeaconColor()[isRed ? 1 : 0],
                 currentReading,
                 maxColor = 0,
                 directionSwitches = 0;
@@ -218,7 +218,7 @@ public class Sensors {
 
         while (opMode.opModeIsActive()) {
 
-            if ((currentReading = getBeaconColor()[isRed ? 1: 0]) >  maxColor)
+            if ((currentReading = getBeaconColor()[isRed ? 1 : 0]) >  maxColor)
                 maxColor = currentReading;
 
             if (directionSwitches > 3 && currentReading == maxColor) {
@@ -243,10 +243,10 @@ public class Sensors {
 
     }
 
-    public void driveUntilOdsThreshold(double theta, double odsThreshold) {
+    public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isMax) {
         //drive until we reach the beacon
         wheels.readySoftStart(500);
-        while (opMode.opModeIsActive() && getOpticalDistance() < odsThreshold)
+        while (opMode.opModeIsActive() && isMax ? (getOpticalDistance() < odsThreshold) : (getOpticalDistance() > odsThreshold))
             compensatedTranslate(theta, true);
         wheels.softStop(500);
     }
