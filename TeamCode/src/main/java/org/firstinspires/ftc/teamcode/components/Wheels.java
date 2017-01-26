@@ -16,6 +16,11 @@ public class Wheels {
     //constants
     private final double channelModeStickThreshold = 0.1; //the max magnitude of a stick reading
 
+    private long softStartLength; //ms to bring robot to full speed
+    private long softStartStartTime; //ms time when movement started
+    private boolean isSoftStarting = false;
+
+
     private final double[][] compensationConstants = {
             {1, 1},
             {1, 1}
@@ -35,16 +40,18 @@ public class Wheels {
         wheelBase[1][1].setDirection(DcMotor.Direction.REVERSE);
     }
 
-    public void softStart(double xVel, double yVel, double angularVel, long time) {
+    public void readySoftStart(long time) {
+        softStartLength = time;
+        softStartStartTime = System.currentTimeMillis();
+        isSoftStarting = true;
+    }
 
-        long start = System.currentTimeMillis(),
-                stop = start + time;
+    private double getSoftStartScalar() {
+        double scalar = (System.currentTimeMillis() - softStartStartTime) / softStartLength;
 
-        while (System.currentTimeMillis() < stop) {
-            double scalar = (System.currentTimeMillis() - start) / time;
-            drive(xVel * scalar, yVel * scalar, angularVel * scalar, false);
-            Utils.sleep(10);
-        }
+        if (scalar >= 1) isSoftStarting = false;
+
+        return Utils.trim(0, 1, scalar);
     }
 
     public String drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //translate/rotate the robot given velocity and angular velocity, and return a string representation of this algorithm
@@ -86,6 +93,9 @@ public class Wheels {
     }
 
     private String setMotorPowers(double[][] wheelPowers) { //apply power to the motors, and return string representation of the wheel powers
+
+        if (isSoftStarting) wheelPowers = Utils.multiplyValues(getSoftStartScalar(), wheelPowers);
+
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
             wheelbase[i][j].setPower(wheelPowers[i][j]);
 
@@ -105,7 +115,6 @@ public class Wheels {
         while (System.currentTimeMillis() < stop) {
             double scalar = 1 - ((System.currentTimeMillis() - start) / time);
             setMotorPowers(Utils.multiplyValues(scalar, getMotorPowers()));
-            Utils.sleep(10);
         }
 
         stop();

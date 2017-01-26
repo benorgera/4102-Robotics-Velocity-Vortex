@@ -19,8 +19,8 @@ import java.util.Arrays;
 @TeleOp (name = "Test", group = "4102")
 public class Test extends LinearOpMode {
 
-    private boolean gamePad1AState = false;
-    private boolean gamePad1BState = false;
+    private boolean gamePad2XState = false;
+    private boolean gamepad2YState = false;
 
     private boolean isUppingNgConstant = false;
     private boolean isDroppingNgConstant = false;
@@ -47,8 +47,9 @@ public class Test extends LinearOpMode {
 
     private Sensors sensors;
 
-    private Intake intake;
     private Wheels wheels;
+
+    private long softMotionTime = 500;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -56,7 +57,6 @@ public class Test extends LinearOpMode {
         Hardware.setMap(hardwareMap);
 
         wheels = Hardware.getWheels();
-        intake = Hardware.getIntake();
         sensors = Hardware.getSensors();
 
         sensors.resetHeading();
@@ -67,97 +67,88 @@ public class Test extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if (gamepad1.a && !gamePad1AState) {
-                intake.startIntaking(true);
-            }
 
-            gamePad1AState = gamepad1.a;
+            if (gamepad1.b)
+                wheels.readySoftStart(softMotionTime);
 
+            if (gamepad2.x && ! gamePad2XState)
+                softMotionTime += 50;
 
+            gamePad2XState = gamepad1.a;
 
-            if (gamepad1.a && !gamePad1BState) {
-                intake.stopIntaking();
-            }
+            if (gamepad2.y && !gamepad2YState)
+                    softMotionTime -= 50;
 
-            gamePad1BState = gamepad1.b;
             
             //drive if no autonomous driving is occurring
             if (!gamepad1.dpad_down && ! gamepad1.dpad_right && !gamepad1.dpad_left && !gamepad1.dpad_up && !gamepad2.dpad_down && ! gamepad2.dpad_right && !gamepad2.dpad_left && !gamepad2.dpad_up && (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0))
                 wheels.drive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, false);
 
-            if (gamepad1.b) sensors.findBeaconButton(gamepad1.y, this);
+            if (gamepad2.a) sensors.findBeaconButton(gamepad1.y);
 
             if (gamepad1.x) sensors.resetHeading();
 
 
             if (gamepad1.dpad_up) {
-                sensors.resetCompensatedTranslate();
-                telemetry.addData("ngComp | cyc | rate", sensors.compensatedTranslate(Math.PI / 2, !gamePad1DpadUpState, false));
+                telemetry.addData("ngComp", sensors.compensatedTranslate(Math.PI / 2, false));
             } else if (gamePad1DpadUpState) {
-                wheels.softStop();
+                wheels.softStop(softMotionTime);
             }
 
             gamePad1DpadUpState = gamepad1.dpad_up;
 
             if (gamepad1.dpad_down) {
-                sensors.resetCompensatedTranslate();
-                telemetry.addData("ngComp | cyc | rate", sensors.compensatedTranslate(3 * Math.PI / 2, !gamePad1DpadDownState, false));
+                telemetry.addData("ngComp", sensors.compensatedTranslate(3 * Math.PI / 2, false));
             } else if (gamePad1DpadDownState) {
-                wheels.softStop();
+                wheels.softStop(softMotionTime);
             }
 
             gamePad1DpadDownState = gamepad1.dpad_down;
 
             if (gamepad1.dpad_right) {
-                sensors.resetCompensatedTranslate();
-                telemetry.addData("ngComp", sensors.compensatedTranslate(0, !gamePad1DpadRightState, false));
+                telemetry.addData("ngComp", sensors.compensatedTranslate(0, false));
             } else if (gamePad1DpadRightState) {
-                wheels.softStop();
+                wheels.softStop(softMotionTime);
             }
 
             gamePad1DpadRightState = gamepad1.dpad_right;
 
             if (gamepad1.dpad_left) {
-                sensors.resetCompensatedTranslate();
-                telemetry.addData("ngComp", sensors.compensatedTranslate(Math.PI, !gamePad1DpadLeftState, false));
+                telemetry.addData("ngComp", sensors.compensatedTranslate(Math.PI, false));
             } else if (gamePad1DpadLeftState) {
-                wheels.softStop();
+                wheels.softStop(softMotionTime);
             }
 
             gamePad1DpadLeftState = gamepad1.dpad_left;
 
             if (gamepad2.dpad_right) {
-                sensors.resetCompensatedTranslate();
-                telemetry.addData("ngComp", sensors.compensatedTranslate(Math.PI / 4, !gamePad2DpadRightState, false));
+                telemetry.addData("ngComp", sensors.compensatedTranslate(Math.PI / 4, false));
             } else if (gamePad2DpadRightState) {
-                wheels.softStop();
+                wheels.softStop(softMotionTime);
             }
 
             gamePad2DpadRightState = gamepad2.dpad_right;
 
             if (gamepad2.dpad_up) {
-                sensors.resetCompensatedTranslate();
-                telemetry.addData("ngComp", sensors.compensatedTranslate(3 * Math.PI / 4, !gamePad2DpadUpState, false));
+                telemetry.addData("ngComp", sensors.compensatedTranslate(3 * Math.PI / 4, false));
             } else if (gamePad2DpadUpState) {
-                wheels.softStop();
+                wheels.softStop(softMotionTime);
             }
 
             gamePad2DpadUpState = gamepad2.dpad_up;
 
             if (gamepad2.dpad_left) {
-                sensors.resetCompensatedTranslate();
-                telemetry.addData("ngComp", sensors.compensatedTranslate(5 * Math.PI / 4, !gamePad2DpadLeftState, false));
+                telemetry.addData("ngComp", sensors.compensatedTranslate(5 * Math.PI / 4, false));
             } else if (gamePad2DpadLeftState) {
-                wheels.softStop();
+                wheels.softStop(softMotionTime);
             }
 
             gamePad2DpadLeftState = gamepad2.dpad_left;
 
             if (gamepad2.dpad_down) {
-                sensors.resetCompensatedTranslate();
-                telemetry.addData("ngComp", sensors.compensatedTranslate(7 * Math.PI/ 4, !gamePad2DpadDownState, false));
+                telemetry.addData("ngComp", sensors.compensatedTranslate(7 * Math.PI/ 4, false));
             } else if (gamePad2DpadDownState) {
-                wheels.softStop();
+                wheels.softStop(softMotionTime);
             }
 
             gamePad2DpadDownState = gamepad2.dpad_down;
@@ -207,13 +198,14 @@ public class Test extends LinearOpMode {
             if (gamepad2.b)
                 sensors.turnAround();
 
-            if (gamepad2.x) sensors.centerOnZero(this);
+            if (gamepad1.a) sensors.centerOnZero();
 
+            telemetry.addData("sst", softMotionTime);
             telemetry.addData("rH | iH | head", Utils.toString(Utils.toDegrees(sensors.getRawHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getInitialHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getHeading())));
             telemetry.addData("ng | strafe", Utils.toString(sensors.getNgConstant()) + " | " + Utils.toString(sensors.getStrafeConstant()));
             telemetry.addData("ngRateUp | ngRateDown", sensors.getNgSignChangesPerCycleUpThreshold() + " | " + sensors.getNgSignChangesPerCycleDownThreshold());
             telemetry.addData("blue | red | distance",  Utils.toString(sensors.getBeaconColor()[0]) + " | " + Utils.toString(sensors.getBeaconColor()[1]) + Utils.toString(sensors.getOpticalDistance()));
-//            telemetry.addData("line readings", Utils.toString(sensors.getLineData()[0][0]) + " " + Utils.toString(sensors.getLineData()[0][1]) + " " + Utils.toString(sensors.getLineData()[1][0]) + " " + Utils.toString(sensors.getLineData()[1][1]));
+            telemetry.addData("line readings", Arrays.asList(sensors.getLineReadings()).toString());
 
             telemetry.update();
         }

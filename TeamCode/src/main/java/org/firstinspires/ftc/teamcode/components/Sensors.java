@@ -29,9 +29,11 @@ public class Sensors {
 
     private Wheels wheels;
 
+    private LinearOpMode opMode;
+
     private double initialHeading = 0;
 
-    private final double translateSpeed = 0.2;
+    private final double compensatedTranslateSpeed = 0.2;
 
     private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1.5 degrees
 
@@ -74,6 +76,10 @@ public class Sensors {
 //        imu.startAccelerationIntegration(new Position(), new Velocity(), 100);
     }
 
+    public void setOpMode(LinearOpMode opMode) {
+        this.opMode = opMode;
+    }
+
     public double getHeading() { // [-π, π]
         return Utils.angleDifference(getRawHeading(), initialHeading);
     }
@@ -111,22 +117,16 @@ public class Sensors {
         return initialHeading;
     }
 
-    public void setInitialHeading(double heading) {
-        initialHeading = heading;
-    }
-
-    public String compensatedTranslate(double thetaDesired, boolean isFirstRun, boolean isExtraSlow, long softStartTime) { //translate robot with rotation compensation (must be called on a loop)
-        double power = translateSpeed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))) * (isExtraSlow ? 0.48 : 1),
+    public String compensatedTranslate(double thetaDesired, boolean isExtraSlow) { //translate robot with rotation compensation (must be called on a loop)
+        double power = compensatedTranslateSpeed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))) * (isExtraSlow ? 0.48 : 1),
                 ngVel = Utils.trim(-1, 1, -1 * getHeading() * ngConstant); //compensate for rotation by accounting for change in heading
-
-        if (isFirstRun) wheels.softStart(Math.cos(thetaDesired) * power, Math.sin(thetaDesired) * power,  0, softStartTime);
 
         wheels.drive(Math.cos(thetaDesired) * power, Math.sin(thetaDesired) * power, ngVel, false);
 
         return "" + ngVel;
     }
 
-    public void centerOnZero(LinearOpMode opMode) {
+    public void centerOnZero() {
         double heading = getHeading();
         while (Math.abs(heading) > headingAccuracyThreshold && opMode.opModeIsActive()) {
             heading = getHeading();
@@ -145,13 +145,13 @@ public class Sensors {
 
         resetHeading();
 
-        while ((heading = getHeading()) < Math.PI && heading > 0) {
+        while ((heading = getHeading()) < Math.PI || heading < 0) {
             wheels.drive(0, 0, -0.08, false);
         }
 
         wheels.stop();
 
-        initialHeading = (storedHeading + Math.PI) % (2 * Math.PI);
+        initialHeading = (storedHeading + getHeading()) % (2 * Math.PI);
     }
 
     public double getStrafeConstant() {
@@ -169,11 +169,11 @@ public class Sensors {
     public void setNgConstant(double n) {
         ngConstant = n;
     }
-    
+
     public double getNgSignChangesPerCycleUpThreshold() {
         return ngSignChangesPerCycleUpThreshold;
     }
-    
+
     public void setNgSignChangesPerCycleUpThreshold(double t) {
         ngSignChangesPerCycleUpThreshold = t;
     }
@@ -193,19 +193,19 @@ public class Sensors {
         };
     }
 
-    public void followLine(boolean isFirstRun, long softStartTime) {
+    private void followLine() {
         double[] readings = getLineReadings();
         double left = readings[0],
                 right = readings[1];
 
         if (Math.abs(left - right) <= 2) { //both sensors equally on the white line
-            compensatedTranslate(0, isFirstRun, true, softStartTime);
+            compensatedTranslate(0, true);
         } else { //left more on the white line turn left, right turn right
-            compensatedTranslate(Math.PI / 4 * (left > right ? 1 : -1), isFirstRun, true, softStartTime);
+            compensatedTranslate(Math.PI / 4 * (left > right ? 1 : -1), true);
         }
     }
 
-    public void findBeaconButton(boolean isRed, LinearOpMode opMode, long softStartTime) {
+    public void findBeaconButton(boolean isRed) {
 
         boolean goingForward = false;
 
@@ -236,11 +236,34 @@ public class Sensors {
                 directionSwitches = 0;
             }
 
-            compensatedTranslate(Math.PI / 2 * (goingForward ? 1 : 3), false, true, softStartTime);
+            compensatedTranslate(Math.PI / 2 * (goingForward ? 1 : 3), true);
 
             previousReading = currentReading;
         }
 
+    }
+
+    public void driveUntilOdsThreshold(double theta, double odsThreshold) {
+        //drive until we reach the beacon
+        wheels.readySoftStart(500);
+        while (opMode.opModeIsActive() && getOpticalDistance() < odsThreshold)
+            compensatedTranslate(theta, true);
+        wheels.softStop(500);
+    }
+
+    public void followLineUntilOdsThreshold(double odsThreshold) {
+        //drive until we reach the beacon
+        wheels.readySoftStart(500);
+        while (opMode.opModeIsActive() && getOpticalDistance() < odsThreshold)
+            followLine();
+        wheels.softStop(500);
+    }
+
+    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold) {
+        wheels.readySoftStart(500);
+        while (opMode.opModeIsActive() && Utils.getMaxMagnitude(getLineReadings()) < whiteLineReadingThreshold)
+            compensatedTranslate(theta, false);
+        wheels.softStop(500);
     }
 
 

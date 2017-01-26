@@ -23,7 +23,9 @@ public class AutonomousImplementation {
 
     private final boolean isRed;
 
-    private final double odsThreshold = 0.04;
+    private final double odsThresholdFindButton = 0.04;
+
+    private final double odsThresholdPushButton = 0.1;
 
     private final double whiteLineSignalThreshold = 7; //the minimum color sensor reading required to signify finding the white line
 
@@ -39,61 +41,36 @@ public class AutonomousImplementation {
         this.isRed = isRed;
 
         sensors.initImu();
+        sensors.setOpMode(opMode);
     }
 
     public void run() {
         shooter.shoot(6);
 
-        if (isRed) sensors.turnAround();
+        if (isRed) {
 
-        driveUntilLine(Math.PI / 4);
+            sensors.turnAround();
+        }
 
-        wheels.softStop(500);
+        sensors.driveUntilLineReadingThreshold(Math.PI / 4 * (isRed ? -1 : 1), whiteLineSignalThreshold);
 
-        followLine();
+        captureBeacon();
 
-        wheels.softStop(500);
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold);
 
-        sensors.findBeaconButton(isRed, opMode, 500);
+        sensors.centerOnZero();
 
-        pushButton();
-
-        sensors.centerOnZero(opMode);
-
-        driveUntilLine(Math.PI / 2);
-
-        wheels.stop();
-
-        sensors.centerOnZero(opMode);
-
-        followLine();
-
-        wheels.stop();
-
-        sensors.findBeaconButton(isRed, opMode, 500);
-
-        pushButton();
-
-        sensors.centerOnZero(opMode);
+        captureBeacon();
     }
 
-    private void pushButton() {
-        wheels.drive(0.35, 0, 0, false);
-        Utils.sleep(500);
-        wheels.stop();
-    }
+    private void captureBeacon() {
+        sensors.followLineUntilOdsThreshold(odsThresholdFindButton);
 
-    private void followLine() {
-        //drive until we reach the beacon
-        sensors.followLine(true, 500);
-        while (opMode.opModeIsActive() && sensors.getOpticalDistance() < odsThreshold)
-            sensors.followLine(false, 500);
-    }
+        sensors.findBeaconButton(isRed);
 
-    private void driveUntilLine(double theta) {
-        sensors.compensatedTranslate(theta * (isRed ? -1 : 1), true, false, 500);
-        while (opMode.opModeIsActive() && Utils.getMaxMagnitude(sensors.getLineReadings()) < whiteLineSignalThreshold)
-            sensors.compensatedTranslate(theta * (isRed ? -1 : 1), false, false, 500);
+        sensors.driveUntilOdsThreshold(0, odsThresholdPushButton);
+
+        sensors.centerOnZero();
     }
 
 }
