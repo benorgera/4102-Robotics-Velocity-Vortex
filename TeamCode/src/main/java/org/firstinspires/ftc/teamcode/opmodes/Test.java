@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.RobotLog;
+
 import org.firstinspires.ftc.teamcode.components.Hardware;
+import org.firstinspires.ftc.teamcode.components.Intake;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Utils;
 import org.firstinspires.ftc.teamcode.components.Wheels;
@@ -65,8 +68,8 @@ public class Test extends LinearOpMode {
         while (opModeIsActive()) {
 
 
-            if (gamepad1.b)
-                wheels.readySoftStart(softMotionTime);
+//            if (gamepad1.b)
+//                wheels.readySoftStart(softMotionTime);
 
             if (gamepad2.x && ! gamePad2XState)
                 softMotionTime += 50;
@@ -76,10 +79,14 @@ public class Test extends LinearOpMode {
             if (gamepad2.y && !gamepad2YState)
                     softMotionTime -= 50;
 
-            
+
+            if (gamepad1.b) wheels.stop();
+
             //drive if no autonomous driving is occurring
-            if (!gamepad1.dpad_down && ! gamepad1.dpad_right && !gamepad1.dpad_left && !gamepad1.dpad_up && !gamepad2.dpad_down && ! gamepad2.dpad_right && !gamepad2.dpad_left && !gamepad2.dpad_up && (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0))
-                wheels.drive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, false);
+            if (!gamepad1.dpad_down && ! gamepad1.dpad_right && !gamepad1.dpad_left && !gamepad1.dpad_up && !gamepad2.dpad_down && ! gamepad2.dpad_right && !gamepad2.dpad_left && !gamepad2.dpad_up) {
+                if ((Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0))
+                    wheels.drive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, false);
+            }
 
             if (gamepad2.a) sensors.findBeaconButton(gamepad1.y);
 

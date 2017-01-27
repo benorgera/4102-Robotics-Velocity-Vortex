@@ -32,7 +32,7 @@ public class Sensors {
 
     private final double compensatedTranslateSpeed = 0.2;
 
-    private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1.5 degrees
+    private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1 degrees
 
     private double ngSignChangesPerCycleUpThreshold = 0.001; //the low number of sign changes per cycle needed to cause an ngConstant increase
     private double ngSignChangesPerCycleDownThreshold = 0.005; //the high number of sign changes per cycle needed to cause an ngConstant decrease
@@ -120,14 +120,22 @@ public class Sensors {
     }
 
     public void centerOnZero() {
-        double heading = getHeading();
-        while (Math.abs(heading) > headingAccuracyThreshold && Hardware.active()) {
-            heading = getHeading();
+        double heading = getHeading(),
+                previousHeading = heading,
+                power = 0.06;
+        long checkTime = System.currentTimeMillis() + 250;
 
-            wheels.drive(0, 0, Utils.trim(0.05, 0.08, .04 * heading) * (heading > 0 ? -1 : 1), false);
-            Utils.sleep(15);
-            wheels.stop();
-            Utils.sleep(70);
+        while (Math.abs(heading) > headingAccuracyThreshold && Hardware.active()) {
+            wheels.drive(0, 0, power * ((heading = getHeading()) > 0 ? -1 : 1), false);
+
+            if (System.currentTimeMillis() >= checkTime) { //if its been 250 ms, consider upping the power and ready the next check
+
+                if (Math.abs(previousHeading - heading) < headingAccuracyThreshold / 4) //if the robot hasn't rotated at 1 deg / s
+                    power += 0.01;
+
+                previousHeading = heading;
+                checkTime = System.currentTimeMillis() + 250;
+            }
         }
         wheels.stop();
     }
