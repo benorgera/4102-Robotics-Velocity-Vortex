@@ -21,7 +21,8 @@ public class Sensors {
     private BNO055IMU imu;
     private ColorSensor leftColorSensor;
     private ColorSensor rightColorSensor;
-    private ModernRoboticsAnalogOpticalDistanceSensor ods;
+    private ModernRoboticsAnalogOpticalDistanceSensor odsBeacon;
+    private ModernRoboticsAnalogOpticalDistanceSensor odsCentered;
     private ModernRoboticsI2cColorSensor beaconSensor;
 
     private Integrator integrator;
@@ -30,7 +31,7 @@ public class Sensors {
 
     private double initialHeading = 0;
 
-    private final double compensatedTranslateSpeed = 0.2;
+    private final double compensatedTranslateSpeed = 0.3;
 
     private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1 degrees
 
@@ -40,11 +41,12 @@ public class Sensors {
     private double strafeConstant = 1.71;
     private double ngConstant = 0.6;
 
-    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor) {
+    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsCentered, ModernRoboticsAnalogOpticalDistanceSensor odsBeacon, ModernRoboticsI2cColorSensor beaconSensor) {
         this.imu = imu;
         this.leftColorSensor = leftColorSensor;
         this.rightColorSensor = rightColorSensor;
-        this.ods = ods;
+        this.odsCentered = odsCentered;
+        this.odsBeacon = odsBeacon;
         this.wheels = Hardware.getWheels();
         this.beaconSensor = beaconSensor;
         beaconSensor.enableLed(false);
@@ -94,8 +96,8 @@ public class Sensors {
         return imu.getPosition();
     }
 
-    public double getOpticalDistance() {
-        return ods.getLightDetected();
+    public double getOpticalDistance(boolean isCentered) {
+        return isCentered ? odsCentered.getLightDetected() : odsBeacon.getLightDetected();
     }
 
     public int[] getBeaconColor() {
@@ -111,7 +113,7 @@ public class Sensors {
     }
 
     public String compensatedTranslate(double thetaDesired, boolean isExtraSlow) { //translate robot with rotation compensation (must be called on a loop)
-        double power = compensatedTranslateSpeed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))) * (isExtraSlow ? 0.48 : 1),
+        double power = compensatedTranslateSpeed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))) * (isExtraSlow ? 0.35 : 1),
                 ngVel = Utils.trim(-1, 1, -1 * getHeading() * ngConstant); //compensate for rotation by accounting for change in heading
 
         wheels.drive(Math.cos(thetaDesired) * power, Math.sin(thetaDesired) * power, ngVel, false);
@@ -122,19 +124,19 @@ public class Sensors {
     public void centerOnZero() {
         double heading = getHeading(),
                 previousHeading = heading,
-                power = 0.06;
-        long checkTime = System.currentTimeMillis() + 250;
+                power = 0.13;
+        long checkTime = System.currentTimeMillis() + 1000;
 
         while (Math.abs(heading) > headingAccuracyThreshold && Hardware.active()) {
             wheels.drive(0, 0, power * ((heading = getHeading()) > 0 ? -1 : 1), false);
 
             if (System.currentTimeMillis() >= checkTime) { //if its been 250 ms, consider upping the power and ready the next check
 
-                if (Math.abs(previousHeading - heading) < headingAccuracyThreshold / 4) //if the robot hasn't rotated at 1 deg / s
-                    power += 0.01;
+                if (Math.abs(previousHeading - heading) < headingAccuracyThreshold) //if the robot hasn't rotated at 1 deg / s
+                    power += 0.03;
 
                 previousHeading = heading;
-                checkTime = System.currentTimeMillis() + 250;
+                checkTime = System.currentTimeMillis() + 1000;
             }
         }
         wheels.stop();
@@ -199,10 +201,10 @@ public class Sensors {
         double left = readings[0],
                 right = readings[1];
 
-        if (Math.abs(left - right) <= 2) { //both sensors equally on the white line
-            compensatedTranslate(0, true);
+        if (Math.abs(left - right) <= 50) { //both sensors equally on the white line
+            compensatedTranslate(Math.PI, false);
         } else { //left more on the white line turn left, right turn right
-            compensatedTranslate(Math.PI / 4 * (left > right ? 1 : -1), true);
+            compensatedTranslate(left > right ? (9 * Math.PI / 8) : (7 * Math.PI / 8), false);
         }
     }
 
@@ -243,29 +245,31 @@ public class Sensors {
 
     }
 
-    public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isMax) {
+    public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isCentered, boolean isMax) {
         //drive until we reach the beacon
-        wheels.readySoftStart(500);
-        while (Hardware.active() && isMax ? (getOpticalDistance() < odsThreshold) : (getOpticalDistance() > odsThreshold))
-            compensatedTranslate(theta, true);
+        while (Hardware.active() && isMax ? (getOpticalDistance(isCentered) < odsThreshold) : (getOpticalDistance(isCentered) > odsThreshold))
+            compensatedTranslate(theta, false);
         wheels.softStop(500);
     }
 
-    public void followLineUntilOdsThreshold(double odsThreshold) {
+    public void followLineUntilOdsThreshold(double odsThreshold, boolean isCentered) {
         //drive until we reach the beacon
-        wheels.readySoftStart(500);
-        while (Hardware.active() && getOpticalDistance() < odsThreshold)
+        while (Hardware.active() && getOpticalDistance(isCentered) < odsThreshold)
             followLine();
         wheels.softStop(500);
     }
 
     public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold) {
-        wheels.readySoftStart(500);
         while (Hardware.active() && Utils.getMaxMagnitude(getLineReadings()) < whiteLineReadingThreshold)
             compensatedTranslate(theta, false);
         wheels.softStop(500);
     }
 
-
-
+    public void driveByTime(double theta, long time, boolean shouldStop) {
+        wheels.readySoftStart(500);
+        long stop = System.currentTimeMillis() + time;
+        while (Hardware.active() && System.currentTimeMillis() < stop)
+            compensatedTranslate(theta, false);
+        if (shouldStop) wheels.softStop(500);
+    }
 }

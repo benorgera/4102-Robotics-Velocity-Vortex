@@ -54,7 +54,7 @@ public class Test extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Hardware.init(hardwareMap, this, false);
+        Hardware.init(hardwareMap, this, false, telemetry);
 
         wheels = Hardware.getWheels();
         sensors = Hardware.getSensors();
@@ -68,15 +68,15 @@ public class Test extends LinearOpMode {
         while (opModeIsActive()) {
 
 
-//            if (gamepad1.b)
-//                wheels.readySoftStart(softMotionTime);
+            if (gamepad1.y && gamepad2.y)
+                wheels.readySoftStart(softMotionTime);
 
             if (gamepad2.x && ! gamePad2XState)
                 softMotionTime += 50;
 
             gamePad2XState = gamepad1.a;
 
-            if (gamepad2.y && !gamepad2YState)
+            if (gamepad2.y && !gamepad2YState && !gamepad1.y)
                     softMotionTime -= 50;
 
 
@@ -208,8 +208,8 @@ public class Test extends LinearOpMode {
             telemetry.addData("rH | iH | head", Utils.toString(Utils.toDegrees(sensors.getRawHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getInitialHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getHeading())));
             telemetry.addData("ng | strafe", Utils.toString(sensors.getNgConstant()) + " | " + Utils.toString(sensors.getStrafeConstant()));
             telemetry.addData("ngRateUp | ngRateDown", sensors.getNgSignChangesPerCycleUpThreshold() + " | " + sensors.getNgSignChangesPerCycleDownThreshold());
-            telemetry.addData("blue | red | distance",  Utils.toString(sensors.getBeaconColor()[0]) + " | " + Utils.toString(sensors.getBeaconColor()[1]) + Utils.toString(sensors.getOpticalDistance()));
-            telemetry.addData("line readings", Arrays.asList(sensors.getLineReadings()).toString());
+            telemetry.addData("blue | red | odsC | odsB",  Utils.toString(sensors.getBeaconColor()[0]) + " | " + Utils.toString(sensors.getBeaconColor()[1]) + "|" + Utils.toString(sensors.getOpticalDistance(true)) + "|" + Utils.toString(sensors.getOpticalDistance(false)));
+            telemetry.addData("line readings", sensors.getLineReadings()[0] + ", " + sensors.getLineReadings()[1]);
 
             telemetry.update();
         }

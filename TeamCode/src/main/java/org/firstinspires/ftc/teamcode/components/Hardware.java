@@ -26,12 +26,25 @@ public class Hardware {
     private static Sensors sensors;
     private static Shooter shooter;
     private static Intake intake;
+    private static Telemetry t;
+    private static String output = "HARDWARE:/n/n";
 
-    public static void init(HardwareMap map, LinearOpMode opMode, boolean isAuton) {
+    public static void init(HardwareMap map, LinearOpMode opMode, boolean isAuton, Telemetry t) {
         clean();
         Hardware.opMode = opMode;
         Hardware.isAuton = isAuton;
         Hardware.map = map;
+        Hardware.t = t;
+    }
+
+    public static void print(String s) {
+        if (t == null)
+            return;
+
+        output += "\n" + s;
+
+        t.addData("H", output);
+        t.update();
     }
 
     public static Wheels getWheels() {
@@ -54,7 +67,8 @@ public class Hardware {
                 map.get(BNO055IMU.class, "imu"),
                 map.colorSensor.get("left-color-sensor"),
                 map.colorSensor.get("right-color-sensor"),
-                (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
+                (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods-centered"),
+                (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods-beacon"),
                 (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor")
         ) : sensors;
 
@@ -97,6 +111,7 @@ public class Hardware {
     }
 
     private static void clean() {
+        output = null;
         map = null;
         lift = null;
         wheels = null;
@@ -104,6 +119,7 @@ public class Hardware {
         shooter = null;
         intake = null;
         opMode = null;
+        t = null;
         isAuton = false;
     }
 }

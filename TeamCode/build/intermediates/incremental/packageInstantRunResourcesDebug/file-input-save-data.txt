@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Thu Jan 26 16:57:23 EST 2017
+#Fri Jan 27 15:58:48 EST 2017
 175.set=ASSET
 122.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/template_info.xml
 60.set=ASSET
@@ -12,7 +12,7 @@
 36.set=ASSET
 28.set=ASSET
 98.set=ASSET
-136.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/simple_device.xml
+136.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/item_list_parent.xml
 1.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/blocks/elapsed_time.js
 13.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug
 45.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/drawable-hdpi-v4/ic_launcher.png
@@ -96,11 +96,11 @@
 18.set=ANDROID_RESOURCE
 96.set=ANDROID_RESOURCE
 88.set=ANDROID_RESOURCE
-135.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/item_list_parent.xml
+135.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/simple_device.xml
 0.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/blocks/toolbox_util.js
 44.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/toolbox/images.css
 12.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_
-182.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/activity_ftc_wifi_channel_selector.xml
+182.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/menu/main_menu.xml
 7.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/header.xml
 91.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/matrix_devices.xml
 98.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/images/ftcAnalogInput.png
@@ -164,7 +164,7 @@
 81.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/FTC_2016-17.xml
 91.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_
 7.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_
-88.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/activity_config_wifi_direct.xml
+88.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/servo_list.xml
 98.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug
 120.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/blocks/color_sensor.js
 40.set=ANDROID_RESOURCE
@@ -182,7 +182,7 @@
 134.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/darker_gray_line.xml
 11.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug
 43.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/blocks/project_util.js
-181.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/menu/main_menu.xml
+181.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/activity_ftc_wifi_channel_selector.xml
 90.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/xml/device_filter.xml
 6.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/RobotConfigTaxonomy.xml
 97.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/raw/cube_mesh_vertex_shader.glsl
@@ -243,7 +243,7 @@
 80.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/RobotConfig.xsd
 90.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_
 6.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug
-87.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/servo_list.xml
+87.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/activity_config_wifi_direct.xml
 97.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_
 30.set=ANDROID_RESOURCE
 126.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/xml/pushbot.xml
@@ -338,7 +338,7 @@
 139.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/images/ftcI2cDeviceReader.png
 4.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/resources.arsc
 149.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_
-48.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/xml/k9usbbot.xml
+48.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/activity_blocks.xml
 16.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug
 95.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/AndroidManifest.xml
 1.set=ASSET
@@ -418,7 +418,7 @@ count=184
 3.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug/blockly/media/handopen.cur
 148.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug
 15.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_
-47.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/layout/activity_blocks.xml
+47.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/xml/k9usbbot.xml
 94.file=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/resources-debug.ap_/res/raw/errormessage.wav
 120.set=ASSET
 101.base=/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/assets/debug

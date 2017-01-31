@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.components;
 
-import com.qualcomm.hardware.adafruit.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -25,53 +23,33 @@ public class Shooter {
         door.setPosition(doorPositions[1]);
 
         for (DcMotor m : disks) {
-            m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//            m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
-
-//        disks[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        disks[0].setMode(DcMotor.RunMode.RUN_USING_ENCODER); //left
-//        disks[1].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //right
 
         disks[1].setDirection(DcMotor.Direction.REVERSE);
     }
 
-    public void shoot(double speed, Telemetry t) {
-
-        //temporary
-        for (DcMotor m : disks) {
-            m.setTargetPosition(1000);
-            m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-
+    public void shoot(double speed) {
 
         setDiskMotorPowers(Utils.trim(0, 1, speed / 10)); //bring motors up to speed
 
-//        Utils.sleep(500);
+        Utils.sleep(500);
 
-//        door.setPosition(doorPositions[0]); //drop door
-//
-//        Utils.sleep(500);
+        door.setPosition(doorPositions[0]); //drop door
+
+        Utils.sleep(500);
 
         Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
         Hardware.getIntake().startElevator(); //feed shots through shooter
 
-        long stop = System.currentTimeMillis() + 2500;
+        Utils.sleep(2500);
 
-        while (System.currentTimeMillis() < stop) {
-            t.addData("left", disks[0].getCurrentPosition());
-            t.addData("right", disks[1].getCurrentPosition());
-            t.update();
-            Utils.sleep(30);
-        }
-
-        //stop everything
-        stop();
+        //reset stuff
         Hardware.getIntake().stopElevator();
-
-        //reset ramp for next intaking
-        door.setPosition(doorPositions[1]);
+        stop();
+        setDiskMotorPowers(0);
+        door.setPosition(doorPositions[1]); //reset ramp for next intaking
         Hardware.getIntake().dropRamp(0);
     }
 

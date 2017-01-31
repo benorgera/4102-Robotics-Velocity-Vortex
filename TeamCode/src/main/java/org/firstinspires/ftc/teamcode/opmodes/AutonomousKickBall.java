@@ -17,7 +17,7 @@ public class AutonomousKickBall extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Hardware.init(hardwareMap, this, true);
+        Hardware.init(hardwareMap, this, true, telemetry);
         wheels = Hardware.getWheels();
 
         telemetry.addData("4102", "Let's kick up");

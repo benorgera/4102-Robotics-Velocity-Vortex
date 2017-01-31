@@ -46,7 +46,7 @@ public class DriverControlled extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Hardware.init(hardwareMap, this, false);
+        Hardware.init(hardwareMap, this, false, telemetry);
 
         lift = Hardware.getLift();
         wheels = Hardware.getWheels();
@@ -92,7 +92,7 @@ public class DriverControlled extends LinearOpMode {
         wasDowningShotPower = gamepad2.dpad_left;
 
         if (gamepad2.b && !intake.isRunning() && !wasShooting)
-            shooter.shoot(shotPower, telemetry);
+            shooter.shoot(shotPower);
 
         wasShooting = gamepad2.b;
 

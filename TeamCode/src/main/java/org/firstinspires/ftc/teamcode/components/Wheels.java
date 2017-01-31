@@ -42,7 +42,7 @@ public class Wheels {
     }
 
     private double getSoftStartScalar() {
-        double scalar = (System.currentTimeMillis() - softStartStartTime) / softStartLength;
+        double scalar = ((double) System.currentTimeMillis() - (double) softStartStartTime) / (double) softStartLength;
 
         if (scalar >= 1) isSoftStarting = false;
 

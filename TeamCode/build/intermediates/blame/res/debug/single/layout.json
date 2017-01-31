@@ -136,12 +136,12 @@
         "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/res/layout/pwm_device.xml"
     },
     {
-        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/layout/red_line.xml",
-        "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/res/layout/red_line.xml"
-    },
-    {
         "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/layout/motor_controller_banner.xml",
         "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/res/layout/motor_controller_banner.xml"
+    },
+    {
+        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/layout/red_line.xml",
+        "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/res/layout/red_line.xml"
     },
     {
         "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/layout/digital_device.xml",

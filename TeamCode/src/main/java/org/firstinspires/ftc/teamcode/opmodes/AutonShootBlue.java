@@ -17,7 +17,7 @@ public class AutonShootBlue extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Hardware.init(hardwareMap, this, true);
+        Hardware.init(hardwareMap, this, true, telemetry);
         Hardware.getLift();
         Hardware.getShooter();
         wheels = Hardware.getWheels();
@@ -27,7 +27,7 @@ public class AutonShootBlue extends LinearOpMode {
 
         waitForStart(); //wait for the driver station to
 
-        Hardware.getShooter().shoot(6, telemetry);
+        Hardware.getShooter().shoot(6);
 
         Utils.sleep(6500);
 
