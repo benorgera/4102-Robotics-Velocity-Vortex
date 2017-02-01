@@ -12,15 +12,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class GyroPoll implements Runnable {
 
     private BNO055IMU imu;
-    private Sensors s;
 
     private SizedStack<Double> accelerations = new SizedStack<>(100);
 
     private final double drivingAccelerationThreshold = 0.5;
 
-    public GyroPoll(BNO055IMU imu, Sensors s) {
+    public GyroPoll(BNO055IMU imu) {
         this.imu = imu;
-        this.s = s;
     }
 
     @Override

@@ -193,7 +193,7 @@ public class Sensors {
 
     private void readyCompensatedTranslate(long softStartTime) {
         wheels.readyCompensatedTranslate(softStartTime);
-        gyroPoll = new Thread(new GyroPoll(imu, this));
+        gyroPoll = new Thread(new GyroPoll(imu));
     }
 
     private void stopCompensatedTranslate() {
