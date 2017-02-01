@@ -41,6 +41,8 @@ public class Sensors {
     private double strafeConstant = 1.71;
     private double ngConstant = 0.6;
 
+    private Thread gyroPoll;
+
     public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsCentered, ModernRoboticsAnalogOpticalDistanceSensor odsBeacon, ModernRoboticsI2cColorSensor beaconSensor) {
         this.imu = imu;
         this.leftColorSensor = leftColorSensor;
@@ -189,6 +191,17 @@ public class Sensors {
         ngSignChangesPerCycleDownThreshold = t;
     }
 
+    private void readyCompensatedTranslate(long softStartTime) {
+        wheels.readyCompensatedTranslate(softStartTime);
+        gyroPoll = new Thread(new GyroPoll(imu, this));
+    }
+
+    private void stopCompensatedTranslate() {
+        if (gyroPoll != null) gyroPoll.interrupt();
+        gyroPoll = null;
+        wheels.stopCompensatedTranslating();
+    }
+
     public double[] getLineReadings() {
         return new double[] {
                 leftColorSensor.green(), //green is a measure of white
@@ -246,30 +259,44 @@ public class Sensors {
     }
 
     public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isCentered, boolean isMax) {
-        //drive until we reach the beacon
+        readyCompensatedTranslate(0);
+
         while (Hardware.active() && isMax ? (getOpticalDistance(isCentered) < odsThreshold) : (getOpticalDistance(isCentered) > odsThreshold))
             compensatedTranslate(theta, false);
         wheels.softStop(500);
+
+        stopCompensatedTranslate();
     }
 
     public void followLineUntilOdsThreshold(double odsThreshold, boolean isCentered) {
-        //drive until we reach the beacon
+        readyCompensatedTranslate(0);
+
         while (Hardware.active() && getOpticalDistance(isCentered) < odsThreshold)
             followLine();
         wheels.softStop(500);
+
+        stopCompensatedTranslate();
     }
 
+
     public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold) {
+        readyCompensatedTranslate(0);
+
         while (Hardware.active() && Utils.getMaxMagnitude(getLineReadings()) < whiteLineReadingThreshold)
             compensatedTranslate(theta, false);
         wheels.softStop(500);
+
+        stopCompensatedTranslate();
     }
 
     public void driveByTime(double theta, long time, boolean shouldStop) {
-        wheels.readySoftStart(500);
+        readyCompensatedTranslate(500);
+
         long stop = System.currentTimeMillis() + time;
         while (Hardware.active() && System.currentTimeMillis() < stop)
             compensatedTranslate(theta, false);
         if (shouldStop) wheels.softStop(500);
+
+        stopCompensatedTranslate();
     }
 }

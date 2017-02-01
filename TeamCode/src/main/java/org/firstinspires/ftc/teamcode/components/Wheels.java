@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class Wheels {
     private DcMotor[][] wheelbase;
 
+    private boolean isCompensatedTranslating = false;
+
     //constants
     private final double channelModeStickThreshold = 0.1; //the max magnitude of a stick reading
 
@@ -35,10 +37,18 @@ public class Wheels {
         wheelBase[1][1].setDirection(DcMotor.Direction.REVERSE);
     }
 
-    public void readySoftStart(long time) {
-        softStartLength = time;
-        softStartStartTime = System.currentTimeMillis();
-        isSoftStarting = true;
+    public void readyCompensatedTranslate(long softStartTime) {
+        if (softStartTime > 0) {
+            softStartLength = softStartTime;
+            softStartStartTime = System.currentTimeMillis();
+            isSoftStarting = true;
+        }
+
+        isCompensatedTranslating = true;
+    }
+
+    public void stopCompensatedTranslating() {
+        isCompensatedTranslating = false;
     }
 
     private double getSoftStartScalar() {
@@ -88,8 +98,10 @@ public class Wheels {
     }
 
     private String setMotorPowers(double[][] wheelPowers) { //apply power to the motors, and return string representation of the wheel powers
-
-        if (isSoftStarting) wheelPowers = Utils.multiplyValues(getSoftStartScalar(), wheelPowers);
+        if (isCompensatedTranslating)
+            wheelPowers = Utils.multiplyValues(Hardware.getGyroConstant(), wheelPowers);
+        if (isSoftStarting)
+            wheelPowers = Utils.multiplyValues(getSoftStartScalar(), wheelPowers);
 
         for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
             wheelbase[i][j].setPower(wheelPowers[i][j]);

@@ -79,7 +79,7 @@ public class AutonomousImplementation {
 
         Hardware.print("Found beacon button, about to push button");
 
-        sensors.driveUntilOdsThreshold(Math.PI, odsThresholdPushButton, false, true); //press button
+        sensors.driveByTime(Math.PI, 1000, true); //press button
 
         Hardware.print("Pushed beacon button, about to back up");
 

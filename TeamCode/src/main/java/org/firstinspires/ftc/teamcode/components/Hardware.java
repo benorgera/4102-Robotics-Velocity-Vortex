@@ -21,6 +21,8 @@ public class Hardware {
 
     private static boolean isAuton = false;
 
+    private static double gyroConstant = 1;
+
     private static Lift lift;
     private static Wheels wheels;
     private static Sensors sensors;
@@ -121,5 +123,13 @@ public class Hardware {
         opMode = null;
         t = null;
         isAuton = false;
+    }
+
+    public static void setGyroConstant(double d) {
+        gyroConstant = d;
+    }
+
+    public static double getGyroConstant() {
+        return gyroConstant;
     }
 }
