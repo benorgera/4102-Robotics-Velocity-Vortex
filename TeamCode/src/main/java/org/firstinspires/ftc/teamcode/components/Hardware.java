@@ -49,6 +49,10 @@ public class Hardware {
         t.update();
     }
 
+    public static void clearLog() {
+        output = "";
+    }
+
     public static Wheels getWheels() {
         return wheels == null ? wheels = new Wheels(
                 new DcMotor[][] {

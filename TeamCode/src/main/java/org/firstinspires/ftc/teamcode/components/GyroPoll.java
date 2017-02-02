@@ -13,9 +13,9 @@ public class GyroPoll implements Runnable {
 
     private BNO055IMU imu;
 
-    private SizedStack<Double> accelerations = new SizedStack<>(100);
+    private SizedStack<Double> accelerations = new SizedStack<Double>(100);
 
-    private final double drivingAccelerationThreshold = 0.5;
+    private final double drivingAccelerationThreshold = 0.650;
 
     public GyroPoll(BNO055IMU imu) {
         this.imu = imu;
@@ -23,19 +23,28 @@ public class GyroPoll implements Runnable {
 
     @Override
     public void run() {
-        while (Thread.currentThread().isAlive()) {
-            accelerations.push(Math.abs(imu.getAcceleration().xAccel) + Math.abs(imu.getAcceleration().yAccel));
+        while (!Thread.currentThread().isInterrupted()) {
+            accelerations.push(Math.sqrt(Math.pow(imu.getLinearAcceleration().xAccel, 2) + Math.pow(imu.getLinearAcceleration().yAccel, 2)));
             Hardware.setGyroConstant(getGyroConstant());
             try {
-                wait(100);
+                Thread.sleep(40);
             } catch (InterruptedException e) {
-                return;
+                e.printStackTrace();
             }
         }
     }
 
-    private synchronized double getGyroConstant() {
-        return getAverageAcceleration() < drivingAccelerationThreshold ? 1.5 : 1;
+    private double getGyroConstant() {
+        Hardware.clearLog();
+        Hardware.print("avg a: " + getAverageAcceleration());
+
+        double gyroConst = 1;
+
+        if (accelerations.size() > 50 && getAverageAcceleration() < drivingAccelerationThreshold)
+            gyroConst = Math.sin(2 * Math.PI / 1000 * System.currentTimeMillis()) > -0.5 ? 1.5 : -0.5;
+
+        Hardware.print("gConst:" + gyroConst);
+        return gyroConst;
     }
 
     private double getAverageAcceleration() {

@@ -69,7 +69,7 @@ public class Test extends LinearOpMode {
 
 
             if (gamepad1.y && gamepad2.y)
-                wheels.readySoftStart(softMotionTime);
+                wheels.readyCompensatedTranslate(softMotionTime);
 
             if (gamepad2.x && ! gamePad2XState)
                 softMotionTime += 50;

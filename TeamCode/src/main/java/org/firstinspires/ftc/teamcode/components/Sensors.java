@@ -31,7 +31,7 @@ public class Sensors {
 
     private double initialHeading = 0;
 
-    private final double compensatedTranslateSpeed = 0.3;
+    private final double compensatedTranslateSpeed = 0.25;
 
     private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1 degrees
 
@@ -115,7 +115,7 @@ public class Sensors {
     }
 
     public String compensatedTranslate(double thetaDesired, boolean isExtraSlow) { //translate robot with rotation compensation (must be called on a loop)
-        double power = compensatedTranslateSpeed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))) * (isExtraSlow ? 0.35 : 1),
+        double power = compensatedTranslateSpeed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))) * (isExtraSlow ? 0.5 : 1),
                 ngVel = Utils.trim(-1, 1, -1 * getHeading() * ngConstant); //compensate for rotation by accounting for change in heading
 
         wheels.drive(Math.cos(thetaDesired) * power, Math.sin(thetaDesired) * power, ngVel, false);
@@ -193,12 +193,11 @@ public class Sensors {
 
     private void readyCompensatedTranslate(long softStartTime) {
         wheels.readyCompensatedTranslate(softStartTime);
-        gyroPoll = new Thread(new GyroPoll(imu));
+        (gyroPoll = new Thread(new GyroPoll(imu))).start();
     }
 
     private void stopCompensatedTranslate() {
-        if (gyroPoll != null) gyroPoll.interrupt();
-        gyroPoll = null;
+        gyroPoll.interrupt();
         wheels.stopCompensatedTranslating();
     }
 
@@ -259,44 +258,32 @@ public class Sensors {
     }
 
     public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isCentered, boolean isMax) {
-        readyCompensatedTranslate(0);
-
         while (Hardware.active() && isMax ? (getOpticalDistance(isCentered) < odsThreshold) : (getOpticalDistance(isCentered) > odsThreshold))
             compensatedTranslate(theta, false);
-        wheels.softStop(500);
-
-        stopCompensatedTranslate();
+        wheels.stop();
     }
 
     public void followLineUntilOdsThreshold(double odsThreshold, boolean isCentered) {
-        readyCompensatedTranslate(0);
-
         while (Hardware.active() && getOpticalDistance(isCentered) < odsThreshold)
             followLine();
-        wheels.softStop(500);
-
-        stopCompensatedTranslate();
+        wheels.stop();
     }
 
 
-    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold) {
+    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean isExtraSlow) {
         readyCompensatedTranslate(0);
 
         while (Hardware.active() && Utils.getMaxMagnitude(getLineReadings()) < whiteLineReadingThreshold)
-            compensatedTranslate(theta, false);
-        wheels.softStop(500);
+            compensatedTranslate(theta, isExtraSlow);
+        wheels.stop();
 
         stopCompensatedTranslate();
     }
 
     public void driveByTime(double theta, long time, boolean shouldStop) {
-        readyCompensatedTranslate(500);
-
         long stop = System.currentTimeMillis() + time;
         while (Hardware.active() && System.currentTimeMillis() < stop)
             compensatedTranslate(theta, false);
-        if (shouldStop) wheels.softStop(500);
-
-        stopCompensatedTranslate();
+        if (shouldStop) wheels.stop();
     }
 }

@@ -23,8 +23,9 @@ public class Shooter {
         door.setPosition(doorPositions[1]);
 
         for (DcMotor m : disks) {
+            m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
         disks[1].setDirection(DcMotor.Direction.REVERSE);

@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.components.Hardware;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
+import org.firstinspires.ftc.teamcode.components.Utils;
 
 /**
  * Created by benorgera on 11/24/16.
@@ -19,9 +20,7 @@ public class AutonomousImplementation {
 
     private final boolean isRed;
 
-    private final double odsThresholdFindButton = 0.05;
-
-    private final double odsThresholdPushButton = 0.4;
+    private final double odsThresholdFindButton = 0.045;
 
     private final double whiteLineSignalThreshold = 70; //the minimum color sensor reading required to signify finding the white line
 
@@ -50,9 +49,9 @@ public class AutonomousImplementation {
 
         Hardware.print("About to find line");
 
-        sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 1300, false);
+        sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 600, false);
 
-        sensors.driveUntilLineReadingThreshold(isRed ? (5 * Math.PI / 6) : (7 * Math.PI / 6), whiteLineSignalThreshold); //translate to line in front of first beacon
+        sensors.driveUntilLineReadingThreshold(isRed ? (5 * Math.PI / 6) : (7 * Math.PI / 6), whiteLineSignalThreshold, false); //translate to line in front of first beacon
 
         Hardware.print("Found line, about to capture beacon");
 
@@ -60,7 +59,13 @@ public class AutonomousImplementation {
 
         Hardware.print("About to translate to second beacon");
 
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold); //translate to line in front of second beacon
+        sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 2500, false);
+
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false); //translate to line in front of second beacon
+
+        Utils.sleep(1500);
+
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold, true);
 
         Hardware.print("Translated to second beacon, about to capture beacon");
 
@@ -79,17 +84,15 @@ public class AutonomousImplementation {
 
         Hardware.print("Found beacon button, about to push button");
 
-        sensors.driveByTime(Math.PI, 1000, true); //press button
+        sensors.driveByTime(Math.PI, 700, true); //press button
 
         Hardware.print("Pushed beacon button, about to back up");
 
-        sensors.driveUntilOdsThreshold(0, odsThresholdFindButton, false, false); //pull away from beacon
+        sensors.driveByTime(0, 700, true); //pull away from beacon
+
+//        sensors.driveUntilOdsThreshold(0, odsThresholdFindButton, false, false); //pull away from beacon
 
         Hardware.print("Backed up from button, about to center on zero");
-
-        sensors.centerOnZero(); //align orientation
-
-        Hardware.print("Centered on zero");
     }
 
 }
