@@ -23,14 +23,15 @@ public class GyroPoll implements Runnable {
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            accelerations.push(Math.sqrt(Math.pow(imu.getLinearAcceleration().xAccel, 2) + Math.pow(imu.getLinearAcceleration().yAccel, 2)));
-            Hardware.setGyroConstant(getGyroConstant());
-            try {
+
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                accelerations.push(Math.sqrt(Math.pow(imu.getLinearAcceleration().xAccel, 2) + Math.pow(imu.getLinearAcceleration().yAccel, 2)));
+                Hardware.setGyroConstant(getGyroConstant());
                 Thread.sleep(40);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

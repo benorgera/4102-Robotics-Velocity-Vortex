@@ -63,7 +63,7 @@ public class AutonomousImplementation {
 
         sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false, true); //translate to line in front of second beacon
 
-        Utils.sleep(1500);
+        Utils.sleep(1000);
 
         sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold, true, false);
 
@@ -83,6 +83,8 @@ public class AutonomousImplementation {
         sensors.findBeaconButton(isRed); //align on button
 
         Hardware.print("Found beacon button, about to push button");
+
+        Utils.sleep(500);
 
         sensors.driveByTime(Math.PI, 700, true); //press button
 
