@@ -270,14 +270,14 @@ public class Sensors {
     }
 
 
-    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean isExtraSlow) {
-        readyCompensatedTranslate(0);
+    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean isExtraSlow, boolean shouldPollGyro) {
+        if (shouldPollGyro) readyCompensatedTranslate(0);
 
         while (Hardware.active() && Utils.getMaxMagnitude(getLineReadings()) < whiteLineReadingThreshold)
             compensatedTranslate(theta, isExtraSlow);
         wheels.stop();
 
-        stopCompensatedTranslate();
+        if (shouldPollGyro) stopCompensatedTranslate();
     }
 
     public void driveByTime(double theta, long time, boolean shouldStop) {
