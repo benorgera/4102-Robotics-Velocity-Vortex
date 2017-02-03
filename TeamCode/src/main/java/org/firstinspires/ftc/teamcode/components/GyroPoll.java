@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.components;
 
-import android.util.Size;
-
 import com.qualcomm.hardware.adafruit.BNO055IMU;
-import com.qualcomm.robotcore.hardware.Servo;
-
 /**
  * Created by benorgera on 1/31/17.
  */

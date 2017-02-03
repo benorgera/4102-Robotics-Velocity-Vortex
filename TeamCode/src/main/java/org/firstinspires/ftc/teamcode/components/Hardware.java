@@ -29,7 +29,7 @@ public class Hardware {
     private static Shooter shooter;
     private static Intake intake;
     private static Telemetry t;
-    private static String output = "HARDWARE:/n/n";
+    private static String output = "\n";
 
     public static void init(HardwareMap map, LinearOpMode opMode, boolean isAuton, Telemetry t) {
         clean();
@@ -40,7 +40,7 @@ public class Hardware {
     }
 
     public static void print(String s) {
-        if (t == null)
+        if (t == null || s.isEmpty())
             return;
 
         output += "\n" + s;
@@ -50,7 +50,7 @@ public class Hardware {
     }
 
     public static void clearLog() {
-        output = "";
+        output = "\n";
     }
 
     public static Wheels getWheels() {
