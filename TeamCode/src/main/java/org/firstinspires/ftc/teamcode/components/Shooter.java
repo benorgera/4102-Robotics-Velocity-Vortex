@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.components;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 /**
  * Created by benorgera on 11/24/16.
  */
