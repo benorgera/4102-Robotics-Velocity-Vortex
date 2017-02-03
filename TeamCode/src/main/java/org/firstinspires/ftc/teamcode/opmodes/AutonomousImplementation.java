@@ -36,9 +36,8 @@ public class AutonomousImplementation {
     }
 
     public void run() {
-        Hardware.print("Starting shot");
+        Hardware.print("About to shoot");
         shooter.shoot(10);
-        Hardware.print("Finished shot");
 
         if (isRed) {
             Hardware.print("isRed = true");
@@ -47,28 +46,28 @@ public class AutonomousImplementation {
             sensors.centerOnZero();
         }
 
-        Hardware.print("About to find line");
-
+        Hardware.print("About to pick up momentum to find line");
         sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 600, false);
 
+        Hardware.print("About to find first beacon line");
         sensors.driveUntilLineReadingThreshold(isRed ? (5 * Math.PI / 6) : (7 * Math.PI / 6), whiteLineSignalThreshold, false, true); //translate to line in front of first beacon
 
-        Hardware.print("Found line, about to capture beacon");
-
+        Hardware.print("About to capture first beacon");
         captureBeacon();
 
-        Hardware.print("About to translate to second beacon");
-
+        Hardware.print("About to drive by time to second beacon");
         sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 2000, false);
 
+        Hardware.print("About to find second beacon line");
         sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false, true); //translate to line in front of second beacon
 
+        Hardware.print("About to stop and lose momentum");
         Utils.sleep(1000);
 
+        Hardware.print("About to realign on second beacon line");
         sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold, true, false);
 
-        Hardware.print("Translated to second beacon, about to capture beacon");
-
+        Hardware.print("About to capture second beacon");
         captureBeacon();
     }
 
@@ -90,9 +89,7 @@ public class AutonomousImplementation {
 
         Hardware.print("Pushed beacon button, about to back up");
 
-        sensors.driveByTime(0, 700, true); //pull away from beacon
-
-//        sensors.driveUntilOdsThreshold(0, odsThresholdFindButton, false, false); //pull away from beacon
+        sensors.driveByTime(0, 600, true); //pull away from beacon
 
         Hardware.print("Backed up from button, about to center on zero");
     }
