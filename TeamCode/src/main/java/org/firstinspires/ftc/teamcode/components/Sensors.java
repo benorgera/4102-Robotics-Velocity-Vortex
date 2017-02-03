@@ -35,11 +35,10 @@ public class Sensors {
 
     private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1 degrees
 
-    private double ngSignChangesPerCycleUpThreshold = 0.001; //the low number of sign changes per cycle needed to cause an ngConstant increase
-    private double ngSignChangesPerCycleDownThreshold = 0.005; //the high number of sign changes per cycle needed to cause an ngConstant decrease
+    private double strafeConstant = 1.71; //amount of extra power supplied based on horizontal component of translation angle (strafing takes more power)
+    private double ngConstant = 0.6; //rotational speed given based on deviation from 0 degrees
 
-    private double strafeConstant = 1.71;
-    private double ngConstant = 0.6;
+    private final double extraSlowMagnitude = 0.5;
 
     private Thread gyroPoll;
 
@@ -114,13 +113,11 @@ public class Sensors {
         return initialHeading;
     }
 
-    public String compensatedTranslate(double thetaDesired, boolean isExtraSlow) { //translate robot with rotation compensation (must be called on a loop)
-        double power = compensatedTranslateSpeed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))) * (isExtraSlow ? 0.5 : 1),
+    public void compensatedTranslate(double thetaDesired, boolean isExtraSlow) { //translate robot with rotation compensation (must be called on a loop)
+        double power = compensatedTranslateSpeed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))) * (isExtraSlow ? extraSlowMagnitude : 1),
                 ngVel = Utils.trim(-1, 1, -1 * getHeading() * ngConstant); //compensate for rotation by accounting for change in heading
 
         wheels.drive(Math.cos(thetaDesired) * power, Math.sin(thetaDesired) * power, ngVel, false);
-
-        return "" + ngVel;
     }
 
     public void centerOnZero() {
@@ -173,22 +170,6 @@ public class Sensors {
 
     public void setNgConstant(double n) {
         ngConstant = n;
-    }
-
-    public double getNgSignChangesPerCycleUpThreshold() {
-        return ngSignChangesPerCycleUpThreshold;
-    }
-
-    public void setNgSignChangesPerCycleUpThreshold(double t) {
-        ngSignChangesPerCycleUpThreshold = t;
-    }
-
-    public double getNgSignChangesPerCycleDownThreshold() {
-        return ngSignChangesPerCycleDownThreshold;
-    }
-
-    public void setNgSignChangesPerCycleDownThreshold(double t) {
-        ngSignChangesPerCycleDownThreshold = t;
     }
 
     private void readyCompensatedTranslate(long softStartTime) {

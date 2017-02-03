@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.components.Hardware;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
@@ -74,24 +70,17 @@ public class AutonomousImplementation {
     private void captureBeacon() {
 
         Hardware.print("About to follow line");
-
         sensors.followLineUntilOdsThreshold(odsThresholdFindButton, true); //pull up to beacon
 
-        Hardware.print("In front of beacon, about to find button");
+        Hardware.print("About to find button");
+        sensors.findBeaconButton(isRed);
 
-        sensors.findBeaconButton(isRed); //align on button
-
-        Hardware.print("Found beacon button, about to push button");
-
+        Hardware.print("About to push button");
         Utils.sleep(500);
-
-        sensors.driveByTime(Math.PI, 700, true); //press button
+        sensors.driveByTime(Math.PI, 700, true);
 
         Hardware.print("Pushed beacon button, about to back up");
-
-        sensors.driveByTime(0, 600, true); //pull away from beacon
-
-        Hardware.print("Backed up from button, about to center on zero");
+        sensors.driveByTime(0, 600, true);
     }
 
 }
