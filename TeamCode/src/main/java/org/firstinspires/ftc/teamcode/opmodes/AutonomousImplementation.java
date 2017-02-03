@@ -59,7 +59,7 @@ public class AutonomousImplementation {
 
         Hardware.print("About to translate to second beacon");
 
-        sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 2500, false);
+        sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 2000, false);
 
         sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false, true); //translate to line in front of second beacon
 

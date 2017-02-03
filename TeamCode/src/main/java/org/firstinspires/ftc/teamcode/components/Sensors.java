@@ -245,7 +245,7 @@ public class Sensors {
                 directionSwitches++;
             }
 
-            if (directionSwitches > 6) { //we got an outlier maximum and can't recreate it, lower the threshold
+            if (directionSwitches > 5) { //we got an outlier maximum and can't recreate it, lower the threshold
                 maxColor--;
                 directionSwitches = 0;
             }
@@ -273,8 +273,13 @@ public class Sensors {
     public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean isExtraSlow, boolean shouldPollGyro) {
         if (shouldPollGyro) readyCompensatedTranslate(0);
 
-        while (Hardware.active() && Utils.getMaxMagnitude(getLineReadings()) < whiteLineReadingThreshold)
+        int sufficientReadings = 0;
+
+        while (Hardware.active() && sufficientReadings < 4) {
             compensatedTranslate(theta, isExtraSlow);
+            if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)
+                sufficientReadings++;
+        }
         wheels.stop();
 
         if (shouldPollGyro) stopCompensatedTranslate();
