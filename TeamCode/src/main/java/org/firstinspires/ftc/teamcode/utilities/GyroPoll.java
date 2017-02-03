@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode.components;
+package org.firstinspires.ftc.teamcode.utilities;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
+
 /**
  * Created by benorgera on 1/31/17.
  */

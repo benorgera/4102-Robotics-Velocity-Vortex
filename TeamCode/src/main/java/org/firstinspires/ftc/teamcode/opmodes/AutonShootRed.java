@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.firstinspires.ftc.teamcode.components.Hardware;
-import org.firstinspires.ftc.teamcode.components.Utils;
+import org.firstinspires.ftc.teamcode.utilities.Hardware;
+import org.firstinspires.ftc.teamcode.utilities.Utils;
 import org.firstinspires.ftc.teamcode.components.Wheels;
 
 /**
