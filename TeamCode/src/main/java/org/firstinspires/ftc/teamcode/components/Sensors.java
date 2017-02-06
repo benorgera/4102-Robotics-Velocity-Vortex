@@ -116,8 +116,8 @@ public class Sensors {
         return initialHeading;
     }
 
-    public void compensatedTranslate(double thetaDesired, boolean isExtraSlow) { //translate robot with rotation compensation (must be called on a loop)
-        double power = compensatedTranslateSpeed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))) * (isExtraSlow ? extraSlowMagnitude : 1),
+    public void compensatedTranslate(double thetaDesired, double speed) { //translate robot with rotation compensation (must be called on a loop)
+        double power = speed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))),
                 ngVel = Utils.trim(-1, 1, -1 * getHeading() * ngConstant); //compensate for rotation by accounting for change in heading
 
         wheels.drive(Math.cos(thetaDesired) * power, Math.sin(thetaDesired) * power, ngVel, false);
@@ -192,19 +192,19 @@ public class Sensors {
         };
     }
 
-    private void followLine() {
+    private void followLine(double speed) {
         double[] readings = getLineReadings();
         double left = readings[0],
                 right = readings[1];
 
         if (Math.abs(left - right) <= 50) { //both sensors equally on the white line
-            compensatedTranslate(Math.PI, false);
+            compensatedTranslate(Math.PI, speed);
         } else { //left more on the white line turn left, right turn right
-            compensatedTranslate(left > right ? (9 * Math.PI / 8) : (7 * Math.PI / 8), false);
+            compensatedTranslate(left > right ? (9 * Math.PI / 8) : (7 * Math.PI / 8), speed);
         }
     }
 
-    public void findBeaconButton(boolean isRed) {
+    public void findBeaconButton(boolean isRed, double speed) {
 
         boolean goingForward = true;
 
@@ -234,33 +234,41 @@ public class Sensors {
                 directionSwitches = 0;
             }
 
-            compensatedTranslate(Math.PI / 2 * (goingForward ? 1 : 3), true);
+            compensatedTranslate(Math.PI / 2 * (goingForward ? 1 : 3), speed);
 
             previousReading = currentReading;
         }
 
     }
 
-    public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isCentered, boolean isMax) {
+    public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isCentered, boolean isMax, double speed) {
         while (Hardware.active() && isMax ? (getOpticalDistance(isCentered) < odsThreshold) : (getOpticalDistance(isCentered) > odsThreshold))
-            compensatedTranslate(theta, false);
+            compensatedTranslate(theta, speed);
+        wheels.stop();
+    }
+
+    public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isCentered, boolean isMax) {
+        driveUntilOdsThreshold(theta, odsThreshold, isCentered, isMax, compensatedTranslateSpeed);
+    }
+
+    public void followLineUntilOdsThreshold(double odsThreshold, boolean isCentered, double speed) {
+        while (Hardware.active() && getOpticalDistance(isCentered) < odsThreshold)
+            followLine(speed);
         wheels.stop();
     }
 
     public void followLineUntilOdsThreshold(double odsThreshold, boolean isCentered) {
-        while (Hardware.active() && getOpticalDistance(isCentered) < odsThreshold)
-            followLine();
-        wheels.stop();
+        followLineUntilOdsThreshold(odsThreshold, isCentered, compensatedTranslateSpeed);
     }
 
 
-    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean isExtraSlow, boolean shouldPollGyro) {
+    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, double speed) {
         if (shouldPollGyro) readyCompensatedTranslate(0);
 
         int sufficientReadings = 0;
 
         while (Hardware.active() && sufficientReadings < 4) {
-            compensatedTranslate(theta, isExtraSlow);
+            compensatedTranslate(theta, speed);
             if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)
                 sufficientReadings++;
         }
@@ -269,10 +277,18 @@ public class Sensors {
         if (shouldPollGyro) stopCompensatedTranslate();
     }
 
-    public void driveByTime(double theta, long time, boolean shouldStop) {
+    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro) {
+        driveUntilLineReadingThreshold(theta, whiteLineReadingThreshold, shouldPollGyro, compensatedTranslateSpeed);
+    }
+
+    public void driveByTime(double theta, long time, boolean shouldStop, double speed) {
         long stop = System.currentTimeMillis() + time;
         while (Hardware.active() && System.currentTimeMillis() < stop)
-            compensatedTranslate(theta, false);
+            compensatedTranslate(theta, speed);
         if (shouldStop) wheels.stop();
+    }
+
+    public void driveByTime(double theta, long time, boolean shouldStop) {
+        driveByTime(theta, time, shouldStop, compensatedTranslateSpeed);
     }
 }
