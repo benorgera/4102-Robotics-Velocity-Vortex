@@ -12,24 +12,34 @@ import org.firstinspires.ftc.teamcode.utilities.DelayedAction;
 public class Lift {
 
     private DcMotor lift;
-    private Servo latch;
+    private Servo forkLatch;
+
+    private Servo sliderLock;
+
+    private final double[] lockPositions = {0.6, 0.9}; //locked and unlocked respectively
 
     private final double[] latchPositions = {0.93, 0}; //latched and unlatched respectively
 
-    public Lift(DcMotor lift, Servo latch) {
+    public Lift(DcMotor lift, Servo forkLatch, Servo sliderLock) {
         this.lift = lift;
-        this.latch = latch;
+        this.forkLatch = forkLatch;
 
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        latch.setPosition(latchPositions[0]);
+        forkLatch.setPosition(latchPositions[0]);
+        sliderLock.setPosition(lockPositions[0]);
+
     }
 
     public void dropFork() {
-        latch.setPosition(latchPositions[1]);
+        forkLatch.setPosition(latchPositions[1]);
 
-        new Thread(new DelayedAction(latch, 500, latchPositions[0])).start();
+        new Thread(new DelayedAction(forkLatch, 500, latchPositions[0])).start();
+    }
+
+    public void unlock() {
+        sliderLock.setPosition(lockPositions[1]);
     }
 
     public void raise() {

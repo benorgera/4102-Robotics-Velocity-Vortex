@@ -116,6 +116,9 @@ public class DriverControlled extends LinearOpMode {
         if (!hasDroppedFork && (hasDroppedFork = gamepad2.x))
             lift.dropFork();
 
+        if (gamepad2.back)
+            lift.unlock();
+
         if (gamepad2.y && !wasTogglingHoldingLift && hasDroppedFork)
             isHoldingLift = !isHoldingLift;
 

@@ -100,7 +100,7 @@ public class Hardware {
     }
 
     public static Lift getLift() {
-        return lift == null ? lift = new Lift(map.dcMotor.get("lift"), map.servo.get("latch")) : lift;
+        return lift == null ? lift = new Lift(map.dcMotor.get("lift"), map.servo.get("latch"), map.servo.get("lock")) : lift;
     }
 
     public static void freezeAllMotorFunctions() {
