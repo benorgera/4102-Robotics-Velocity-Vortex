@@ -82,7 +82,7 @@ public class Test extends LinearOpMode {
 
 
             if (gamepad1.dpad_up) {
-                sensors.compensatedTranslate(Math.PI / 2, false);
+                sensors.compensatedTranslate(Math.PI / 2);
             } else if (gamePad1DpadUpState) {
                 wheels.softStop(softMotionTime);
             }
@@ -90,7 +90,7 @@ public class Test extends LinearOpMode {
             gamePad1DpadUpState = gamepad1.dpad_up;
 
             if (gamepad1.dpad_down) {
-                sensors.compensatedTranslate(3 * Math.PI / 2, false);
+                sensors.compensatedTranslate(3 * Math.PI / 2);
             } else if (gamePad1DpadDownState) {
                 wheels.softStop(softMotionTime);
             }
@@ -98,7 +98,7 @@ public class Test extends LinearOpMode {
             gamePad1DpadDownState = gamepad1.dpad_down;
 
             if (gamepad1.dpad_right) {
-                sensors.compensatedTranslate(0, false);
+                sensors.compensatedTranslate(0);
             } else if (gamePad1DpadRightState) {
                 wheels.softStop(softMotionTime);
             }
@@ -106,7 +106,7 @@ public class Test extends LinearOpMode {
             gamePad1DpadRightState = gamepad1.dpad_right;
 
             if (gamepad1.dpad_left) {
-                sensors.compensatedTranslate(Math.PI, false);
+                sensors.compensatedTranslate(Math.PI);
             } else if (gamePad1DpadLeftState) {
                 wheels.softStop(softMotionTime);
             }
@@ -114,7 +114,7 @@ public class Test extends LinearOpMode {
             gamePad1DpadLeftState = gamepad1.dpad_left;
 
             if (gamepad2.dpad_right) {
-                sensors.compensatedTranslate(Math.PI / 4, false);
+                sensors.compensatedTranslate(Math.PI / 4);
             } else if (gamePad2DpadRightState) {
                 wheels.softStop(softMotionTime);
             }
@@ -122,7 +122,7 @@ public class Test extends LinearOpMode {
             gamePad2DpadRightState = gamepad2.dpad_right;
 
             if (gamepad2.dpad_up) {
-                sensors.compensatedTranslate(3 * Math.PI / 4, false);
+                sensors.compensatedTranslate(3 * Math.PI / 4);
             } else if (gamePad2DpadUpState) {
                 wheels.softStop(softMotionTime);
             }
@@ -130,7 +130,7 @@ public class Test extends LinearOpMode {
             gamePad2DpadUpState = gamepad2.dpad_up;
 
             if (gamepad2.dpad_left) {
-                sensors.compensatedTranslate(5 * Math.PI / 4, false);
+                sensors.compensatedTranslate(5 * Math.PI / 4);
             } else if (gamePad2DpadLeftState) {
                 wheels.softStop(softMotionTime);
             }
@@ -138,7 +138,7 @@ public class Test extends LinearOpMode {
             gamePad2DpadLeftState = gamepad2.dpad_left;
 
             if (gamepad2.dpad_down) {
-                sensors.compensatedTranslate(7 * Math.PI/ 4, false);
+                sensors.compensatedTranslate(7 * Math.PI/ 4);
             } else if (gamePad2DpadDownState) {
                 wheels.softStop(softMotionTime);
             }

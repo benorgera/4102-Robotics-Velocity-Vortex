@@ -75,8 +75,6 @@ public class Sensors {
         imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN, 0x01);
 
         resetHeading();
-
-//        imu.startAccelerationIntegration(new Position(), new Velocity(), 100);
     }
 
     public double getHeading() { // [-π, π]
@@ -121,6 +119,10 @@ public class Sensors {
                 ngVel = Utils.trim(-1, 1, -1 * getHeading() * ngConstant); //compensate for rotation by accounting for change in heading
 
         wheels.drive(Math.cos(thetaDesired) * power, Math.sin(thetaDesired) * power, ngVel, false);
+    }
+
+    public void compensatedTranslate(double thetaDesired) { //translate robot with rotation compensation (must be called on a loop)
+        compensatedTranslate(thetaDesired, compensatedTranslateSpeed);
     }
 
     public void centerOnZero() {
@@ -219,7 +221,7 @@ public class Sensors {
             if ((currentReading = getBeaconColor()[isRed ? 1 : 0]) >  maxColor)
                 maxColor = currentReading;
 
-            if (directionSwitches > 3 && currentReading == maxColor) {
+            if (directionSwitches > 3 && currentReading >= maxColor) {
                 wheels.stop();
                 return;
             }
@@ -239,6 +241,10 @@ public class Sensors {
             previousReading = currentReading;
         }
 
+    }
+
+    public void findBeaconButton(boolean isRed) {
+        findBeaconButton(isRed, 0.125);
     }
 
     public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isCentered, boolean isMax, double speed) {
@@ -267,7 +273,7 @@ public class Sensors {
 
         int sufficientReadings = 0;
 
-        while (Hardware.active() && sufficientReadings < 4) {
+        while (Hardware.active() && sufficientReadings < 3) {
             compensatedTranslate(theta, speed);
             if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)
                 sufficientReadings++;
@@ -290,5 +296,12 @@ public class Sensors {
 
     public void driveByTime(double theta, long time, boolean shouldStop) {
         driveByTime(theta, time, shouldStop, compensatedTranslateSpeed);
+    }
+
+    public void turnByTime(long time, double ngVel) {
+        long stop = System.currentTimeMillis() + time;
+        while (Hardware.active() && System.currentTimeMillis() < stop)
+            wheels.drive(0, 0, ngVel, false);
+        wheels.stop();
     }
 }
