@@ -5,33 +5,33 @@
     density="hdpi"
     format="8"
     plugin-version="2.2.2"
-    timestamp="77017713643825"
+    timestamp="1640180392261"
     token="3332708133728700115"
     verifier="FULL_BUILD_REQUESTED" >
 
     <task
         name="javac"
-        duration="158" />
+        duration="1261" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="11" />
+        duration="157" />
     <task
         name="verifier"
-        duration="2" />
+        duration="4" />
 
     <artifact
         location="/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/outputs/apk/TeamCode-debug.apk"
         type="MAIN" />
 
     <build
-        timestamp="77017713643825"
-        verifier="FULL_BUILD_REQUESTED" >
+        timestamp="79666726995006"
+        verifier="COMPATIBLE" >
         <artifact
-            location="/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/outputs/apk/TeamCode-debug.apk"
-            type="MAIN" />
+            location="/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/builds/debug/79666726995006/classes.dex"
+            type="RELOAD_DEX" />
     </build>
 
 </instant-run>

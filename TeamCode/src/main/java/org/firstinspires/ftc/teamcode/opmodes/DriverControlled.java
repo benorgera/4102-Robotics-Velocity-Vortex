@@ -16,7 +16,8 @@ import org.firstinspires.ftc.teamcode.components.Wheels;
 public class DriverControlled extends LinearOpMode {
 
     //modes
-    private boolean isChannelMode = true; //left bumper to enable channel mode, right bumper to disable channel mode
+    private boolean isSlowMode = false;
+    private boolean intakeIsFront = false;
 
     //components
     private Lift lift;
@@ -24,25 +25,20 @@ public class DriverControlled extends LinearOpMode {
     private Wheels wheels;
     private Intake intake;
 
-    private int shotPower = 6;
+    private double shotPower = 6;
     
     private boolean wasTogglingDirection = false;
-
-    private boolean intakeIsFront = false;
-
-    private boolean isHoldingLift = false;
-    private boolean wasTogglingHoldingLift = false;
-
+    private boolean wasTogglingSlowMode = false;
     private boolean wasUppingShotPower = false;
     private boolean wasDowningShotPower = false;
-
     private boolean wasShooting = false;
-
     private boolean wasTogglingIntake = false;
 
     private boolean hasDroppedFork = false;
 
     private long startTime;
+
+    private final double slowModeConstant = 0.3;
 
     @Override
     public void runOpMode() {
@@ -70,24 +66,30 @@ public class DriverControlled extends LinearOpMode {
 
     private void run() { //control to robot using gamepad input
 
-        //all components return a string with telemetry data when passed input
-        telemetry.addData("WHEELS", wheels.drive((intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, gamepad1.right_stick_x, isChannelMode = gamepad1.left_bumper || (!gamepad1.right_bumper && isChannelMode)));
+        //--------------------------DRIVING-------------------------------
+
+        telemetry.addData("WHEELS", wheels.drive((isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, (isSlowMode ? slowModeConstant : 1) * gamepad1.right_stick_x, !isSlowMode));
 
         if (gamepad1.a && !wasTogglingDirection)
             intakeIsFront = !intakeIsFront;
 
         wasTogglingDirection = gamepad1.a;
 
+        if (gamepad1.b && !wasTogglingSlowMode)
+            isSlowMode =! isSlowMode;
+
+        wasTogglingSlowMode = gamepad1.b;
+
 
         //--------------------------SHOOTER-------------------------------
 
         if (gamepad2.dpad_right && !wasUppingShotPower)
-            shotPower = (int) Utils.trim(0, 10, shotPower + 1);
+            shotPower = Utils.trim(0, 10, shotPower + 0.5);
 
         wasUppingShotPower = gamepad2.dpad_right;
 
         if (gamepad2.dpad_left && !wasDowningShotPower)
-            shotPower = (int) Utils.trim(0, 10, shotPower - 1);
+            shotPower = Utils.trim(0, 10, shotPower - 0.5);
 
         wasDowningShotPower = gamepad2.dpad_left;
 
@@ -116,26 +118,16 @@ public class DriverControlled extends LinearOpMode {
         if (!hasDroppedFork && (hasDroppedFork = gamepad2.x))
             lift.dropFork();
 
-        if (gamepad2.back)
-            lift.unlock();
-
-        if (gamepad2.y && !wasTogglingHoldingLift && hasDroppedFork)
-            isHoldingLift = !isHoldingLift;
-
-        wasTogglingHoldingLift = gamepad2.y;
-
         if (gamepad2.dpad_up && hasDroppedFork) //raise the lift if we've dropped the fork
             lift.raise();
         else if (gamepad2.dpad_down && hasDroppedFork) //lower the lift if we've dropped the fork
             lift.lower();
-        else if (isHoldingLift)
-            lift.hold();
         else
             lift.stop();
 
+        telemetry.addData("SHOT", Math.round(shotPower * 10) / 10);
         telemetry.addData("FRONT", intakeIsFront ? "INTAKE" : "SHOOTER");
-        telemetry.addData("SHOT", shotPower);
-        if (isHoldingLift) telemetry.addData("LIFT", "HOLDING");
+        if (isSlowMode) telemetry.addData("SLOW MODE", "TRUE");
         telemetry.addData("TIME", getTimeString());
         telemetry.update();
     }

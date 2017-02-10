@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.components;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utilities.DelayedAction;
@@ -14,32 +15,25 @@ public class Lift {
     private DcMotor lift;
     private Servo forkLatch;
 
-    private Servo sliderLock;
-
     private final double[] lockPositions = {0.6, 0.9}; //locked and unlocked respectively
 
     private final double[] latchPositions = {0.93, 0}; //latched and unlatched respectively
 
-    public Lift(DcMotor lift, Servo forkLatch, Servo sliderLock) {
+    public Lift(DcMotor lift, Servo forkLatch) {
         this.lift = lift;
         this.forkLatch = forkLatch;
 
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lift.setDirection(DcMotorSimple.Direction.REVERSE);
 
         forkLatch.setPosition(latchPositions[0]);
-        sliderLock.setPosition(lockPositions[0]);
-
     }
 
     public void dropFork() {
         forkLatch.setPosition(latchPositions[1]);
 
         new Thread(new DelayedAction(forkLatch, 500, latchPositions[0])).start();
-    }
-
-    public void unlock() {
-        sliderLock.setPosition(lockPositions[1]);
     }
 
     public void raise() {
@@ -51,10 +45,6 @@ public class Lift {
     }
 
     public void lower() {
-        lift.setPower(-0.5);
-    }
-
-    public void hold() {
-        lift.setPower(0.35);
+        lift.setPower(-1);
     }
 }

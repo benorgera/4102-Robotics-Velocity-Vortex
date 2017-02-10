@@ -194,15 +194,15 @@ public class Sensors {
         };
     }
 
-    private void followLine(double speed) {
+    private void followLine(double speed, boolean isGoingForwards) {
         double[] readings = getLineReadings();
         double left = readings[0],
                 right = readings[1];
 
         if (Math.abs(left - right) <= 50) { //both sensors equally on the white line
-            compensatedTranslate(Math.PI, speed);
+            compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
         } else { //left more on the white line turn left, right turn right
-            compensatedTranslate(left > right ? (9 * Math.PI / 8) : (7 * Math.PI / 8), speed);
+            compensatedTranslate(left > right ? (isGoingForwards ? 9 * Math.PI / 8 : -Math.PI / 8) : (isGoingForwards ? 7 * Math.PI / 8 : Math.PI / 8), speed);
         }
     }
 
@@ -258,8 +258,10 @@ public class Sensors {
     }
 
     public void followLineUntilOdsThreshold(double odsThreshold, boolean isCentered, double speed) {
-        while (Hardware.active() && getOpticalDistance(isCentered) < odsThreshold)
-            followLine(speed);
+        boolean isGoingForwards = getOpticalDistance(isCentered) < odsThreshold;
+
+        while (Hardware.active() && isGoingForwards ? (getOpticalDistance(isCentered) < odsThreshold) : (getOpticalDistance(isCentered) > odsThreshold))
+            followLine(speed, isGoingForwards);
         wheels.stop();
     }
 

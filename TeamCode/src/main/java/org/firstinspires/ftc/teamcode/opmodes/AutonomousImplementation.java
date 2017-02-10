@@ -32,14 +32,16 @@ public class AutonomousImplementation {
     }
 
     public void run() {
+        Hardware.print("Color is " + (isRed ? "red" : "blue"));
+
         Hardware.print("About to shoot");
-        shooter.shoot(6);
+        shooter.shoot(6.5);
 
         if (isRed) {
-            Hardware.print("isRed = true");
-            sensors.driveByTime(Math.PI / 2, 2000, true);
+            Hardware.print("About to pull away from wall");
+            sensors.driveByTime(-Math.PI / 2, 700, true);
+            Hardware.print("About to turn around");
             sensors.turnAround();
-            sensors.centerOnZero();
         }
 
         Hardware.print("About to pick up momentum to find line");
@@ -77,6 +79,9 @@ public class AutonomousImplementation {
 
         Hardware.print("About to follow line");
         sensors.followLineUntilOdsThreshold(odsThresholdFindButton, true); //pull up to beacon
+
+        Hardware.print("About to realign on beacon");
+        sensors.followLineUntilOdsThreshold(odsThresholdFindButton, true, 0.17);
 
         Hardware.print("About to find button");
         sensors.findBeaconButton(isRed, 0.135);
