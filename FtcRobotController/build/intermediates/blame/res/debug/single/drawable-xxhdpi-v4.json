@@ -1,9 +1,5 @@
 [
     {
-        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/build/intermediates/res/merged/debug/drawable-xxhdpi-v4/ic_launcher.png",
-        "source": "/Users/benorgera/Documents/CHS Robotics/Code/4102 Velocity Vortex/FtcRobotController/src/main/res/drawable-xxhdpi/ic_launcher.png"
-    },
-    {
         "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/res/merged/debug/drawable-xxhdpi-v4/ic_launcher.png",
         "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/src/main/res/drawable-xxhdpi/ic_launcher.png"
     }

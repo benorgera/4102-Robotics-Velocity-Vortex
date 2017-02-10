@@ -146,14 +146,16 @@ public class Sensors {
         wheels.stop();
     }
 
-    public void turnAround() { //must call center on zero after
-        double storedHeading = initialHeading,
-                heading;
+    public void turnAround(double speed) { //must call center on zero after
+        double storedHeading = initialHeading;
+        long start = System.currentTimeMillis();
 
         resetHeading();
 
-        while ((heading = getHeading()) < Math.PI || heading < 0) {
-            wheels.drive(0, 0, -0.08, false);
+        while (getHeading() > 0 || System.currentTimeMillis() - start < 300) {
+            wheels.drive(0, 0, speed, false);
+            Hardware.clearLog();
+            Hardware.print("" + getHeading());
         }
 
         wheels.stop();
@@ -194,15 +196,15 @@ public class Sensors {
         };
     }
 
-    private void followLine(double speed, boolean isGoingForwards) {
+    private void followLine(double speed) {
         double[] readings = getLineReadings();
         double left = readings[0],
                 right = readings[1];
 
         if (Math.abs(left - right) <= 50) { //both sensors equally on the white line
-            compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
+            compensatedTranslate(Math.PI, speed);
         } else { //left more on the white line turn left, right turn right
-            compensatedTranslate(left > right ? (isGoingForwards ? 9 * Math.PI / 8 : -Math.PI / 8) : (isGoingForwards ? 7 * Math.PI / 8 : Math.PI / 8), speed);
+            compensatedTranslate(left > right ? 9 * Math.PI / 8 : 7 * Math.PI / 8, speed);
         }
     }
 
@@ -247,21 +249,21 @@ public class Sensors {
         findBeaconButton(isRed, 0.125);
     }
 
-    public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isCentered, boolean isMax, double speed) {
-        while (Hardware.active() && isMax ? (getOpticalDistance(isCentered) < odsThreshold) : (getOpticalDistance(isCentered) > odsThreshold))
-            compensatedTranslate(theta, speed);
-        wheels.stop();
-    }
-
-    public void driveUntilOdsThreshold(double theta, double odsThreshold, boolean isCentered, boolean isMax) {
-        driveUntilOdsThreshold(theta, odsThreshold, isCentered, isMax, compensatedTranslateSpeed);
-    }
-
-    public void followLineUntilOdsThreshold(double odsThreshold, boolean isCentered, double speed) {
+    public void driveUntilOdsThreshold(double odsThreshold, boolean isCentered, double speed) {
         boolean isGoingForwards = getOpticalDistance(isCentered) < odsThreshold;
 
         while (Hardware.active() && isGoingForwards ? (getOpticalDistance(isCentered) < odsThreshold) : (getOpticalDistance(isCentered) > odsThreshold))
-            followLine(speed, isGoingForwards);
+            compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
+        wheels.stop();
+    }
+
+    public void driveUntilOdsThreshold(double odsThreshold, boolean isCentered) {
+        driveUntilOdsThreshold(odsThreshold, isCentered, compensatedTranslateSpeed);
+    }
+
+    public void followLineUntilOdsThreshold(double odsThreshold, boolean isCentered, double speed) {
+        while (Hardware.active() && getOpticalDistance(isCentered) < odsThreshold)
+            followLine(speed);
         wheels.stop();
     }
 
@@ -298,6 +300,13 @@ public class Sensors {
 
     public void driveByTime(double theta, long time, boolean shouldStop) {
         driveByTime(theta, time, shouldStop, compensatedTranslateSpeed);
+    }
+
+    public void uncompensatedDriveByTime(double xVel, double yVel, double ngVel, long time) {
+        long stop = System.currentTimeMillis() + time;
+        while (Hardware.active() && System.currentTimeMillis() < stop)
+            wheels.drive(xVel, yVel, ngVel, false);
+        wheels.stop();
     }
 
     public void turnByTime(long time, double ngVel) {

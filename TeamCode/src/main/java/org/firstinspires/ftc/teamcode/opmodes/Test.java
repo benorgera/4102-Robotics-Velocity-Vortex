@@ -167,7 +167,7 @@ public class Test extends LinearOpMode {
             isDroppingStrafeConstant = gamepad2.back;
 
             if (gamepad2.b)
-                sensors.turnAround();
+                sensors.turnAround(0.2);
 
             if (gamepad1.a) sensors.centerOnZero();
 
