@@ -14,6 +14,8 @@ import org.firstinspires.ftc.teamcode.components.Wheels;
 @TeleOp (name = "Test", group = "4102")
 public class Test extends LinearOpMode {
 
+    private final double whiteLineSignalThreshold = 70;
+
     private boolean gamePad2XState = false;
     private boolean gamepad2YState = false;
 
@@ -76,7 +78,7 @@ public class Test extends LinearOpMode {
                     wheels.drive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, false);
             }
 
-            if (gamepad2.a) sensors.findBeaconButton(gamepad1.y);
+            if (gamepad2.a) sensors.findBeaconButton(gamepad1.y, whiteLineSignalThreshold);
 
             if (gamepad1.x) sensors.resetHeading();
 
@@ -167,7 +169,7 @@ public class Test extends LinearOpMode {
             isDroppingStrafeConstant = gamepad2.back;
 
             if (gamepad2.b)
-                sensors.turnAround(0.2);
+                sensors.turn(Math.PI, 0.29);
 
             if (gamepad1.a) sensors.centerOnZero();
 

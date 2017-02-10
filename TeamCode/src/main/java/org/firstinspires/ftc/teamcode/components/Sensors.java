@@ -34,6 +34,8 @@ public class Sensors {
 
     private double initialHeading = 0;
 
+    private final double droveAwayThreshold = 3;
+
     private final double compensatedTranslateSpeed = 0.25;
 
     private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1 degrees
@@ -146,14 +148,14 @@ public class Sensors {
         wheels.stop();
     }
 
-    public void turnAround(double speed) { //must call center on zero after
+    public void turn(double theta, double speed) { //must call center on zero after
         double storedHeading = initialHeading;
         long start = System.currentTimeMillis();
 
         resetHeading();
 
-        while (getHeading() > 0 || System.currentTimeMillis() - start < 300) {
-            wheels.drive(0, 0, speed, false);
+        while (getHeading() < theta % Math.PI || System.currentTimeMillis() - start < 300) {
+            wheels.drive(0, 0, -speed, false);
             Hardware.clearLog();
             Hardware.print("" + getHeading());
         }
@@ -208,7 +210,7 @@ public class Sensors {
         }
     }
 
-    public void findBeaconButton(boolean isRed, double speed) {
+    public void findBeaconButton(boolean isRed, double whiteLineThreshold, double speed) {
 
         boolean goingForward = true;
 
@@ -217,10 +219,11 @@ public class Sensors {
                 maxColor = 0,
                 directionSwitches = 0;
 
+        long lastDirectionSwitch = System.currentTimeMillis();
 
         while (Hardware.active()) {
 
-            if ((currentReading = getBeaconColor()[isRed ? 1 : 0]) >  maxColor)
+            if ((currentReading = getBeaconColor()[isRed ? 1 : 0]) > maxColor)
                 maxColor = currentReading;
 
             if (directionSwitches > 3 && currentReading >= maxColor) {
@@ -228,9 +231,17 @@ public class Sensors {
                 return;
             }
 
-            if (currentReading < previousReading) {
+            if (System.currentTimeMillis() - lastDirectionSwitch > 1000) {
+                goingForward = !goingForward;
+
+                driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 1 : 3), whiteLineThreshold, false, speed);
+                directionSwitches = maxColor = 0;
+                goingForward = true;
+                lastDirectionSwitch = System.currentTimeMillis();
+            } else if (currentReading < previousReading) {
                 goingForward = !goingForward;
                 directionSwitches++;
+                lastDirectionSwitch = System.currentTimeMillis();
             }
 
             if (directionSwitches > 5) { //we got an outlier maximum and can't recreate it, lower the threshold
@@ -245,8 +256,8 @@ public class Sensors {
 
     }
 
-    public void findBeaconButton(boolean isRed) {
-        findBeaconButton(isRed, 0.125);
+    public void findBeaconButton(boolean isRed, double whiteLineReadingThreshold) {
+        findBeaconButton(false, whiteLineReadingThreshold, 0.125);
     }
 
     public void driveUntilOdsThreshold(double odsThreshold, boolean isCentered, double speed) {

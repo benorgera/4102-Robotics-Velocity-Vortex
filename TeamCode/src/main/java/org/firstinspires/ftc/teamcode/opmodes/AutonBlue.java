@@ -23,8 +23,10 @@ public class AutonBlue extends LinearOpMode {
 
         waitForStart();
 
-        a.run();
-
-        Hardware.freezeAllMotorFunctions();
+        try {
+            a.run();
+        } catch (Exception e) {
+            Hardware.freezeAllMotorFunctions();
+        }
     }
 }
