@@ -53,7 +53,7 @@ public class Sensors {
         this.odsBeacon = odsBeacon;
         this.wheels = Hardware.getWheels();
         this.beaconSensor = beaconSensor;
-        beaconSensor.enableLed(false); 
+        beaconSensor.enableLed(false);
     }
 
     public void initImu() {
@@ -152,11 +152,8 @@ public class Sensors {
 
         resetHeading();
 
-        while (Hardware.active() && (theta == Math.PI ? (getHeading() > 0) : (getHeading() < theta)) || System.currentTimeMillis() - start < 300) {
+        while (Hardware.active() && (theta == Math.PI ? (getHeading() > 0) : (getHeading() < theta)) || System.currentTimeMillis() - start < 300)
             wheels.drive(0, 0, speed, false);
-            Hardware.clearLog();
-            Hardware.print("" + getHeading());
-        }
 
         wheels.stop();
 
@@ -228,6 +225,9 @@ public class Sensors {
             if (directionSwitches > 3 && currentReading >= maxColor) {
                 wheels.stop();
                 return;
+            } else if (directionSwitches > 5) {
+                maxColor--;
+                directionSwitches = 4;
             }
 
             if (System.currentTimeMillis() - lastDirectionSwitch > 2000) {
@@ -235,18 +235,16 @@ public class Sensors {
                 driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 3 : 1), whiteLineThreshold, false, speed);
                 shouldRestart = true;
                 break;
-            } else
-
-            if (currentReading < previousReading) {
+            } else if (currentReading < previousReading && System.currentTimeMillis() - lastDirectionSwitch > 400) {
                 goingForward = !goingForward;
                 directionSwitches++;
                 lastDirectionSwitch = System.currentTimeMillis();
             }
 
-            if (directionSwitches > 5) { //we got an outlier maximum and can't recreate it, lower the threshold
-                maxColor--;
-                directionSwitches = 0;
-            }
+            Hardware.clearLog();
+            Hardware.print("Reading: " + currentReading);
+            Hardware.print("Direction switches: " + directionSwitches);
+            Hardware.print("Threshold: " + maxColor);
 
             compensatedTranslate(Math.PI / 2 * (goingForward ? 1 : 3), speed);
 

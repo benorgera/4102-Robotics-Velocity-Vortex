@@ -34,14 +34,14 @@ public class GyroPoll implements Runnable {
 
     private double getGyroConstant() {
         Hardware.clearLog();
-        Hardware.print("avg a: " + getAverageAcceleration());
+        Hardware.print("Acceleration: " + Math.round(getAverageAcceleration() * 100) / 100);
 
         double gyroConst = 1;
 
         if (accelerations.size() > 50 && getAverageAcceleration() < drivingAccelerationThreshold)
             gyroConst = Math.sin(2 * Math.PI / 1000 * System.currentTimeMillis()) > -0.5 ? 1.5 : -0.5;
 
-        Hardware.print("gConst:" + gyroConst);
+        Hardware.print("Gyro Constant:" + gyroConst);
         return gyroConst;
     }
 
