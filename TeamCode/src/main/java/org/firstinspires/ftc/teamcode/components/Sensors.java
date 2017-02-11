@@ -43,8 +43,6 @@ public class Sensors {
     private double strafeConstant = 1.71; //amount of extra power supplied based on horizontal component of translation angle (strafing takes more power)
     private double ngConstant = 0.6; //rotational speed given based on deviation from 0 degrees
 
-    private final double extraSlowMagnitude = 0.5;
-
     private Thread gyroPoll;
 
     public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsCentered, ModernRoboticsAnalogOpticalDistanceSensor odsBeacon, ModernRoboticsI2cColorSensor beaconSensor) {
@@ -56,6 +54,7 @@ public class Sensors {
         this.wheels = Hardware.getWheels();
         this.beaconSensor = beaconSensor;
         beaconSensor.enableLed(false);
+        odsBeacon.enableLed(false);
     }
 
     public void initImu() {
@@ -154,8 +153,8 @@ public class Sensors {
 
         resetHeading();
 
-        while (getHeading() < theta % Math.PI || System.currentTimeMillis() - start < 300) {
-            wheels.drive(0, 0, -speed, false);
+        while (Hardware.active() && (theta == Math.PI ? (getHeading() > 0) : (getHeading() < theta)) || System.currentTimeMillis() - start < 300) {
+            wheels.drive(0, 0, speed, false);
             Hardware.clearLog();
             Hardware.print("" + getHeading());
         }
@@ -212,7 +211,8 @@ public class Sensors {
 
     public void findBeaconButton(boolean isRed, double whiteLineThreshold, double speed) {
 
-        boolean goingForward = true;
+        boolean goingForward = true,
+                shouldRestart = false;
 
         double previousReading = getBeaconColor()[isRed ? 1 : 0],
                 currentReading,
@@ -231,14 +231,14 @@ public class Sensors {
                 return;
             }
 
-            if (System.currentTimeMillis() - lastDirectionSwitch > 1000) {
-                goingForward = !goingForward;
+            if (System.currentTimeMillis() - lastDirectionSwitch > 2000) {
+                Hardware.print("Restarted find beacon button");
+                driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 3 : 1), whiteLineThreshold, false, speed);
+                shouldRestart = true;
+                break;
+            } else
 
-                driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 1 : 3), whiteLineThreshold, false, speed);
-                directionSwitches = maxColor = 0;
-                goingForward = true;
-                lastDirectionSwitch = System.currentTimeMillis();
-            } else if (currentReading < previousReading) {
+            if (currentReading < previousReading) {
                 goingForward = !goingForward;
                 directionSwitches++;
                 lastDirectionSwitch = System.currentTimeMillis();
@@ -254,6 +254,7 @@ public class Sensors {
             previousReading = currentReading;
         }
 
+        if (shouldRestart) findBeaconButton(isRed, whiteLineThreshold, speed);
     }
 
     public void findBeaconButton(boolean isRed, double whiteLineReadingThreshold) {

@@ -22,12 +22,11 @@ public class Hardware {
 
     private static HardwareMap map;
 
-    private static LinearOpMode opMode;
-
     private static boolean isAuton = false;
 
     private static double gyroConstant = 1;
 
+    private static LinearOpMode opMode;
     private static Lift lift;
     private static Wheels wheels;
     private static Sensors sensors;
@@ -35,6 +34,10 @@ public class Hardware {
     private static Intake intake;
     private static Telemetry t;
     private static String output = "\n";
+
+    public static void sleep(long ms) {
+        opMode.sleep(ms);
+    }
 
     public static void init(HardwareMap map, LinearOpMode opMode, boolean isAuton, Telemetry t) {
         clean();
@@ -118,7 +121,7 @@ public class Hardware {
     }
 
     public static boolean active() {
-        return opMode.opModeIsActive();
+        return opMode.opModeIsActive() && !opMode.isStopRequested();
     }
 
     private static void clean() {

@@ -25,6 +25,8 @@ public class AutonRed extends LinearOpMode {
         try {
             a.run();
         } catch (Exception e) {
+            Hardware.print("Exception: " + e.getMessage());
+        } finally {
             Hardware.freezeAllMotorFunctions();
         }
     }

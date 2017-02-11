@@ -29,7 +29,7 @@ public class AutonShootBlue extends LinearOpMode {
 
         Hardware.getShooter().shoot(6);
 
-        Utils.sleep(6500);
+        Hardware.sleep(6500);
 
         driveByTime(2000, 0, -0.5, 0);
         driveByTime(1000, 0, 0, 1);
@@ -37,7 +37,7 @@ public class AutonShootBlue extends LinearOpMode {
 
     private void driveByTime(long ms, double xVel, double yVel, double angularVel) {
         wheels.drive(xVel, yVel, angularVel, false);
-        Utils.sleep(ms);
+        Hardware.sleep(ms);
         wheels.stop();
     }
 }

@@ -23,7 +23,7 @@ public class DelayedAction implements Runnable {
 
     @Override
     public void run() {
-        Utils.sleep(delay);
+        Hardware.sleep(delay);
 
         if (o instanceof DcMotor)
             ((DcMotor) o).setPower(setting);

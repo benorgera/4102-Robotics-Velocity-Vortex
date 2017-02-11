@@ -62,14 +62,6 @@ public class Utils {
         return multiplyValues(1.0 / max, values); //divide each value by the maximum magnitude
     }
 
-    public static void sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-
-        }
-    }
-
     public static double average(double a, double b) {
         return (a + b) / 2;
     }

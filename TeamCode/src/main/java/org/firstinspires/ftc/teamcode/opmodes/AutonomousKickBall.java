@@ -25,7 +25,7 @@ public class AutonomousKickBall extends LinearOpMode {
 
         waitForStart(); //wait for the driver station to
 
-        Utils.sleep(10000);
+        Hardware.sleep(10000);
 
         driveByTime(3000, 0, 0.5, 0);
 
@@ -33,7 +33,7 @@ public class AutonomousKickBall extends LinearOpMode {
 
     private void driveByTime(long ms, double xVel, double yVel, double angularVel) {
         wheels.drive(xVel, yVel, angularVel, false);
-        Utils.sleep(ms);
+        Hardware.sleep(ms);
         wheels.stop();
     }
 }

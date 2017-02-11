@@ -36,16 +36,16 @@ public class Shooter {
 
         setDiskMotorPowers(Utils.trim(0, 1, speed / 10)); //bring motors up to speed
 
-        Utils.sleep(500);
+        Hardware.sleep(500);
 
         door.setPosition(doorPositions[0]); //drop door
 
-        Utils.sleep(500);
+        Hardware.sleep(500);
 
         Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
         Hardware.getIntake().startElevator(); //feed shots through shooter
 
-        Utils.sleep(2500);
+        Hardware.sleep(2500);
 
         //reset stuff
         Hardware.getIntake().stopElevator();

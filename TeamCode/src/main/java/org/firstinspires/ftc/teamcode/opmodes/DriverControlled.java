@@ -68,7 +68,7 @@ public class DriverControlled extends LinearOpMode {
 
         //--------------------------DRIVING-------------------------------
 
-        telemetry.addData("WHEELS", wheels.drive((isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, (isSlowMode ? slowModeConstant : 1) * gamepad1.right_stick_x, !isSlowMode));
+        wheels.drive((isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, (isSlowMode ? slowModeConstant : 1) * gamepad1.right_stick_x, !isSlowMode);
 
         if (gamepad1.a && !wasTogglingDirection)
             intakeIsFront = !intakeIsFront;
@@ -112,6 +112,7 @@ public class DriverControlled extends LinearOpMode {
         wasTogglingIntake = gamepad2.a;
 
 
+        
         //--------------------------LIFT-------------------------------
 
         //drop fork if it hasn't been dropped before
@@ -126,7 +127,7 @@ public class DriverControlled extends LinearOpMode {
             lift.stop();
 
         telemetry.addData("SHOT", Math.round(shotPower * 10) / 10);
-        telemetry.addData("FRONT", intakeIsFront ? "INTAKE" : "SHOOTER");
+        telemetry.addData("MODE", intakeIsFront ? "INTAKE" : "SHOOT");
         if (isSlowMode) telemetry.addData("SLOW MODE", "TRUE");
         telemetry.addData("TIME", getTimeString());
         telemetry.update();

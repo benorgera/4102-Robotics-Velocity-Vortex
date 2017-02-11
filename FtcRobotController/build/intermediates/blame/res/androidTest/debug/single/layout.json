@@ -172,12 +172,12 @@
         "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/exploded-aar/FtcCommon-release/res/layout/activity_ftc_configuration.xml"
     },
     {
-        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/res/merged/androidTest/debug/layout/analog_inputs.xml",
-        "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/exploded-aar/FtcCommon-release/res/layout/analog_inputs.xml"
-    },
-    {
         "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/res/merged/androidTest/debug/layout/activity_about.xml",
         "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/exploded-aar/FtcCommon-release/res/layout/activity_about.xml"
+    },
+    {
+        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/res/merged/androidTest/debug/layout/analog_inputs.xml",
+        "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/exploded-aar/FtcCommon-release/res/layout/analog_inputs.xml"
     },
     {
         "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/FtcRobotController/build/intermediates/res/merged/androidTest/debug/layout/servo_list.xml",

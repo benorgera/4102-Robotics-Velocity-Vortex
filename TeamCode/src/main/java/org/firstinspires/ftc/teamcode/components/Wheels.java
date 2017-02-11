@@ -62,7 +62,7 @@ public class Wheels {
         return Utils.trim(0, 1, scalar);
     }
 
-    public String drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //translate/rotate the robot given velocity and angular velocity, and return a string representation of this algorithm
+    public void drive(double xVel, double yVel, double angularVel, boolean isChannelMode) { //translate/rotate the robot given velocity and angular velocity, and return a string representation of this algorithm
 
         xVel = -xVel; //this is a fix for some trig bug (deleting this statement and changing 'Math.cos(theta - Math.PI / 4)' to 'Math.cos(theta + Math.PI / 4)' should do the trick
 
@@ -81,23 +81,18 @@ public class Wheels {
                     Math.cos(theta - Math.PI / 4) //front right and back left wheel relative velocity (without angular velocity)
         }}));
 
-        //return a string representation of the algorithm, and power the wheels after scaling and accounting for angular velocity
-        return "vel: " + Utils.toString(robotVel) +
-                ", theta: " + Utils.toString(theta) +
-                ", ngVel: " + Utils.toString(angularVel) +
-                ", mode: " + (isChannelMode ? "chan" : "prec") +
-                ", pow: " +
-                setMotorPowers( //apply the scaled powers to the motors
-                        Utils.scaleValues(1, new double[][] { //scale the velocities to unit vectors, only if any of them have a magnitude greater than one
-                                {
-                                        compensationConstants[0][0] * (relativeWheelVels[0][0] + angularVel), //front left wheel relative velocity (with angular velocity)
-                                        compensationConstants[0][1] * (relativeWheelVels[0][1] - angularVel) //front right wheel relative velocity (with angular velocity)
-                                }, {
-                                        compensationConstants[1][0] * (relativeWheelVels[0][1] + angularVel), //back left wheel relative velocity (with angular velocity)
-                                        compensationConstants[1][1] * (relativeWheelVels[0][0] - angularVel) //back right wheel relative velocity (with angular velocity)
-                                }
-                        })
-                );
+        //power the wheels after scaling and accounting for angular velocity
+        setMotorPowers( //apply the scaled powers to the motors
+                Utils.scaleValues(1, new double[][] { //scale the velocities to unit vectors, only if any of them have a magnitude greater than one
+                        {
+                                compensationConstants[0][0] * (relativeWheelVels[0][0] + angularVel), //front left wheel relative velocity (with angular velocity)
+                                compensationConstants[0][1] * (relativeWheelVels[0][1] - angularVel) //front right wheel relative velocity (with angular velocity)
+                        }, {
+                        compensationConstants[1][0] * (relativeWheelVels[0][1] + angularVel), //back left wheel relative velocity (with angular velocity)
+                        compensationConstants[1][1] * (relativeWheelVels[0][0] - angularVel) //back right wheel relative velocity (with angular velocity)
+                }
+                })
+        );
     }
 
     private String setMotorPowers(double[][] wheelPowers) { //apply power to the motors, and return string representation of the wheel powers
