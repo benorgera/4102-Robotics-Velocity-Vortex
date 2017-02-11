@@ -40,12 +40,12 @@ public class Shooter {
 
         door.setPosition(doorPositions[0]); //drop door
 
-        Hardware.sleep(500);
+        Hardware.sleep(1000);
 
         Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
         Hardware.getIntake().startElevator(); //feed shots through shooter
 
-        Hardware.sleep(2500);
+        Hardware.sleep(2000);
 
         //reset stuff
         Hardware.getIntake().stopElevator();

@@ -126,7 +126,7 @@ public class DriverControlled extends LinearOpMode {
         else
             lift.stop();
 
-        telemetry.addData("SHOT", Math.round(shotPower * 10) / 10);
+        telemetry.addData("SHOT", "" + Math.round(shotPower * 100) / 10);
         telemetry.addData("MODE", intakeIsFront ? "INTAKE" : "SHOOT");
         if (isSlowMode) telemetry.addData("SLOW MODE", "TRUE");
         telemetry.addData("TIME", getTimeString());

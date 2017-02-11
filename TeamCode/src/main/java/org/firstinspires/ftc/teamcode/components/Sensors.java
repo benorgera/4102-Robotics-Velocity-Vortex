@@ -146,14 +146,18 @@ public class Sensors {
         wheels.stop();
     }
 
-    public void turn(double theta, double speed) { //must call center on zero after
+    public void turn(double theta, double speed) { //positive is clockwise, max turn is PI
+
+        boolean isCounterClockwise = theta < 0;
+        theta = Math.abs(theta);
+
         double storedHeading = initialHeading;
         long start = System.currentTimeMillis();
 
         resetHeading();
 
-        while (Hardware.active() && (theta == Math.PI ? (getHeading() > 0) : (getHeading() < theta)) || System.currentTimeMillis() - start < 300)
-            wheels.drive(0, 0, speed, false);
+        while (Hardware.active() && (theta == Math.PI ? (isCounterClockwise ? (getHeading() < 0) : (getHeading() > 0)) : (Math.abs(getHeading()) < theta)) || System.currentTimeMillis() - start < 300)
+            wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed, false);
 
         wheels.stop();
 
@@ -222,7 +226,7 @@ public class Sensors {
             if ((currentReading = getBeaconColor()[isRed ? 1 : 0]) > maxColor)
                 maxColor = currentReading;
 
-            if (directionSwitches > 3 && currentReading >= maxColor) {
+            if (directionSwitches >= 3 && currentReading >= maxColor) {
                 wheels.stop();
                 return;
             } else if (directionSwitches > 5) {
@@ -230,12 +234,12 @@ public class Sensors {
                 directionSwitches = 4;
             }
 
-            if (System.currentTimeMillis() - lastDirectionSwitch > 2000) {
+            if (System.currentTimeMillis() - lastDirectionSwitch > 3000) {
                 Hardware.print("Restarted find beacon button");
                 driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 3 : 1), whiteLineThreshold, false, speed);
                 shouldRestart = true;
                 break;
-            } else if (currentReading < previousReading && System.currentTimeMillis() - lastDirectionSwitch > 400) {
+            } else if (currentReading < previousReading && System.currentTimeMillis() - lastDirectionSwitch > 300) {
                 goingForward = !goingForward;
                 directionSwitches++;
                 lastDirectionSwitch = System.currentTimeMillis();
