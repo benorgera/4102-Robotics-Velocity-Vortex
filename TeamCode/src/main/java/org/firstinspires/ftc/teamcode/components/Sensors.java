@@ -53,8 +53,7 @@ public class Sensors {
         this.odsBeacon = odsBeacon;
         this.wheels = Hardware.getWheels();
         this.beaconSensor = beaconSensor;
-        beaconSensor.enableLed(false);
-        odsBeacon.enableLed(false);
+        beaconSensor.enableLed(false); 
     }
 
     public void initImu() {
