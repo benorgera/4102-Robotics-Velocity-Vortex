@@ -56,7 +56,7 @@ public class DriverControlled extends LinearOpMode {
 
         startTime = System.currentTimeMillis(); //store the start time, so we can print remaining match time
 
-        while (opModeIsActive()) run(); //control to robot using gamepad input while the opMode is active
+        while (Hardware.active()) run(); //control to robot using gamepad input while the opMode is active
 
         Hardware.freezeAllMotorFunctions(); //stop all motors in case any are running
 
@@ -112,7 +112,7 @@ public class DriverControlled extends LinearOpMode {
         wasTogglingIntake = gamepad2.a;
 
 
-        
+
         //--------------------------LIFT-------------------------------
 
         //drop fork if it hasn't been dropped before
