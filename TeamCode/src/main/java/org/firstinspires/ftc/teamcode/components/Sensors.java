@@ -4,6 +4,8 @@ import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -27,14 +29,13 @@ public class Sensors {
     private ModernRoboticsAnalogOpticalDistanceSensor odsBeacon;
     private ModernRoboticsAnalogOpticalDistanceSensor odsCentered;
     private ModernRoboticsI2cColorSensor beaconSensor;
+    private VoltageSensor voltage;
 
     private Integrator integrator;
 
     private Wheels wheels;
 
     private double initialHeading = 0;
-
-    private final double droveAwayThreshold = 3;
 
     private final double compensatedTranslateSpeed = 0.25;
 
@@ -45,8 +46,9 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsCentered, ModernRoboticsAnalogOpticalDistanceSensor odsBeacon, ModernRoboticsI2cColorSensor beaconSensor) {
+    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsCentered, ModernRoboticsAnalogOpticalDistanceSensor odsBeacon, ModernRoboticsI2cColorSensor beaconSensor, VoltageSensor voltage) {
         this.imu = imu;
+        this.voltage = voltage;
         this.leftColorSensor = leftColorSensor;
         this.rightColorSensor = rightColorSensor;
         this.odsCentered = odsCentered;
@@ -115,7 +117,7 @@ public class Sensors {
     }
 
     public void compensatedTranslate(double thetaDesired, double speed) { //translate robot with rotation compensation (must be called on a loop)
-        double power = speed * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))),
+        double power = (speed + getVoltageConstant()) * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))),
                 ngVel = Utils.trim(-1, 1, -1 * getHeading() * ngConstant); //compensate for rotation by accounting for change in heading
 
         wheels.drive(Math.cos(thetaDesired) * power, Math.sin(thetaDesired) * power, ngVel, false);
@@ -144,6 +146,17 @@ public class Sensors {
             }
         }
         wheels.stop();
+    }
+
+    private double getVoltageConstant() {
+        double minVoltage = 12.8,
+                maxVoltage = 13.7,
+                range = maxVoltage - minVoltage,
+                maxAdditionalSpeed = 0.05,
+                v = voltage.getVoltage(),
+                dif = (maxVoltage - v) / range;
+
+        return v >= maxVoltage ? 0 : (dif * maxAdditionalSpeed);
     }
 
     public void turn(double theta, double speed) { //positive is clockwise, max turn is PI

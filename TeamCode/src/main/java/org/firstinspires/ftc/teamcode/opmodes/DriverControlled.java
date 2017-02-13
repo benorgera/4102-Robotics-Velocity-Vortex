@@ -33,6 +33,7 @@ public class DriverControlled extends LinearOpMode {
     private boolean wasDowningShotPower = false;
     private boolean wasShooting = false;
     private boolean wasTogglingIntake = false;
+    private boolean wasDroppingFork = false;
 
     private boolean hasDroppedFork = false;
 
@@ -115,9 +116,12 @@ public class DriverControlled extends LinearOpMode {
 
         //--------------------------LIFT-------------------------------
 
-        //drop fork if it hasn't been dropped before
-        if (!hasDroppedFork && (hasDroppedFork = gamepad2.x))
+        if (gamepad2.x && !wasDroppingFork) {
+            hasDroppedFork = true;
             lift.dropFork();
+        }
+
+        wasDroppingFork = gamepad2.x;
 
         if (gamepad2.dpad_up && hasDroppedFork) //raise the lift if we've dropped the fork
             lift.raise();

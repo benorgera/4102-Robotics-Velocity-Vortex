@@ -34,6 +34,8 @@ public class Shooter {
 
     public void shoot(double speed) {
 
+        Hardware.getWheels().stop();
+
         setDiskMotorPowers(Utils.trim(0, 1, speed / 10)); //bring motors up to speed
 
         Hardware.sleep(500);
