@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.os.SystemClock;
+
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
@@ -15,19 +17,21 @@ public class AutonomousImplementation {
     private Shooter shooter;
 
     private final boolean isRed;
+    private final boolean isDoublePushing;
 
-    private final double odsThresholdFindButton = 0.025;
+    private final double odsThresholdFindButton = 0.015;
     private final double odsRealignThreshold = 0.055;
 
     private final double whiteLineSignalThreshold = 70; //the minimum color sensor reading required to signify finding the white line
 
 
-    public AutonomousImplementation(boolean isRed) {
+    public AutonomousImplementation(boolean isRed, boolean isDoublePushing) {
         Hardware.getLift();
         Hardware.getIntake();
         this.sensors = Hardware.getSensors();
         this.shooter = Hardware.getShooter();
         this.isRed = isRed;
+        this.isDoublePushing = isDoublePushing;
 
         sensors.initImu();
     }
@@ -58,6 +62,7 @@ public class AutonomousImplementation {
         Hardware.sleep(500);
 
         Hardware.print("About to capture first beacon");
+
         captureBeacon();
 
         Hardware.print("About to drive by time to second beacon");
@@ -75,34 +80,63 @@ public class AutonomousImplementation {
         Hardware.print("About to capture second beacon");
         captureBeacon();
 
-        Hardware.print("About to turn towards the cap ball");
+        Hardware.print("Turning towards the cap ball");
         sensors.turn(Math.PI / 4 * (isRed ? -1 : 1), 0.4);
 
         Hardware.getIntake().moveRampForShot();
 
-        Hardware.print("About to drive to the cap ball");
+        Hardware.print("Driving to the cap ball");
         sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 1600, true, 1);
     }
 
     private void captureBeacon() {
 
-        Hardware.print("About to follow line");
+        Hardware.print("Following line");
         sensors.followLineUntilOdsThreshold(odsThresholdFindButton, true, 0.15); //pull up to beacon
 
         Hardware.sleep(500);
 
-        Hardware.print("About to realign on beacon");
+        realignOnBeacon();
+
+        if (isDoublePushing) {
+            pushButton();
+            long readyTime = System.currentTimeMillis() + 5000; //5 second delay on beacons
+
+            Hardware.sleep(200); //just in case the color change takes time
+
+            if (sensors.getBeaconColor()[isRed ? 0 : 1] > sensors.getBeaconColor()[isRed ? 1 : 0]) { //we need to push again
+                realignOnBeacon();
+
+                if (readyTime > System.currentTimeMillis())
+                    Hardware.sleep(readyTime - System.currentTimeMillis());
+
+                pushButton();
+            }
+        } else {
+            Hardware.print("Finding button");
+            sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 0.155);
+
+            Hardware.sleep(500);
+
+            pushButton();
+        }
+
+        backUpFromBeacon();
+    }
+
+    private void realignOnBeacon() {
+        Hardware.print("Realigning on beacon");
         sensors.driveUntilOdsThreshold(odsRealignThreshold, true, 0.09);
+    }
 
-        Hardware.print("About to find button");
-        sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 0.155);
-
-        Hardware.print("About to push button");
-        Hardware.sleep(500);
-        sensors.driveByTime(Math.PI, 700, true);
-
-        Hardware.print("Pushed beacon button, about to back up");
+    private void backUpFromBeacon() {
+        Hardware.print("Backing up");
         sensors.driveByTime(0, 600, true);
+    }
+
+    private void pushButton() {
+        Hardware.print("Pushing button");
+        sensors.driveByTime(Math.PI, 700, true);
     }
 
 }

@@ -120,6 +120,8 @@ public class Sensors {
         double power = (speed + getVoltageConstant()) * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))),
                 ngVel = Utils.trim(-1, 1, -1 * getHeading() * ngConstant); //compensate for rotation by accounting for change in heading
 
+
+
         wheels.drive(Math.cos(thetaDesired) * power, Math.sin(thetaDesired) * power, ngVel, false);
     }
 
@@ -163,14 +165,21 @@ public class Sensors {
 
         boolean isCounterClockwise = theta < 0;
         theta = Math.abs(theta);
+        boolean isTurningAround = theta == Math.PI,
+                isGreaterThan = isTurningAround ? !isCounterClockwise : isCounterClockwise;
 
-        double storedHeading = initialHeading;
+        double storedHeading = initialHeading,
+                threshold = isTurningAround ? 0 : theta;
         long start = System.currentTimeMillis();
 
         resetHeading();
+//
+//        while (Hardware.active() && Utils.compare(getHeading(), threshold, isGreaterThan)) {
+//
+//        }
 
-        while (Hardware.active() && (theta == Math.PI ? (isCounterClockwise ? (getHeading() < 0) : (getHeading() > 0)) : (Math.abs(getHeading()) < theta)) || System.currentTimeMillis() - start < 300)
-            wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed, false);
+        while (Hardware.active() && (theta == Math.PI ? (isCounterClockwise ? (getHeading()) < 0 : (getHeading() > 0)) : (Math.abs(getHeading()) < theta)) || System.currentTimeMillis() - start < 300)
+            wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed * (theta == Math.PI ? (Math.PI - Math.abs(getHeading()) < thresh ? ) : theta - Math.abs(getHeading())), false);
 
         wheels.stop();
 

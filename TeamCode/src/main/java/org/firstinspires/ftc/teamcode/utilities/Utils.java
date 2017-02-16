@@ -75,4 +75,8 @@ public class Utils {
         return rads * 180 / Math.PI;
     }
 
+    public static boolean compare(double n, double comparingTo, boolean isGreaterThan) {
+        return isGreaterThan ? n > comparingTo : n < comparingTo;
+    }
+
 }
