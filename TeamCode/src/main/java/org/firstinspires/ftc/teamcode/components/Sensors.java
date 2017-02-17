@@ -152,7 +152,7 @@ public class Sensors {
         double minVoltage = 12.8,
                 maxVoltage = 13.7,
                 range = maxVoltage - minVoltage,
-                maxAdditionalSpeed = 0.05,
+                maxAdditionalSpeed = 0.06,
                 v = voltage.getVoltage(),
                 difVolt = (maxVoltage - v) / range,
                 difSpeed = Utils.trim(0, 1, speed / compensatedTranslateSpeed);
