@@ -17,7 +17,7 @@ public class DriverControlled extends LinearOpMode {
 
     //modes
     private boolean isSlowMode = false;
-    private boolean intakeIsFront = false;
+    private boolean intakeIsFront = true;
 
     //components
     private Lift lift;

@@ -160,44 +160,27 @@ public class Sensors {
         return v >= maxVoltage ? 0 : (difVolt * maxAdditionalSpeed * difSpeed);
     }
 
-    public void turn(double theta, double speed) { //positive is clockwise, max turn is PI
+    public void turn(double theta, double tolerance, double speed) { //positive is clockwise, max turn is PI
 
-//        boolean isCounterClockwise = theta < 0;
-//        theta = Math.abs(theta);
-//        boolean isTurningAround = theta == Math.PI,
-//                isGreaterThan = isTurningAround ? !isCounterClockwise : isCounterClockwise;
-//
-//        double storedHeading = initialHeading,
-//                threshold = isTurningAround ? 0 : theta;
-//        long start = System.currentTimeMillis();
-//
-//        resetHeading();
-////
-////        while (Hardware.active() && Utils.compare(getHeading(), threshold, isGreaterThan)) {
-////
-////        }
-//
-//        while (Hardware.active() && (theta == Math.PI ? (isCounterClockwise ? (getHeading()) < 0 : (getHeading() > 0)) : (Math.abs(getHeading()) < theta)) || System.currentTimeMillis() - start < 300)
-//            wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed * (theta == Math.PI ? (Math.PI - Math.abs(getHeading()) < thresh ? ) : theta - Math.abs(getHeading())), false);
-//
-//        wheels.stop();
-//
-//        initialHeading = (storedHeading + getHeading()) % (2 * Math.PI);
+        boolean isCounterClockwise = theta > 0;
 
-        boolean isCounterClockwise = theta < 0;
-        theta = Math.abs(theta);
+        double storedHeading = initialHeading,
+                threshold = theta + tolerance * (isCounterClockwise ? -1 : 1);
 
-        double storedHeading = initialHeading;
         long start = System.currentTimeMillis();
 
         resetHeading();
 
-        while (Hardware.active() && (theta == Math.PI ? (isCounterClockwise ? (getHeading() < 0) : (getHeading() > 0)) : (Math.abs(getHeading()) < theta)) || System.currentTimeMillis() - start < 300)
+
+        while (Hardware.active() && Utils.compare(-getHeading(), threshold, !isCounterClockwise))
             wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed, false);
+
+//        while (Hardware.active() && (theta == Math.PI ? (isCounterClockwise ? (getHeading() < 0) : (getHeading() > 0)) : (Math.abs(getHeading()) < theta)) || System.currentTimeMillis() - start < 300)
+//            wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed, false);
 
         wheels.stop();
 
-        initialHeading = (storedHeading + getHeading()) % (2 * Math.PI);
+        initialHeading = (storedHeading + -theta) % (2 * Math.PI);
     }
 
     public double getStrafeConstant() {
@@ -238,7 +221,7 @@ public class Sensors {
         double left = readings[0],
                 right = readings[1];
 
-        if (Math.abs(left - right) <= 50) { //both sensors equally on the white line
+        if (Math.abs(left - right) <= 35) { //both sensors equally on the white line
             compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
         } else { //left more on the white line turn left, right turn right
             compensatedTranslate((isGoingForwards ? Math.PI : 0) + (Math.PI / 9 * (left > right ? 1 : -1) * (isGoingForwards ? 1 : -1)), speed);
@@ -326,9 +309,10 @@ public class Sensors {
     public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, double speed) {
         if (shouldPollGyro) readyCompensatedTranslate(0);
 
-        int sufficientReadings = 0;
+        int sufficientReadings = 0,
+                neededSufficientReadings = 1;
 
-        while (Hardware.active() && sufficientReadings < 2) {
+        while (Hardware.active() && sufficientReadings < neededSufficientReadings) {
             compensatedTranslate(theta, speed);
             if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)
                 sufficientReadings++;
