@@ -82,7 +82,6 @@ public class Hardware {
                 map.colorSensor.get("left-color-sensor"),
                 map.colorSensor.get("right-color-sensor"),
                 (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods-centered"),
-                (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods-beacon"),
                 (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor"),
                 map.voltageSensor.iterator().next()
         ) : sensors;

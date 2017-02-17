@@ -26,8 +26,7 @@ public class Sensors {
     private BNO055IMU imu;
     private ColorSensor leftColorSensor;
     private ColorSensor rightColorSensor;
-    private ModernRoboticsAnalogOpticalDistanceSensor odsBeacon;
-    private ModernRoboticsAnalogOpticalDistanceSensor odsCentered;
+    private ModernRoboticsAnalogOpticalDistanceSensor ods;
     private ModernRoboticsI2cColorSensor beaconSensor;
     private VoltageSensor voltage;
 
@@ -46,13 +45,12 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsCentered, ModernRoboticsAnalogOpticalDistanceSensor odsBeacon, ModernRoboticsI2cColorSensor beaconSensor, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor, VoltageSensor voltage) {
         this.imu = imu;
         this.voltage = voltage;
         this.leftColorSensor = leftColorSensor;
         this.rightColorSensor = rightColorSensor;
-        this.odsCentered = odsCentered;
-        this.odsBeacon = odsBeacon;
+        this.ods = ods;
         this.wheels = Hardware.getWheels();
         this.beaconSensor = beaconSensor;
         beaconSensor.enableLed(false);
@@ -100,8 +98,8 @@ public class Sensors {
         return imu.getPosition();
     }
 
-    public double getOpticalDistance(boolean isCentered) {
-        return isCentered ? odsCentered.getLightDetected() : odsBeacon.getLightDetected();
+    public double getOpticalDistance() {
+        return ods.getLightDetected();
     }
 
     public int[] getBeaconColor() {
@@ -117,7 +115,7 @@ public class Sensors {
     }
 
     public void compensatedTranslate(double thetaDesired, double speed) { //translate robot with rotation compensation (must be called on a loop)
-        double power = (speed + getVoltageConstant()) * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))),
+        double power = (speed + getVoltageConstant(speed)) * (1 + strafeConstant * Math.abs(Math.cos(thetaDesired))),
                 ngVel = Utils.trim(-1, 1, -1 * getHeading() * ngConstant); //compensate for rotation by accounting for change in heading
 
 
@@ -150,15 +148,16 @@ public class Sensors {
         wheels.stop();
     }
 
-    private double getVoltageConstant() {
+    private double getVoltageConstant(double speed) {
         double minVoltage = 12.8,
                 maxVoltage = 13.7,
                 range = maxVoltage - minVoltage,
                 maxAdditionalSpeed = 0.05,
                 v = voltage.getVoltage(),
-                dif = (maxVoltage - v) / range;
+                difVolt = (maxVoltage - v) / range,
+                difSpeed = Utils.trim(0, 1, speed / compensatedTranslateSpeed);
 
-        return v >= maxVoltage ? 0 : (dif * maxAdditionalSpeed);
+        return v >= maxVoltage ? 0 : (difVolt * maxAdditionalSpeed * difSpeed);
     }
 
     public void turn(double theta, double speed) { //positive is clockwise, max turn is PI
@@ -234,15 +233,15 @@ public class Sensors {
         };
     }
 
-    private void followLine(double speed) {
+    private void followLine(double speed, boolean isGoingForwards) {
         double[] readings = getLineReadings();
         double left = readings[0],
                 right = readings[1];
 
         if (Math.abs(left - right) <= 50) { //both sensors equally on the white line
-            compensatedTranslate(Math.PI, speed);
+            compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
         } else { //left more on the white line turn left, right turn right
-            compensatedTranslate(left > right ? 10 * Math.PI / 9 : 8 * Math.PI / 9, speed);
+            compensatedTranslate((isGoingForwards ? Math.PI : 0) + (Math.PI / 9 * (left > right ? 1 : -1) * (isGoingForwards ? 1 : -1)), speed);
         }
     }
 
@@ -299,26 +298,28 @@ public class Sensors {
         findBeaconButton(false, whiteLineReadingThreshold, 0.125);
     }
 
-    public void driveUntilOdsThreshold(double odsThreshold, boolean isCentered, double speed) {
-        boolean isGoingForwards = getOpticalDistance(isCentered) < odsThreshold;
+    public void driveUntilOdsThreshold(double odsThreshold, double speed) {
+        boolean isGoingForwards = getOpticalDistance() < odsThreshold;
 
-        while (Hardware.active() && isGoingForwards ? (getOpticalDistance(isCentered) < odsThreshold) : (getOpticalDistance(isCentered) > odsThreshold))
+        while (Hardware.active() && isGoingForwards ? (getOpticalDistance() < odsThreshold) : (getOpticalDistance() > odsThreshold))
             compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
         wheels.stop();
     }
 
-    public void driveUntilOdsThreshold(double odsThreshold, boolean isCentered) {
-        driveUntilOdsThreshold(odsThreshold, isCentered, compensatedTranslateSpeed);
+    public void driveUntilOdsThreshold(double odsThreshold) {
+        driveUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed);
     }
 
-    public void followLineUntilOdsThreshold(double odsThreshold, boolean isCentered, double speed) {
-        while (Hardware.active() && getOpticalDistance(isCentered) < odsThreshold)
-            followLine(speed);
+    public void followLineUntilOdsThreshold(double odsThreshold, double speed) {
+        boolean isGoingForwards = getOpticalDistance() < odsThreshold;
+
+        while (Hardware.active() && Utils.compare(getOpticalDistance(), odsThreshold, !isGoingForwards))
+            followLine(speed, isGoingForwards);
         wheels.stop();
     }
 
-    public void followLineUntilOdsThreshold(double odsThreshold, boolean isCentered) {
-        followLineUntilOdsThreshold(odsThreshold, isCentered, compensatedTranslateSpeed);
+    public void followLineUntilOdsThreshold(double odsThreshold) {
+        followLineUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed);
     }
 
 

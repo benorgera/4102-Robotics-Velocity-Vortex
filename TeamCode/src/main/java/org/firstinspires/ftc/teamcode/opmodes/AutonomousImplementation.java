@@ -20,7 +20,7 @@ public class AutonomousImplementation {
     private final boolean isDoublePushing;
 
     private final double odsThresholdFindButton = 0.03;
-    private final double odsRealignThreshold = 0.052;
+    private final double odsRealignThreshold = 0.05;
 
     private final double whiteLineSignalThreshold = 62; //the minimum color sensor reading required to signify finding the white line
 
@@ -77,6 +77,8 @@ public class AutonomousImplementation {
         Hardware.print("About to realign on second beacon line");
         sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold, false, 0.17);
 
+        Hardware.sleep(500);
+
         Hardware.print("About to capture second beacon");
         captureBeacon();
 
@@ -92,7 +94,7 @@ public class AutonomousImplementation {
     private void captureBeacon() {
 
         Hardware.print("Following line");
-        sensors.followLineUntilOdsThreshold(odsThresholdFindButton, true, 0.15); //pull up to beacon
+        sensors.followLineUntilOdsThreshold(odsThresholdFindButton, 0.15); //pull up to beacon
 
         Hardware.sleep(500);
 
@@ -102,7 +104,7 @@ public class AutonomousImplementation {
             pushButton();
             long readyTime = System.currentTimeMillis() + 5000; //5 second delay on beacons
 
-            Hardware.sleep(200); //just in case the color change takes time
+            Hardware.sleep(2000); //just in case the color change takes time
 
             if (sensors.getBeaconColor()[isRed ? 0 : 1] > sensors.getBeaconColor()[isRed ? 1 : 0]) { //we need to push again
                 realignOnBeacon();
@@ -114,7 +116,7 @@ public class AutonomousImplementation {
             }
         } else {
             Hardware.print("Finding button");
-            sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 0.095);
+            sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 0.115);
 
             Hardware.sleep(500);
 
@@ -126,7 +128,7 @@ public class AutonomousImplementation {
 
     private void realignOnBeacon() {
         Hardware.print("Realigning on beacon");
-        sensors.driveUntilOdsThreshold(odsRealignThreshold, true, 0.08);
+        sensors.followLineUntilOdsThreshold(odsRealignThreshold, 0.1);
     }
 
     private void backUpFromBeacon() {

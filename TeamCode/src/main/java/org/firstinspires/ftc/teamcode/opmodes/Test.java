@@ -175,7 +175,7 @@ public class Test extends LinearOpMode {
             telemetry.addData("sst", softMotionTime);
             telemetry.addData("rH | iH | head", Utils.toString(Utils.toDegrees(sensors.getRawHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getInitialHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getHeading())));
             telemetry.addData("ng | strafe", Utils.toString(sensors.getNgConstant()) + " | " + Utils.toString(sensors.getStrafeConstant()));
-            telemetry.addData("blue | red | odsC | odsB",  Utils.toString(sensors.getBeaconColor()[0]) + " | " + Utils.toString(sensors.getBeaconColor()[1]) + "|" + Utils.toString(sensors.getOpticalDistance(true)) + "|" + Utils.toString(sensors.getOpticalDistance(false)));
+            telemetry.addData("blue | red | ods",  Utils.toString(sensors.getBeaconColor()[0]) + " | " + Utils.toString(sensors.getBeaconColor()[1]) + "|" + Utils.toString(sensors.getOpticalDistance()));
             telemetry.addData("line readings", sensors.getLineReadings()[0] + ", " + sensors.getLineReadings()[1]);
 
             telemetry.update();
