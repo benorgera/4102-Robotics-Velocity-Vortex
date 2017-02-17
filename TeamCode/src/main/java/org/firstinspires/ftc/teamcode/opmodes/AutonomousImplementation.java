@@ -20,7 +20,7 @@ public class AutonomousImplementation {
     private final boolean isDoublePushing;
 
     private final double odsThresholdFindButton = 0.03;
-    private final double odsRealignThreshold = 0.05;
+    private final double odsRealignThreshold = 0.051;
 
     private final double whiteLineSignalThreshold = 62; //the minimum color sensor reading required to signify finding the white line
 
@@ -83,7 +83,7 @@ public class AutonomousImplementation {
         captureBeacon();
 
         Hardware.print("Turning towards the cap ball");
-        sensors.turn(Math.PI / 4 * (isRed ? -1 : 1), 0.4);
+        sensors.turn(Math.PI / 6 * (isRed ? -1 : 1), 0.4);
 
         Hardware.getIntake().moveRampForShot();
 
@@ -104,7 +104,7 @@ public class AutonomousImplementation {
             pushButton();
             long readyTime = System.currentTimeMillis() + 5000; //5 second delay on beacons
 
-            Hardware.sleep(2000); //just in case the color change takes time
+            Hardware.sleep(500); //just in case the color change takes time
 
             if (sensors.getBeaconColor()[isRed ? 0 : 1] > sensors.getBeaconColor()[isRed ? 1 : 0]) { //we need to push again
                 realignOnBeacon();

@@ -328,7 +328,7 @@ public class Sensors {
 
         int sufficientReadings = 0;
 
-        while (Hardware.active() && sufficientReadings < 3) {
+        while (Hardware.active() && sufficientReadings < 2) {
             compensatedTranslate(theta, speed);
             if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)
                 sufficientReadings++;
