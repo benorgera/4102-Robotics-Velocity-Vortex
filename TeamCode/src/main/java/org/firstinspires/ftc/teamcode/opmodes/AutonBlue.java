@@ -19,7 +19,7 @@ public class AutonBlue extends LinearOpMode {
 
         telemetry.update();
 
-        a = new AutonomousImplementation(false);
+        a = new AutonomousImplementation(false, false);
 
         waitForStart();
 

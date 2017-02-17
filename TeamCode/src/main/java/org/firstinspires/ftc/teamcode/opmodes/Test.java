@@ -57,7 +57,6 @@ public class Test extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-
             if (gamepad1.back)
                 wheels.readyCompensatedTranslate(softMotionTime);
 

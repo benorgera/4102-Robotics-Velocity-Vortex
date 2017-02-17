@@ -163,23 +163,38 @@ public class Sensors {
 
     public void turn(double theta, double speed) { //positive is clockwise, max turn is PI
 
+//        boolean isCounterClockwise = theta < 0;
+//        theta = Math.abs(theta);
+//        boolean isTurningAround = theta == Math.PI,
+//                isGreaterThan = isTurningAround ? !isCounterClockwise : isCounterClockwise;
+//
+//        double storedHeading = initialHeading,
+//                threshold = isTurningAround ? 0 : theta;
+//        long start = System.currentTimeMillis();
+//
+//        resetHeading();
+////
+////        while (Hardware.active() && Utils.compare(getHeading(), threshold, isGreaterThan)) {
+////
+////        }
+//
+//        while (Hardware.active() && (theta == Math.PI ? (isCounterClockwise ? (getHeading()) < 0 : (getHeading() > 0)) : (Math.abs(getHeading()) < theta)) || System.currentTimeMillis() - start < 300)
+//            wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed * (theta == Math.PI ? (Math.PI - Math.abs(getHeading()) < thresh ? ) : theta - Math.abs(getHeading())), false);
+//
+//        wheels.stop();
+//
+//        initialHeading = (storedHeading + getHeading()) % (2 * Math.PI);
+
         boolean isCounterClockwise = theta < 0;
         theta = Math.abs(theta);
-        boolean isTurningAround = theta == Math.PI,
-                isGreaterThan = isTurningAround ? !isCounterClockwise : isCounterClockwise;
 
-        double storedHeading = initialHeading,
-                threshold = isTurningAround ? 0 : theta;
+        double storedHeading = initialHeading;
         long start = System.currentTimeMillis();
 
         resetHeading();
-//
-//        while (Hardware.active() && Utils.compare(getHeading(), threshold, isGreaterThan)) {
-//
-//        }
 
-        while (Hardware.active() && (theta == Math.PI ? (isCounterClockwise ? (getHeading()) < 0 : (getHeading() > 0)) : (Math.abs(getHeading()) < theta)) || System.currentTimeMillis() - start < 300)
-            wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed * (theta == Math.PI ? (Math.PI - Math.abs(getHeading()) < thresh ? ) : theta - Math.abs(getHeading())), false);
+        while (Hardware.active() && (theta == Math.PI ? (isCounterClockwise ? (getHeading() < 0) : (getHeading() > 0)) : (Math.abs(getHeading()) < theta)) || System.currentTimeMillis() - start < 300)
+            wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed, false);
 
         wheels.stop();
 
@@ -227,7 +242,7 @@ public class Sensors {
         if (Math.abs(left - right) <= 50) { //both sensors equally on the white line
             compensatedTranslate(Math.PI, speed);
         } else { //left more on the white line turn left, right turn right
-            compensatedTranslate(left > right ? 9 * Math.PI / 8 : 7 * Math.PI / 8, speed);
+            compensatedTranslate(left > right ? 10 * Math.PI / 9 : 8 * Math.PI / 9, speed);
         }
     }
 

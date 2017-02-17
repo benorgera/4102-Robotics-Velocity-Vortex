@@ -19,10 +19,10 @@ public class AutonomousImplementation {
     private final boolean isRed;
     private final boolean isDoublePushing;
 
-    private final double odsThresholdFindButton = 0.015;
-    private final double odsRealignThreshold = 0.055;
+    private final double odsThresholdFindButton = 0.03;
+    private final double odsRealignThreshold = 0.052;
 
-    private final double whiteLineSignalThreshold = 70; //the minimum color sensor reading required to signify finding the white line
+    private final double whiteLineSignalThreshold = 62; //the minimum color sensor reading required to signify finding the white line
 
 
     public AutonomousImplementation(boolean isRed, boolean isDoublePushing) {
@@ -56,7 +56,7 @@ public class AutonomousImplementation {
         sensors.driveByTime(isRed ? 1 : -1 * Math.PI / 2, 300, false, 0.35);
 
         Hardware.print("About to find first beacon line");
-        sensors.driveUntilLineReadingThreshold(isRed ? (9 * Math.PI / 10) : (8 * Math.PI / 7), whiteLineSignalThreshold, true, 0.4); //translate to line in front of first beacon
+        sensors.driveUntilLineReadingThreshold(isRed ? (9 * Math.PI / 10) : (10 * Math.PI / 9), whiteLineSignalThreshold, true, 0.4); //translate to line in front of first beacon
 
         Hardware.print("About to stop and lose momentum");
         Hardware.sleep(500);
@@ -114,7 +114,7 @@ public class AutonomousImplementation {
             }
         } else {
             Hardware.print("Finding button");
-            sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 0.155);
+            sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 0.095);
 
             Hardware.sleep(500);
 
@@ -126,7 +126,7 @@ public class AutonomousImplementation {
 
     private void realignOnBeacon() {
         Hardware.print("Realigning on beacon");
-        sensors.driveUntilOdsThreshold(odsRealignThreshold, true, 0.09);
+        sensors.driveUntilOdsThreshold(odsRealignThreshold, true, 0.08);
     }
 
     private void backUpFromBeacon() {
@@ -136,7 +136,7 @@ public class AutonomousImplementation {
 
     private void pushButton() {
         Hardware.print("Pushing button");
-        sensors.driveByTime(Math.PI, 700, true);
+        sensors.driveByTime(Math.PI, 800, true, 1);
     }
 
 }
