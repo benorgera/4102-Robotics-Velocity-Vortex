@@ -57,7 +57,7 @@ public class AutonomousImplementation {
         sensors.driveByTime(isRed ? 1 : -1 * Math.PI / 2, 300, false, 0.35);
 
         Hardware.print("About to find first beacon line");
-        sensors.driveUntilLineReadingThreshold(isRed ? (9 * Math.PI / 10) : (10 * Math.PI / 9), whiteLineSignalThreshold, true, 0.4); //translate to line in front of first beacon
+        sensors.driveUntilLineReadingThreshold(isRed ? (9 * Math.PI / 10) : (13 * Math.PI / 12), whiteLineSignalThreshold, true, 0.4); //translate to line in front of first beacon
 
         Hardware.print("About to stop and lose momentum");
         Hardware.sleep(500);
@@ -144,7 +144,7 @@ public class AutonomousImplementation {
             Hardware.sleep(100);
         }
 
-        sensors.driveByTime(Math.PI, 200, true, 1);
+        sensors.driveByTime(Math.PI, 400, true, 1);
     }
 
 }

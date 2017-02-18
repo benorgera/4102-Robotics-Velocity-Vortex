@@ -155,7 +155,7 @@ public class Sensors {
                 maxAdditionalSpeed = 0.05,
                 v = voltage.getVoltage(),
                 difVolt = (maxVoltage - v) / range,
-                difSpeed = Utils.trim(0, 1, speed / compensatedTranslateSpeed);
+                difSpeed = Utils.trim(0, 1, speed / 0.4);
 
         return v >= maxVoltage ? 0 : (difVolt * maxAdditionalSpeed * difSpeed);
     }
@@ -224,7 +224,7 @@ public class Sensors {
         if (Math.abs(left - right) <= 35) { //both sensors equally on the white line
             compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
         } else { //left more on the white line turn left, right turn right
-            compensatedTranslate((isGoingForwards ? Math.PI : 0) + (Math.PI / 7 * (left > right ? 1 : -1) * (isGoingForwards ? 1 : -1)), speed);
+            compensatedTranslate((isGoingForwards ? Math.PI : 0) + (Math.PI / 8 * (left > right ? 1 : -1) * (isGoingForwards ? 1 : -1)), speed);
         }
     }
 
