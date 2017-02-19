@@ -155,7 +155,7 @@ public class Sensors {
                 maxAdditionalSpeed = 0.05,
                 v = voltage.getVoltage(),
                 difVolt = (maxVoltage - v) / range,
-                difSpeed = Utils.trim(0, 1, speed / 0.4);
+                difSpeed = Utils.trim(0, 1, speed / 0.35);
 
         return v >= maxVoltage ? 0 : (difVolt * maxAdditionalSpeed * difSpeed);
     }
@@ -172,11 +172,8 @@ public class Sensors {
         resetHeading();
 
 
-        while (Hardware.active() && Utils.compare(-getHeading(), threshold, !isCounterClockwise))
+        while (Hardware.active() && Utils.compare(-getHeading(), threshold, !isCounterClockwise) || System.currentTimeMillis() - start < 300)
             wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed, false);
-
-//        while (Hardware.active() && (theta == Math.PI ? (isCounterClockwise ? (getHeading() < 0) : (getHeading() > 0)) : (Math.abs(getHeading()) < theta)) || System.currentTimeMillis() - start < 300)
-//            wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed, false);
 
         wheels.stop();
 
