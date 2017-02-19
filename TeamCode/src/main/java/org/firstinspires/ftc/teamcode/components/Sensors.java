@@ -252,7 +252,7 @@ public class Sensors {
 
             if (System.currentTimeMillis() - lastDirectionSwitch > 3000) {
                 Hardware.print("Restarted find beacon button");
-                driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 3 : 1), whiteLineThreshold, false, speed);
+                driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 3 : 1), whiteLineThreshold, false, 10000, speed);
                 shouldRestart = true;
                 break;
             } else if (currentReading < previousReading && System.currentTimeMillis() - lastDirectionSwitch > 300) {
@@ -290,26 +290,29 @@ public class Sensors {
         driveUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed);
     }
 
-    public void followLineUntilOdsThreshold(double odsThreshold, double speed) {
+    public void followLineUntilOdsThreshold(double odsThreshold, long timeout, double speed) {
+        timeout += System.currentTimeMillis();
         boolean isGoingForwards = getOpticalDistance() < odsThreshold;
 
-        while (Hardware.active() && Utils.compare(getOpticalDistance(), odsThreshold, !isGoingForwards))
+        while (Hardware.active() && Utils.compare(getOpticalDistance(), odsThreshold, !isGoingForwards) && System.currentTimeMillis() < timeout)
             followLine(speed, isGoingForwards);
         wheels.stop();
     }
 
-    public void followLineUntilOdsThreshold(double odsThreshold) {
-        followLineUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed);
+    public void followLineUntilOdsThreshold(double odsThreshold, long timeout) {
+        followLineUntilOdsThreshold(odsThreshold, timeout, compensatedTranslateSpeed);
     }
 
 
-    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, double speed) {
+    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, long timeout, double speed) {
+        timeout += System.currentTimeMillis();
+
         if (shouldPollGyro) readyCompensatedTranslate(0);
 
         int sufficientReadings = 0,
                 neededSufficientReadings = 1;
 
-        while (Hardware.active() && sufficientReadings < neededSufficientReadings) {
+        while (Hardware.active() && sufficientReadings < neededSufficientReadings && System.currentTimeMillis() < timeout) {
             compensatedTranslate(theta, speed);
             if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)
                 sufficientReadings++;
@@ -319,8 +322,8 @@ public class Sensors {
         if (shouldPollGyro) stopCompensatedTranslate();
     }
 
-    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro) {
-        driveUntilLineReadingThreshold(theta, whiteLineReadingThreshold, shouldPollGyro, compensatedTranslateSpeed);
+    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, long timeout) {
+        driveUntilLineReadingThreshold(theta, whiteLineReadingThreshold, shouldPollGyro, timeout, compensatedTranslateSpeed);
     }
 
     public void driveByTime(double theta, long time, boolean shouldStop, double speed) {
