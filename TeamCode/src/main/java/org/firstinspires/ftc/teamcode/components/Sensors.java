@@ -36,7 +36,7 @@ public class Sensors {
 
     private double initialHeading = 0;
 
-    private final double lostBeaconDifferenceThreshold = 0.03;
+    private final double lostBeaconDifferenceThreshold = 0.025;
 
     private final double compensatedTranslateSpeed = 0.25;
 
@@ -290,7 +290,7 @@ public class Sensors {
         double[] reading = getOpticalDistance();
         boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;
 
-        while (Hardware.active() && isGoingForwards ? (Utils.getMaxMagnitude(reading = getOpticalDistance()) < odsThreshold) : (Utils.getMaxMagnitude(reading = getOpticalDistance()) > odsThreshold) && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold)
+        while (Hardware.active() && isGoingForwards ? (Utils.average((reading = getOpticalDistance())[0], reading[1]) < odsThreshold) : (Utils.average((reading = getOpticalDistance())[0], reading[1]) > odsThreshold) && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold)
             compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
         wheels.stop();
     }
@@ -306,7 +306,7 @@ public class Sensors {
 
         if (!canGoBackwards && !isGoingForwards) return;
 
-        while (Hardware.active() && Utils.compare(Utils.getMaxMagnitude(reading = getOpticalDistance()), odsThreshold, !isGoingForwards) && System.currentTimeMillis() < timeout && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold)
+        while (Hardware.active() && Utils.compare(Utils.average((reading = getOpticalDistance())[0], reading[1]), odsThreshold, !isGoingForwards) && System.currentTimeMillis() < timeout && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold)
             followLine(speed, isGoingForwards);
         wheels.stop();
     }
@@ -327,7 +327,7 @@ public class Sensors {
         int sufficientReadings = 0,
                 neededSufficientReadings = 1;
 
-        while (Hardware.active() && (sufficientReadings < neededSufficientReadings && (time = System.currentTimeMillis()) < maxTime || time < minTime)) {
+        while (Hardware.active() && (sufficientReadings < neededSufficientReadings && (time = System.currentTimeMillis()) < maxTime || (time = System.currentTimeMillis()) < minTime)) {
             compensatedTranslate(theta, speed);
             if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)
                 sufficientReadings++;

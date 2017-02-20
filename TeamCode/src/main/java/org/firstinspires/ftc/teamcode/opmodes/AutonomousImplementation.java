@@ -68,10 +68,12 @@ public class AutonomousImplementation {
         sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 800, false, 0.4);
 
         Hardware.print("Finding second beacon line");
-        boolean success = sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false, true, 0, 2600, 0.4); //translate to line in front of second beacon
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false, true, 0, 2200, 0.4); //translate to line in front of second beacon
+
+        Hardware.sleep(200);
 
         Hardware.print("Realigning on second beacon line");
-        sensors.driveUntilLineReadingThreshold(success ? (Math.PI + Math.PI / 9 * (isRed ? 1 : -1)) : (Math.PI / 2 * (isRed ? -1 : 1)), whiteLineSignalThreshold, false, false, 100, 10000, 0.17);
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold, false, true, 0, 10000, 0.17);
 
         Hardware.print("Capturing second beacon");
         captureBeacon();
