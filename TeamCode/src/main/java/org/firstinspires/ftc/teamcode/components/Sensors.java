@@ -26,7 +26,7 @@ public class Sensors {
     private BNO055IMU imu;
     private ColorSensor leftColorSensor;
     private ColorSensor rightColorSensor;
-    private ModernRoboticsAnalogOpticalDistanceSensor ods;
+    private ModernRoboticsAnalogOpticalDistanceSensor[] ods = new ModernRoboticsAnalogOpticalDistanceSensor[2];
     private ModernRoboticsI2cColorSensor beaconSensor;
     private VoltageSensor voltage;
 
@@ -35,6 +35,8 @@ public class Sensors {
     private Wheels wheels;
 
     private double initialHeading = 0;
+
+    private final double lostBeaconDifferenceThreshold = 0.03;
 
     private final double compensatedTranslateSpeed = 0.25;
 
@@ -45,12 +47,13 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsLeft, ModernRoboticsAnalogOpticalDistanceSensor odsRight, ModernRoboticsI2cColorSensor beaconSensor, VoltageSensor voltage) {
         this.imu = imu;
         this.voltage = voltage;
         this.leftColorSensor = leftColorSensor;
         this.rightColorSensor = rightColorSensor;
-        this.ods = ods;
+        this.ods[0] = odsLeft;
+        this.ods[1] = odsRight;
         this.wheels = Hardware.getWheels();
         this.beaconSensor = beaconSensor;
         beaconSensor.enableLed(false);
@@ -98,8 +101,11 @@ public class Sensors {
         return imu.getPosition();
     }
 
-    public double getOpticalDistance() {
-        return ods.getLightDetected();
+    public double[] getOpticalDistance() {
+        return new double[] {
+                ods[0].getLightDetected(),
+                ods[1].getLightDetected()
+        };
     }
 
     public int[] getBeaconColor() {
@@ -172,7 +178,7 @@ public class Sensors {
         resetHeading();
 
 
-        while (Hardware.active() && Utils.compare(-getHeading(), threshold, !isCounterClockwise) || System.currentTimeMillis() - start < 300)
+        while (Hardware.active() && (Utils.compare(-getHeading(), threshold, !isCounterClockwise) || System.currentTimeMillis() - start < 300))
             wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed, false);
 
         wheels.stop();
@@ -225,7 +231,7 @@ public class Sensors {
         }
     }
 
-    public void findBeaconButton(boolean isRed, double whiteLineThreshold, double speed) {
+    public boolean findBeaconButton(boolean isRed, double whiteLineThreshold, long timeout, double speed) {
 
         boolean goingForward = true,
                 shouldRestart = false;
@@ -236,15 +242,17 @@ public class Sensors {
                 directionSwitches = 0;
 
         long lastDirectionSwitch = System.currentTimeMillis();
+        timeout += lastDirectionSwitch;
 
-        while (Hardware.active()) {
+
+        while (Hardware.active() && System.currentTimeMillis() < timeout) {
 
             if ((currentReading = getBeaconColor()[isRed ? 1 : 0]) > maxColor)
                 maxColor = currentReading;
 
             if (directionSwitches >= 3 && currentReading >= maxColor) {
                 wheels.stop();
-                return;
+                return true;
             } else if (directionSwitches > 5) {
                 maxColor--;
                 directionSwitches = 4;
@@ -252,7 +260,7 @@ public class Sensors {
 
             if (System.currentTimeMillis() - lastDirectionSwitch > 3000) {
                 Hardware.print("Restarted find beacon button");
-                driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 3 : 1), whiteLineThreshold, false, 10000, speed);
+                driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 3 : 1), whiteLineThreshold, false, true, 0, 10000, speed);
                 shouldRestart = true;
                 break;
             } else if (currentReading < previousReading && System.currentTimeMillis() - lastDirectionSwitch > 300) {
@@ -271,17 +279,18 @@ public class Sensors {
             previousReading = currentReading;
         }
 
-        if (shouldRestart) findBeaconButton(isRed, whiteLineThreshold, speed);
+        return shouldRestart ? findBeaconButton(isRed, whiteLineThreshold, timeout - System.currentTimeMillis(), speed) : false;
     }
 
-    public void findBeaconButton(boolean isRed, double whiteLineReadingThreshold) {
-        findBeaconButton(false, whiteLineReadingThreshold, 0.125);
+    public boolean findBeaconButton(boolean isRed, double whiteLineReadingThreshold, long timeout) {
+        return findBeaconButton(false, whiteLineReadingThreshold, timeout, 0.125);
     }
 
     public void driveUntilOdsThreshold(double odsThreshold, double speed) {
-        boolean isGoingForwards = getOpticalDistance() < odsThreshold;
+        double[] reading = getOpticalDistance();
+        boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;
 
-        while (Hardware.active() && isGoingForwards ? (getOpticalDistance() < odsThreshold) : (getOpticalDistance() > odsThreshold))
+        while (Hardware.active() && isGoingForwards ? (Utils.getMaxMagnitude(reading = getOpticalDistance()) < odsThreshold) : (Utils.getMaxMagnitude(reading = getOpticalDistance()) > odsThreshold) && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold)
             compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
         wheels.stop();
     }
@@ -290,40 +299,49 @@ public class Sensors {
         driveUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed);
     }
 
-    public void followLineUntilOdsThreshold(double odsThreshold, long timeout, double speed) {
+    public void followLineUntilOdsThreshold(double odsThreshold, long timeout, boolean canGoBackwards, double speed) {
         timeout += System.currentTimeMillis();
-        boolean isGoingForwards = getOpticalDistance() < odsThreshold;
+        double[] reading = getOpticalDistance();
+        boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;
 
-        while (Hardware.active() && Utils.compare(getOpticalDistance(), odsThreshold, !isGoingForwards) && System.currentTimeMillis() < timeout)
+        if (!canGoBackwards && !isGoingForwards) return;
+
+        while (Hardware.active() && Utils.compare(Utils.getMaxMagnitude(reading = getOpticalDistance()), odsThreshold, !isGoingForwards) && System.currentTimeMillis() < timeout && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold)
             followLine(speed, isGoingForwards);
         wheels.stop();
     }
 
-    public void followLineUntilOdsThreshold(double odsThreshold, long timeout) {
-        followLineUntilOdsThreshold(odsThreshold, timeout, compensatedTranslateSpeed);
+    public void followLineUntilOdsThreshold(double odsThreshold, long timeout, boolean canGoBackwards) {
+        followLineUntilOdsThreshold(odsThreshold, timeout, canGoBackwards, compensatedTranslateSpeed);
     }
 
 
-    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, long timeout, double speed) {
-        timeout += System.currentTimeMillis();
+    public boolean driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime, double speed) {
+        long time = System.currentTimeMillis();
+
+        maxTime += time;
+        minTime += time;
 
         if (shouldPollGyro) readyCompensatedTranslate(0);
 
         int sufficientReadings = 0,
                 neededSufficientReadings = 1;
 
-        while (Hardware.active() && sufficientReadings < neededSufficientReadings && System.currentTimeMillis() < timeout) {
+        while (Hardware.active() && (sufficientReadings < neededSufficientReadings && (time = System.currentTimeMillis()) < maxTime || time < minTime)) {
             compensatedTranslate(theta, speed);
             if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)
                 sufficientReadings++;
         }
-        wheels.stop();
+
+        if (shouldStop) wheels.stop();
 
         if (shouldPollGyro) stopCompensatedTranslate();
+
+        return time < maxTime;
     }
 
-    public void driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, long timeout) {
-        driveUntilLineReadingThreshold(theta, whiteLineReadingThreshold, shouldPollGyro, timeout, compensatedTranslateSpeed);
+    public boolean driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime) {
+        return driveUntilLineReadingThreshold(theta, whiteLineReadingThreshold, shouldPollGyro, shouldStop, minTime, maxTime, compensatedTranslateSpeed);
     }
 
     public void driveByTime(double theta, long time, boolean shouldStop, double speed) {

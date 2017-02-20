@@ -57,10 +57,9 @@ public class AutonomousImplementation {
         sensors.driveByTime(isRed ? 1 : -1 * Math.PI / 2, 300, false, 0.35);
 
         Hardware.print("Finding first beacon line");
-        sensors.driveUntilLineReadingThreshold(isRed ? (9 * Math.PI / 10) : (13 * Math.PI / 12), whiteLineSignalThreshold, true, 10000, 0.4); //translate to line in front of first beacon
+        sensors.driveUntilLineReadingThreshold(isRed ? (8 * Math.PI / 9) : (13 * Math.PI / 12), whiteLineSignalThreshold, true, true, 0, 10000, 0.4); //translate to line in front of first beacon
 
-        Hardware.print("Stopping to lose momentum");
-        Hardware.sleep(500);
+        Hardware.sleep(200);
 
         Hardware.print("Capturing first beacon");
         captureBeacon();
@@ -69,14 +68,10 @@ public class AutonomousImplementation {
         sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 800, false, 0.4);
 
         Hardware.print("Finding second beacon line");
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false, 2600, 0.4); //translate to line in front of second beacon
-
-        Hardware.sleep(250);
+        boolean success = sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false, true, 0, 2600, 0.4); //translate to line in front of second beacon
 
         Hardware.print("Realigning on second beacon line");
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold, false, 10000, 0.17);
-
-        Hardware.sleep(250);
+        sensors.driveUntilLineReadingThreshold(success ? (Math.PI + Math.PI / 9 * (isRed ? 1 : -1)) : (Math.PI / 2 * (isRed ? -1 : 1)), whiteLineSignalThreshold, false, false, 100, 10000, 0.17);
 
         Hardware.print("Capturing second beacon");
         captureBeacon();
@@ -93,7 +88,7 @@ public class AutonomousImplementation {
     private void captureBeacon() {
 
         Hardware.print("Following line");
-        sensors.followLineUntilOdsThreshold(odsThresholdFindButton, 4000, 0.15); //pull up to beacon
+        sensors.followLineUntilOdsThreshold(odsThresholdFindButton, 4000, false, 0.15); //pull up to beacon
 
         Hardware.sleep(250);
 
@@ -115,11 +110,11 @@ public class AutonomousImplementation {
             }
         } else {
             Hardware.print("Finding button");
-            sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 0.13);
 
-            Hardware.sleep(500);
-
-            pushButton();
+            if (sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 7000, 0.13)) {
+                Hardware.sleep(500);
+                pushButton();
+            }
         }
 
         backUpFromBeacon();
@@ -127,7 +122,7 @@ public class AutonomousImplementation {
 
     private void realignOnBeacon() {
         Hardware.print("Realigning on beacon");
-        sensors.followLineUntilOdsThreshold(odsRealignThreshold, 3000, 0.125);
+        sensors.followLineUntilOdsThreshold(odsRealignThreshold, 3000, true, 0.125);
     }
 
     private void backUpFromBeacon() {
@@ -145,5 +140,4 @@ public class AutonomousImplementation {
 
         sensors.driveByTime(Math.PI, 400, true, 1);
     }
-
 }

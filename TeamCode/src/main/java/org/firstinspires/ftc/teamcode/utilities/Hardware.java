@@ -81,7 +81,8 @@ public class Hardware {
                 map.get(BNO055IMU.class, "imu"),
                 map.colorSensor.get("left-color-sensor"),
                 map.colorSensor.get("right-color-sensor"),
-                (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods-centered"),
+                (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods-left"),
+                (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods-right"),
                 (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor"),
                 map.voltageSensor.iterator().next()
         ) : sensors;
