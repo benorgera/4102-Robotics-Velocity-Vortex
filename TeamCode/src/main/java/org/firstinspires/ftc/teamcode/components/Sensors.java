@@ -26,7 +26,7 @@ public class Sensors {
     private BNO055IMU imu;
     private ColorSensor leftColorSensor;
     private ColorSensor rightColorSensor;
-    private ModernRoboticsAnalogOpticalDistanceSensor[] ods = new ModernRoboticsAnalogOpticalDistanceSensor[2];
+    private ModernRoboticsAnalogOpticalDistanceSensor[] ods;
     private ModernRoboticsI2cColorSensor beaconSensor;
     private VoltageSensor voltage;
 
@@ -52,8 +52,7 @@ public class Sensors {
         this.voltage = voltage;
         this.leftColorSensor = leftColorSensor;
         this.rightColorSensor = rightColorSensor;
-        this.ods[0] = odsLeft;
-        this.ods[1] = odsRight;
+        this.ods = new ModernRoboticsAnalogOpticalDistanceSensor[] {odsLeft, odsRight};
         this.wheels = Hardware.getWheels();
         this.beaconSensor = beaconSensor;
         beaconSensor.enableLed(false);

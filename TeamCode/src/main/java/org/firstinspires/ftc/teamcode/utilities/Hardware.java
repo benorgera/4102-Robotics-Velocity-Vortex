@@ -3,10 +3,11 @@ package org.firstinspires.ftc.teamcode.utilities;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.components.Intake;
 import org.firstinspires.ftc.teamcode.components.Lift;
@@ -86,7 +87,6 @@ public class Hardware {
                 (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor"),
                 map.voltageSensor.iterator().next()
         ) : sensors;
-
     }
 
     public static Shooter getShooter() {
