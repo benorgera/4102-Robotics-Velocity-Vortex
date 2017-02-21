@@ -90,7 +90,7 @@ public class AutonomousImplementation {
     private void captureBeacon() {
 
         Hardware.print("Following line");
-        sensors.followLineUntilOdsThreshold(odsThresholdFindButton, 4000, false, 0.15); //pull up to beacon
+        sensors.followLineUntilOdsThreshold(odsThresholdFindButton, 4000, false, 0.16); //pull up to beacon
 
         Hardware.sleep(250);
 
@@ -124,7 +124,7 @@ public class AutonomousImplementation {
 
     private void realignOnBeacon() {
         Hardware.print("Realigning on beacon");
-        sensors.followLineUntilOdsThreshold(odsRealignThreshold, 3000, true, 0.125);
+        sensors.followLineUntilOdsThreshold(odsRealignThreshold, 3000, true, 0.135);
     }
 
     private void backUpFromBeacon() {
