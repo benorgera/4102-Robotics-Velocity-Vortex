@@ -79,7 +79,7 @@ public class AutonomousImplementation {
         captureBeacon();
 
         Hardware.print("Turning towards the cap ball");
-        sensors.turn(2 * Math.PI / 9 * (isRed ? 1 : -1), Math.PI / 25, 0.4);
+        sensors.turn(3 * Math.PI / 14 * (isRed ? 1 : -1), Math.PI / 20, 0.4);
 
         Hardware.getIntake().moveRampForShot();
 
