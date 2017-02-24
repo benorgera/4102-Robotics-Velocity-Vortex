@@ -57,6 +57,7 @@ public class Test extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+
             if (gamepad1.back)
                 wheels.readyCompensatedTranslate(softMotionTime);
 
@@ -172,6 +173,7 @@ public class Test extends LinearOpMode {
 
             if (gamepad1.a) sensors.centerOnZero();
 
+            telemetry.addData("ballSensor", Hardware.getShooter().getAlpha());
             telemetry.addData("sst", softMotionTime);
             telemetry.addData("rH | iH | head", Utils.toString(Utils.toDegrees(sensors.getRawHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getInitialHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getHeading())));
             telemetry.addData("ng | strafe", Utils.toString(sensors.getNgConstant()) + " | " + Utils.toString(sensors.getStrafeConstant()));

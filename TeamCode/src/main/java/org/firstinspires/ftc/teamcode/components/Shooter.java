@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.components;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.DifferentialControlLoopCoefficients;
 
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
 import org.firstinspires.ftc.teamcode.utilities.Utils;
@@ -33,7 +35,9 @@ public class Shooter {
 
         for (DcMotor m : disks) {
             m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            ((ModernRoboticsUsbDcMotorController) m.getController()).setDifferentialControlLoopCoefficients(m.getPortNumber(), new DifferentialControlLoopCoefficients(160, 32, 112));
+            ((ModernRoboticsUsbDcMotorController) m.getController()).setGearRatio(m.getPortNumber(), 25);
         }
 
         disks[1].setDirection(DcMotor.Direction.REVERSE);
@@ -44,29 +48,23 @@ public class Shooter {
         Hardware.getWheels().stop(); //stop the robot in case its moving
         door.setPosition(doorPositions[0]); //open shooter
 
-        PID controller = new PID(disks, 0.55, 0.55, 0.1, 0.25); //initialize speed controller
+        setDiskMotorPowers(speed / 10); //bring motors up to speed by starting the PID
 
-        Thread runnable = new Thread(controller);
-        runnable.start(); //bring motors up to speed by starting the PID
+        Hardware.sleep(1500); //wait for motors to come up to speed
 
-        while (takeShot(controller)); //while there's another ball remaining, shoot
-
-        runnable.interrupt(); //stop the PID
+        while (takeShot()); //while there's another ball remaining, shoot
 
         //reset stuff
         ballSensor.enableLed(false);
         Hardware.getIntake().stopElevator();
-        stop();
+        stop(); //stop the PID
         door.setPosition(doorPositions[1]); //reset ramp for next intaking
         Hardware.getIntake().dropRamp(0);
     }
 
     //take shot while regulating speed, stopping elevator after first ball passes through
     //return true if another ball remains, and therefore another shot should be taken
-    private boolean takeShot(PID controller) {
-        while (!controller.ready()) //wait while the motors aren't up to speed
-            Hardware.sleep(10);
-
+    private boolean takeShot() {
         Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
         Hardware.getIntake().startElevator(); //feed shot through the shooter
 
@@ -74,10 +72,7 @@ public class Shooter {
         //if this command times out, false is returned and no balls remain so no more shots should be taken
         boolean takingAnotherShot = waitForNextBall();
 
-        Hardware.getIntake().stopElevator(); //stop elevator
-
-        //tell the controller the motors are no longer at the right speed, so compensation is once again applied
-        controller.reset();
+        Hardware.getIntake().stopElevator(); //stop elevator once next ball is sensed, or times out
 
         return takingAnotherShot; //return true if another shot is to be taken
     }
@@ -93,7 +88,7 @@ public class Shooter {
 
         //continue running the elevator (waiting) until you see a new ball, or you time out
         //waiting will only cease after at least 50ms have passed since last sensing a ball
-        while (!hasBall() || System.currentTimeMillis() - lastHadBall < 50 && (foundAnotherBall = System.currentTimeMillis() - lastHadBall < 200))
+        while (!hasBall() || System.currentTimeMillis() - lastHadBall < 150 && (foundAnotherBall = System.currentTimeMillis() - lastHadBall < 200))
             Hardware.sleep(10);
 
         return foundAnotherBall; //return true unless no additional balls were found
@@ -104,12 +99,17 @@ public class Shooter {
             m.setPower(power);
     }
 
+    //returns true if a ball is sensed in the elevator, ready to be shot
     private boolean hasBall() {
         return ballSensor.alpha() > alphaThreshold;
     }
 
     public void stop() {
         setDiskMotorPowers(0);
+    }
+
+    public int getAlpha() {
+        return ballSensor.alpha();
     }
 
 }
