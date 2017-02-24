@@ -223,10 +223,10 @@ public class Sensors {
         double left = readings[0],
                 right = readings[1];
 
-        if (Math.abs(left - right) <= 35) { //both sensors equally on the white line
-            compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
+        if (Math.abs(left - right) <= 40) { //both sensors equally on the white line
+            compensatedTranslate(isGoingForwards ? Math.PI + Math.PI / 23 : 0, speed);
         } else { //left more on the white line turn left, right turn right
-            compensatedTranslate((isGoingForwards ? Math.PI : 0) + (Math.PI / 8 * (left > right ? 1 : -1) * (isGoingForwards ? 1 : -1)), speed);
+            compensatedTranslate((isGoingForwards ? Math.PI : 0) + (Math.PI / 8 * (left > right ? 1.5 : -1) * (isGoingForwards ? 1 : -1)), speed);
         }
     }
 
@@ -292,6 +292,25 @@ public class Sensors {
         while (Hardware.active() && isGoingForwards ? (Utils.average((reading = getOpticalDistance())[0], reading[1]) < odsThreshold) : (Utils.average((reading = getOpticalDistance())[0], reading[1]) > odsThreshold) && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold)
             compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
         wheels.stop();
+    }
+
+    public void pulseUntilOdsThreshold(double odsThreshold, double speed) {
+        double[] reading = getOpticalDistance();
+        boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;
+
+        long start = System.currentTimeMillis();
+
+        while (Hardware.active() && isGoingForwards ? (Utils.average((reading = getOpticalDistance())[0], reading[1]) < odsThreshold) : (Utils.average((reading = getOpticalDistance())[0], reading[1]) > odsThreshold) && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold) {
+            if ((System.currentTimeMillis() - start) % 200 < 100)
+                compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
+            else
+                wheels.stop();
+        }
+        wheels.stop();
+    }
+
+    public void pulseUntilOdsThreshold(double odsThreshold) {
+        pulseUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed);
     }
 
     public void driveUntilOdsThreshold(double odsThreshold) {
