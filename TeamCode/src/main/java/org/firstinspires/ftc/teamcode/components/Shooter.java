@@ -72,6 +72,8 @@ public class Shooter {
         //if this command times out, false is returned and no balls remain so no more shots should be taken
         boolean takingAnotherShot = waitForNextBall();
 
+        if (takingAnotherShot) Hardware.sleep(200); //wait for PID to attain desired speed again
+
         Hardware.getIntake().stopElevator(); //stop elevator once next ball is sensed, or times out
 
         return takingAnotherShot; //return true if another shot is to be taken
