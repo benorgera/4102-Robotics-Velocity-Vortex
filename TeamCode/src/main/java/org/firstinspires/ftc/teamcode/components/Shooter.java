@@ -40,7 +40,7 @@ public class Shooter {
             ((ModernRoboticsUsbDcMotorController) m.getController()).setGearRatio(m.getPortNumber(), 25);
         }
 
-        disks[1].setDirection(DcMotor.Direction.REVERSE);
+        disks[0].setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void shoot(double speed) {
