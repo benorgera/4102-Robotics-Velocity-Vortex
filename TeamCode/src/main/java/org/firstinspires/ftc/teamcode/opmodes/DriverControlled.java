@@ -26,7 +26,8 @@ public class DriverControlled extends LinearOpMode {
     private Intake intake;
 
     private double shotPower = 6;
-    
+
+    private boolean wasPreppingShot = false;
     private boolean wasTogglingDirection = false;
     private boolean wasTogglingSlowMode = false;
     private boolean wasUppingShotPower = false;
@@ -36,6 +37,8 @@ public class DriverControlled extends LinearOpMode {
     private boolean wasDroppingFork = false;
 
     private boolean hasDroppedFork = false;
+
+    private boolean isPreppingShot = false;
 
     private long startTime;
 
@@ -94,13 +97,23 @@ public class DriverControlled extends LinearOpMode {
 
         wasDowningShotPower = gamepad2.dpad_left;
 
-        if (gamepad2.b && !intake.isRunning() && !wasShooting)
+        if (gamepad2.y && !wasPreppingShot && !isPreppingShot) {
+            isPreppingShot = true;
+            shooter.prepShot(shotPower);
+        } else if (gamepad2.y && !wasPreppingShot){
+            shooter.stop();
+            shooter.close();
+            isPreppingShot = false;
+        }
+
+        wasPreppingShot = gamepad2.y;
+
+        if (gamepad2.b && !intake.isRunning() && !wasShooting) {
             shooter.shoot(shotPower);
+            isPreppingShot = false;
+        }
 
         wasShooting = gamepad2.b;
-
-
-
 
         //--------------------------Intake-------------------------------
 

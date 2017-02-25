@@ -24,16 +24,16 @@ public class Shooter {
     private Servo door;
     private ColorSensor ballSensor;
 
-    private final double[] doorPositions = {0.333, 1}; //open and closed respectively
+    private final double[] doorPositions = {0.3, 1}; //open and closed respectively
 
-    private final double alphaThreshold = 60;
+    private final double alphaThreshold = 55;
 
     public Shooter(DcMotor[] disks, Servo door, ColorSensor ballSensor) {
         this.door = door;
         this.disks = disks;
         this.ballSensor = ballSensor;
 
-        door.setPosition(doorPositions[1]);
+        close();
 
         ballSensor.enableLed(true); //turn on LED so we can sense the ball
 
@@ -45,23 +45,22 @@ public class Shooter {
         disks[1].setDirection(DcMotor.Direction.REVERSE);
     }
 
-    public void shoot(double speed) {
-        Hardware.getWheels().stop(); //stop the robot in case its moving
-        door.setPosition(doorPositions[0]); //open shooter
-
+    public void prepShot(double speed) {
+        open(); //open shooter
         setDiskMotorPowers(speed / 10); //bring motors up to speed by starting the PID
+    }
 
-        Hardware.print("shooting at " + speed / 10);
-
-        Hardware.sleep(1500); //wait for motors to come up to speed
+    public void shoot(double speed) {
+        setDiskMotorPowers(speed / 10); //adjust speed (maybe it was prepped lower)
+        Hardware.getWheels().stop(); //stop the robot in case its moving
 
         while (takeShot() && Hardware.active()); //while there's another ball remaining, shoot
 
         //reset stuff
         Hardware.getIntake().stopElevator();
         stop(); //stop the PID
-        door.setPosition(doorPositions[1]); //reset ramp for next intaking
-        Hardware.getIntake().dropRamp(0);
+        close();
+        Hardware.getIntake().dropRamp(0); //reset ramp for next intaking
     }
 
     //take shot while regulating speed, stopping elevator after first ball passes through
@@ -80,10 +79,14 @@ public class Shooter {
 
         Hardware.print("stop elevator");
 
-        //stop elevator once next ball is sensed, or times out
-        Hardware.getIntake().stopElevator();
-
-        if (takingAnotherShot) Hardware.sleep(350); //wait for PID to attain desired speed again
+        if (takingAnotherShot) {
+            Hardware.getIntake().runElevator(-0.3);
+            Hardware.sleep(20);
+            Hardware.getIntake().stopElevator();;
+            Hardware.sleep(600);
+        } else {
+            Hardware.getIntake().stopElevator();
+        }
 
         return takingAnotherShot; //return true if another shot is to be taken
     }
@@ -116,7 +119,7 @@ public class Shooter {
 
     //returns true if a ball is sensed in the elevator, ready to be shot
     private boolean hasBall() {
-        long stop = System.currentTimeMillis() + 100;
+        long stop = System.currentTimeMillis() + 75;
 
         double total = 0;
         int count = 0;
@@ -134,6 +137,14 @@ public class Shooter {
 
     public void stop() {
         setDiskMotorPowers(0);
+    }
+
+    public void close() {
+        door.setPosition(doorPositions[1]);
+    }
+
+    private void open() {
+        door.setPosition(doorPositions[0]);
     }
 
     public double getAlpha() {
