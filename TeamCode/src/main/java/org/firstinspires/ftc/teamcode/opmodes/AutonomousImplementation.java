@@ -44,8 +44,7 @@ public class AutonomousImplementation {
         sensors.driveByTime(-Math.PI / 2, 200, false, 0.3);
 
         Hardware.getWheels().softStop(300);
-
-        Hardware.sleep(900);
+        Hardware.sleep(1000);
 
         Hardware.print("Shooting");
         shooter.shoot(6.67, true);
@@ -82,7 +81,7 @@ public class AutonomousImplementation {
         captureBeacon();
 
         Hardware.print("Turning towards the cap ball");
-        sensors.turn(3 * Math.PI / 14 * (isRed ? 1 : -1), Math.PI / 30, 0.4);
+        sensors.turn(3 * Math.PI / 13 * (isRed ? 1 : -1), Math.PI / 30, 0.4);
 
         Hardware.getIntake().moveRampForShot();
 
