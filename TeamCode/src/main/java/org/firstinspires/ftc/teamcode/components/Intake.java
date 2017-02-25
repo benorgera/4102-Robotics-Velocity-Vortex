@@ -73,5 +73,9 @@ public class Intake {
         return isRunning;
     }
 
+    public void runElevator(double power) {
+        intake.setPower(power);
+    }
+
 
 }

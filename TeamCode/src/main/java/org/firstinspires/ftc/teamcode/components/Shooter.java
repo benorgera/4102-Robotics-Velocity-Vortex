@@ -35,16 +35,17 @@ public class Shooter {
 
         door.setPosition(doorPositions[1]);
 
+        ballSensor.enableLed(true); //turn on LED so we can sense the ball
+
         for (DcMotor m : disks) {
             m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
-        disks[0].setDirection(DcMotor.Direction.REVERSE);
+        disks[1].setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void shoot(double speed) {
-        ballSensor.enableLed(true); //turn on LED so we can sense the ball
         Hardware.getWheels().stop(); //stop the robot in case its moving
         door.setPosition(doorPositions[0]); //open shooter
 
@@ -57,7 +58,6 @@ public class Shooter {
         while (takeShot() && Hardware.active()); //while there's another ball remaining, shoot
 
         //reset stuff
-        ballSensor.enableLed(false);
         Hardware.getIntake().stopElevator();
         stop(); //stop the PID
         door.setPosition(doorPositions[1]); //reset ramp for next intaking
@@ -76,11 +76,14 @@ public class Shooter {
         //if this command times out, false is returned and no balls remain so no more shots should be taken
         boolean takingAnotherShot = waitForNextBall();
 
+        Hardware.print(takingAnotherShot ? "taking" : "not taking" + " another shot");
+
         Hardware.print("stop elevator");
 
-        Hardware.getIntake().stopElevator(); //stop elevator once next ball is sensed, or times out
+        //stop elevator once next ball is sensed, or times out
+        Hardware.getIntake().stopElevator();
 
-        if (takingAnotherShot) Hardware.sleep(1000); //wait for PID to attain desired speed again
+        if (takingAnotherShot) Hardware.sleep(350); //wait for PID to attain desired speed again
 
         return takingAnotherShot; //return true if another shot is to be taken
     }
@@ -88,16 +91,21 @@ public class Shooter {
     //wait for the next ball to be sensed, and return true unless another ball is never found
     private boolean waitForNextBall() {
 
+        long started = System.currentTimeMillis();
+
         Hardware.print("while has ball");
         while (hasBall() && Hardware.active()); //wait for the ball currently being shot to pass through
 
         long lastHadBall = System.currentTimeMillis();
+
+        Hardware.print("had ball for " + (lastHadBall - started) + " ms");
 
         //continue running the elevator (waiting) until you see a new ball, or you time out
         //waiting will only cease after at least 50ms have passed since last sensing a ball
         Hardware.print("while not next ball");
         while (Hardware.active() && !hasBall() && (System.currentTimeMillis() - lastHadBall) < 1000 || System.currentTimeMillis() - lastHadBall < 150);
 
+        Hardware.print("waited " + (System.currentTimeMillis() - lastHadBall) + "ms for next ball");
         return System.currentTimeMillis() - lastHadBall < 500; //return true unless no additional balls were found
     }
 
@@ -108,15 +116,28 @@ public class Shooter {
 
     //returns true if a ball is sensed in the elevator, ready to be shot
     private boolean hasBall() {
-        return ballSensor.alpha() > alphaThreshold;
+        long stop = System.currentTimeMillis() + 100;
+
+        double total = 0;
+        int count = 0;
+
+        while (System.currentTimeMillis() < stop) {
+            count++;
+            total += getAlpha();
+        }
+
+        Hardware.print("avg: " + total / count);
+        Hardware.print("c: " + count);
+
+        return total / count > alphaThreshold;
     }
 
     public void stop() {
         setDiskMotorPowers(0);
     }
 
-    public int getAlpha() {
-        return (int) Utils.getMaxMagnitude(new double[] {(double) ballSensor.red(), (double) ballSensor.blue()});
+    public double getAlpha() {
+        return Utils.getMagnitude(ballSensor.red(), ballSensor.blue());
     }
 
 }
