@@ -50,11 +50,13 @@ public class Shooter {
         setDiskMotorPowers(speed / 10); //bring motors up to speed by starting the PID
     }
 
-    public void shoot(double speed) {
+    public void shoot(double speed, boolean isAuton) {
         setDiskMotorPowers(speed / 10); //adjust speed (maybe it was prepped lower)
         Hardware.getWheels().stop(); //stop the robot in case its moving
 
-        while (takeShot() && Hardware.active()); //while there's another ball remaining, shoot
+        boolean hasShot = false;
+
+        while (takeShot(hasShot) && Hardware.active()) hasShot = isAuton; //while there's another ball remaining, shoot
 
         //reset stuff
         Hardware.getIntake().stopElevator();
@@ -65,7 +67,7 @@ public class Shooter {
 
     //take shot while regulating speed, stopping elevator after first ball passes through
     //return true if another ball remains, and therefore another shot should be taken
-    private boolean takeShot() {
+    private boolean takeShot(boolean isLastShot) {
         Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
         Hardware.getIntake().startElevator(); //feed shot through the shooter
 
@@ -73,7 +75,7 @@ public class Shooter {
 
         //wait for the next ball to be in position
         //if this command times out, false is returned and no balls remain so no more shots should be taken
-        boolean takingAnotherShot = waitForNextBall();
+        boolean takingAnotherShot = waitForNextBall(isLastShot);
 
         Hardware.print(takingAnotherShot ? "taking" : "not taking" + " another shot");
 
@@ -92,7 +94,7 @@ public class Shooter {
     }
 
     //wait for the next ball to be sensed, and return true unless another ball is never found
-    private boolean waitForNextBall() {
+    private boolean waitForNextBall(boolean isLastShot) {
 
         long started = System.currentTimeMillis();
 
@@ -102,6 +104,8 @@ public class Shooter {
         long lastHadBall = System.currentTimeMillis();
 
         Hardware.print("had ball for " + (lastHadBall - started) + " ms");
+
+        if (isLastShot) return false;
 
         //continue running the elevator (waiting) until you see a new ball, or you time out
         //waiting will only cease after at least 50ms have passed since last sensing a ball
