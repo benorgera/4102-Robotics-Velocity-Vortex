@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.os.SystemClock;
-
-import org.firstinspires.ftc.teamcode.components.Wheels;
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
-import org.firstinspires.ftc.teamcode.utilities.Utils;
 
 /**
  * Created by benorgera on 11/24/16.
@@ -21,7 +17,7 @@ public class AutonomousImplementation {
     private final boolean isDoublePushing;
 
     private final double odsThresholdFindButton = 0.03;
-    private final double odsRealignThreshold = 0.046;
+    private final double odsRealignThreshold = 0.049;
 
 
     private final double whiteLineSignalThreshold = 60; //the minimum color sensor reading required to signify finding the white line
@@ -42,17 +38,17 @@ public class AutonomousImplementation {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.5);
+        shooter.prepShot(6.67);
 
         Hardware.print("Moving away from wall");
         sensors.driveByTime(-Math.PI / 2, 200, false, 0.3);
 
         Hardware.getWheels().softStop(300);
 
-        Hardware.sleep(1000);
+        Hardware.sleep(900);
 
         Hardware.print("Shooting");
-        shooter.shoot(6.5);
+        shooter.shoot(6.67);
 
         if (isRed) {
             Hardware.print("Pulling away from wall");
@@ -86,7 +82,7 @@ public class AutonomousImplementation {
         captureBeacon();
 
         Hardware.print("Turning towards the cap ball");
-        sensors.turn(3 * Math.PI / 14 * (isRed ? 1 : -1), Math.PI / 20, 0.4);
+        sensors.turn(3 * Math.PI / 14 * (isRed ? 1 : -1), Math.PI / 30, 0.4);
 
         Hardware.getIntake().moveRampForShot();
 
@@ -120,7 +116,7 @@ public class AutonomousImplementation {
         } else {
             Hardware.print("Finding button");
 
-            if (sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 7000, 0.135)) {
+            if (sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 7000, 0.13)) {
                 Hardware.sleep(500);
                 pushButton();
             }
