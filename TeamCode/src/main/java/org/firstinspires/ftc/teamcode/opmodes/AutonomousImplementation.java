@@ -42,15 +42,17 @@ public class AutonomousImplementation {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.2);
+        shooter.prepShot(6.5);
 
         Hardware.print("Moving away from wall");
         sensors.driveByTime(-Math.PI / 2, 200, false, 0.3);
 
-        Hardware.getWheels().softStop(200);
+        Hardware.getWheels().softStop(300);
+
+        Hardware.sleep(1000);
 
         Hardware.print("Shooting");
-        shooter.shoot(6.2);
+        shooter.shoot(6.5);
 
         if (isRed) {
             Hardware.print("Pulling away from wall");
