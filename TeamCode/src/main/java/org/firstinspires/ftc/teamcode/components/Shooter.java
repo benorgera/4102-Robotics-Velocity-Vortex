@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.components;
 
+import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -24,7 +26,7 @@ public class Shooter {
 
     private final double[] doorPositions = {0.333, 1}; //open and closed respectively
 
-    private final double alphaThreshold = 100;
+    private final double alphaThreshold = 60;
 
     public Shooter(DcMotor[] disks, Servo door, ColorSensor ballSensor) {
         this.door = door;
@@ -36,8 +38,6 @@ public class Shooter {
         for (DcMotor m : disks) {
             m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            ((ModernRoboticsUsbDcMotorController) m.getController()).setDifferentialControlLoopCoefficients(m.getPortNumber(), new DifferentialControlLoopCoefficients(160, 32, 112));
-            ((ModernRoboticsUsbDcMotorController) m.getController()).setGearRatio(m.getPortNumber(), 25);
         }
 
         disks[0].setDirection(DcMotor.Direction.REVERSE);
@@ -50,9 +50,11 @@ public class Shooter {
 
         setDiskMotorPowers(speed / 10); //bring motors up to speed by starting the PID
 
+        Hardware.print("shooting at " + speed / 10);
+
         Hardware.sleep(1500); //wait for motors to come up to speed
 
-        while (takeShot()); //while there's another ball remaining, shoot
+        while (takeShot() && Hardware.active()); //while there's another ball remaining, shoot
 
         //reset stuff
         ballSensor.enableLed(false);
@@ -68,32 +70,35 @@ public class Shooter {
         Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
         Hardware.getIntake().startElevator(); //feed shot through the shooter
 
+
+
         //wait for the next ball to be in position
         //if this command times out, false is returned and no balls remain so no more shots should be taken
         boolean takingAnotherShot = waitForNextBall();
 
-        if (takingAnotherShot) Hardware.sleep(200); //wait for PID to attain desired speed again
+        Hardware.print("stop elevator");
 
         Hardware.getIntake().stopElevator(); //stop elevator once next ball is sensed, or times out
+
+        if (takingAnotherShot) Hardware.sleep(1000); //wait for PID to attain desired speed again
 
         return takingAnotherShot; //return true if another shot is to be taken
     }
 
     //wait for the next ball to be sensed, and return true unless another ball is never found
     private boolean waitForNextBall() {
-        while (hasBall()) //wait for the ball currently being shot to pass through
-            Hardware.sleep(10);
+
+        Hardware.print("while has ball");
+        while (hasBall() && Hardware.active()); //wait for the ball currently being shot to pass through
 
         long lastHadBall = System.currentTimeMillis();
 
-        boolean foundAnotherBall = true;
-
         //continue running the elevator (waiting) until you see a new ball, or you time out
         //waiting will only cease after at least 50ms have passed since last sensing a ball
-        while (!hasBall() || System.currentTimeMillis() - lastHadBall < 150 && (foundAnotherBall = System.currentTimeMillis() - lastHadBall < 200))
-            Hardware.sleep(10);
+        Hardware.print("while not next ball");
+        while (Hardware.active() && !hasBall() && (System.currentTimeMillis() - lastHadBall) < 1000 || System.currentTimeMillis() - lastHadBall < 150);
 
-        return foundAnotherBall; //return true unless no additional balls were found
+        return System.currentTimeMillis() - lastHadBall < 500; //return true unless no additional balls were found
     }
 
     private void setDiskMotorPowers(double power) {
@@ -111,7 +116,7 @@ public class Shooter {
     }
 
     public int getAlpha() {
-        return ballSensor.alpha();
+        return (int) Utils.getMaxMagnitude(new double[] {(double) ballSensor.red(), (double) ballSensor.blue()});
     }
 
 }
