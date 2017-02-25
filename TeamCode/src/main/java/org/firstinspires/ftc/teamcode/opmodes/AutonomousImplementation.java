@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import android.os.SystemClock;
 
+import org.firstinspires.ftc.teamcode.components.Wheels;
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
@@ -44,7 +45,9 @@ public class AutonomousImplementation {
         shooter.prepShot(6.2);
 
         Hardware.print("Moving away from wall");
-        sensors.driveByTime(-Math.PI / 2, 250, true, 0.3);
+        sensors.driveByTime(-Math.PI / 2, 200, false, 0.3);
+
+        Hardware.getWheels().softStop(200);
 
         Hardware.print("Shooting");
         shooter.shoot(6.2);
@@ -71,7 +74,7 @@ public class AutonomousImplementation {
         sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 800, false, 0.4);
 
         Hardware.print("Finding second beacon line");
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false, true, 0, 1800, 0.4); //translate to line in front of second beacon
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false, true, 0, 1600, 0.4); //translate to line in front of second beacon
 
         Hardware.sleep(200);
 
