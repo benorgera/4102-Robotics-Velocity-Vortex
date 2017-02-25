@@ -109,7 +109,7 @@ public class DriverControlled extends LinearOpMode {
         wasPreppingShot = gamepad2.y;
 
         if (gamepad2.b && !intake.isRunning() && !wasShooting) {
-            shooter.shoot(shotPower);
+            shooter.shoot(shotPower, false);
             isPreppingShot = false;
         }
 

@@ -48,7 +48,7 @@ public class AutonomousImplementation {
         Hardware.sleep(900);
 
         Hardware.print("Shooting");
-        shooter.shoot(6.67);
+        shooter.shoot(6.67, true);
 
         if (isRed) {
             Hardware.print("Pulling away from wall");
