@@ -93,9 +93,10 @@ public class Hardware {
         return shooter == null ? shooter = new Shooter(
                 new DcMotor[] {
                         map.dcMotor.get("shooter-left"),
-                        map.dcMotor.get("shooter-right")
+                        map.dcMotor.get("shooter-right"),
                 },
-                map.servo.get("door")
+                map.servo.get("door"),
+                map.colorSensor.get("ball-sensor")
         ) : shooter;
     }
 
