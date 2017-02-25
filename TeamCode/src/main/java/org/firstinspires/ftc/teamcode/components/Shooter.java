@@ -54,9 +54,9 @@ public class Shooter {
         setDiskMotorPowers(speed / 10); //adjust speed (maybe it was prepped lower)
         Hardware.getWheels().stop(); //stop the robot in case its moving
 
-        boolean hasShot = false;
+        int count = 0;
 
-        while (takeShot(hasShot) && Hardware.active()) hasShot = isAuton; //while there's another ball remaining, shoot
+        while (takeShot((count == 1 && isAuton) || count == 2) && Hardware.active()) count++; //while there's another ball remaining, shoot
 
         //reset stuff
         Hardware.getIntake().stopElevator();
