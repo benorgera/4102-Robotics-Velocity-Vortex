@@ -110,7 +110,7 @@ public class Shooter {
         //continue running the elevator (waiting) until you see a new ball, or you time out
         //waiting will only cease after at least 50ms have passed since last sensing a ball
         Hardware.print("while not next ball");
-        while (Hardware.active() && !hasBall() && (System.currentTimeMillis() - lastHadBall) < 1000 || System.currentTimeMillis() - lastHadBall < 150);
+        while (Hardware.active() && !hasBall() && (System.currentTimeMillis() - lastHadBall) < 1100 || System.currentTimeMillis() - lastHadBall < 150);
 
         Hardware.print("waited " + (System.currentTimeMillis() - lastHadBall) + "ms for next ball");
         return System.currentTimeMillis() - lastHadBall < 500; //return true unless no additional balls were found
