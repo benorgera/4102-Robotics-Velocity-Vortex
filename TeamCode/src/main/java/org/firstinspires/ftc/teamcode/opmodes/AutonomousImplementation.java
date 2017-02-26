@@ -38,7 +38,7 @@ public class AutonomousImplementation {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.65);
+        shooter.prepShot(6.64);
 
         Hardware.print("Moving away from wall");
         sensors.driveByTime(-Math.PI / 2, 200, false, 0.3);
@@ -47,7 +47,7 @@ public class AutonomousImplementation {
         Hardware.sleep(1000);
 
         Hardware.print("Shooting");
-        shooter.shoot(6.65, true);
+        shooter.shoot(6.64, true);
 
         if (isRed) {
             Hardware.print("Pulling away from wall");
@@ -81,7 +81,7 @@ public class AutonomousImplementation {
         captureBeacon();
 
         Hardware.print("Turning towards the cap ball");
-        sensors.turn(3 * Math.PI / 13 * (isRed ? 1 : -1), Math.PI / 30, 0.4);
+        sensors.turn(2 * Math.PI / 9 * (isRed ? 1 : -1), Math.PI / 30, 0.4);
 
         Hardware.getIntake().moveRampForShot();
 
