@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.components.Shooter;
  * Created by benorgera on 11/24/16.
  */
 
-public class AutonomousImplementation { //this is the basic template for autonomous implementation. all other autonomouses reference this
+public class AutonomousImplementation {
 
     private Sensors sensors;
     private Shooter shooter;
@@ -22,7 +22,7 @@ public class AutonomousImplementation { //this is the basic template for autonom
 
     private final double whiteLineSignalThreshold = 60; //the minimum color sensor reading required to signify finding the white line
 
-    public AutonomousImplementation(boolean isRed, boolean isDoublePushing) { //initializes all of our robot's components. also checks to see if we are red or not, and whether we are running a double push autonomous
+    public AutonomousImplementation(boolean isRed, boolean isDoublePushing) { //initializes all of our robot's component, noting our alliance and whether we are running a double push autonomous
         Hardware.getLift();
         Hardware.getIntake();
         this.sensors = Hardware.getSensors();
@@ -30,7 +30,7 @@ public class AutonomousImplementation { //this is the basic template for autonom
         this.isRed = isRed;
         this.isDoublePushing = isDoublePushing;
 
-        sensors.initImu();
+        sensors.initImu(); //start up the adafruit imu
     }
 
     public void run() {
