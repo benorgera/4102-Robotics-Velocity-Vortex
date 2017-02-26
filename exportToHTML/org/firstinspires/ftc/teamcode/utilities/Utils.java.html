@@ -1,0 +1,105 @@
+<html>
+<head>
+<title>Utils.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,128,0); font-weight: bold; }
+.s4 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+Utils.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">org.firstinspires.ftc.teamcode.utilities; 
+ 
+</span><span class="s0">import </span><span class="s1">java.text.DecimalFormat; 
+ 
+</span><span class="s2">/** 
+ * Created by benorgera on 10/24/16. 
+ */</span><span class="s1"> 
+</span><span class="s0">public class </span><span class="s1">Utils { 
+ 
+    </span><span class="s0">private static </span><span class="s1">DecimalFormat df = </span><span class="s0">new </span><span class="s1">DecimalFormat(</span><span class="s3">&quot;#.##&quot;</span><span class="s1">); 
+ 
+    </span><span class="s0">public static double </span><span class="s1">getMagnitude(</span><span class="s0">double </span><span class="s1">x, </span><span class="s0">double </span><span class="s1">y) { 
+        </span><span class="s0">return </span><span class="s1">Math.pow(Math.pow(x, </span><span class="s4">2</span><span class="s1">) + Math.pow(y, </span><span class="s4">2</span><span class="s1">), </span><span class="s4">0.5</span><span class="s1">); 
+    } 
+ 
+    </span><span class="s0">public static </span><span class="s1">String toString(</span><span class="s0">double </span><span class="s1">d) { </span><span class="s2">//return double as string with max of two decimal places</span><span class="s1"> 
+        </span><span class="s0">return </span><span class="s1">df.format(d); 
+    } 
+ 
+    </span><span class="s0">public static double </span><span class="s1">atan3(</span><span class="s0">double </span><span class="s1">y, </span><span class="s0">double </span><span class="s1">x) { </span><span class="s2">//return angle on [0, 2π] given x and y coordinates</span><span class="s1"> 
+        </span><span class="s0">return </span><span class="s1">(Math.atan2(y, x) + </span><span class="s4">2 </span><span class="s1">* Math.PI) % (Math.PI * </span><span class="s4">2</span><span class="s1">); 
+    } 
+ 
+    </span><span class="s0">public static double </span><span class="s1">trim(</span><span class="s0">double </span><span class="s1">min, </span><span class="s0">double </span><span class="s1">max, </span><span class="s0">double </span><span class="s1">val) { </span><span class="s2">//returns val, trimmed to [min, max]</span><span class="s1"> 
+        </span><span class="s0">return </span><span class="s1">val &gt; max ? max : val &lt; min ? min : val; 
+    } 
+ 
+    </span><span class="s0">public static double </span><span class="s1">getMaxMagnitude(</span><span class="s0">double</span><span class="s1">[] vals) { 
+        </span><span class="s0">double </span><span class="s1">max = </span><span class="s4">0</span><span class="s1">; 
+ 
+        </span><span class="s0">for </span><span class="s1">(</span><span class="s0">double </span><span class="s1">a : vals) </span><span class="s0">if </span><span class="s1">(Math.abs(a) &gt; max) 
+                max = Math.abs(a); 
+ 
+        </span><span class="s0">return </span><span class="s1">max; 
+    } 
+ 
+ 
+    </span><span class="s0">public static double </span><span class="s1">getMaxMagnitude(</span><span class="s0">double</span><span class="s1">[][] vals) { </span><span class="s2">//return the double stored in the arrays with the greatest absolute value</span><span class="s1"> 
+        </span><span class="s0">double </span><span class="s1">max = </span><span class="s4">0</span><span class="s1">; 
+ 
+        </span><span class="s0">for </span><span class="s1">(</span><span class="s0">double</span><span class="s1">[] d2 : vals) </span><span class="s0">for </span><span class="s1">(</span><span class="s0">double </span><span class="s1">d : d2) { 
+            d = Math.abs(d); 
+            </span><span class="s0">if </span><span class="s1">(d &gt; max) max = d; 
+        } 
+ 
+        </span><span class="s0">return </span><span class="s1">max; 
+    } 
+ 
+    </span><span class="s0">public static double</span><span class="s1">[][] multiplyValues(</span><span class="s0">double </span><span class="s1">coefficient, </span><span class="s0">double</span><span class="s1">[][] values) { </span><span class="s2">//multiply every value in a 2d array by a number</span><span class="s1"> 
+        </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s1">; i &lt; values.length; i++) </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s4">0</span><span class="s1">; j &lt; values[i].length; j++) </span><span class="s2">//multiply each value by the coefficient</span><span class="s1"> 
+            values[i][j] *= coefficient; 
+ 
+        </span><span class="s0">return </span><span class="s1">values; 
+    } 
+ 
+    </span><span class="s0">public static double</span><span class="s1">[][] scaleValues(</span><span class="s0">double </span><span class="s1">ceiling, </span><span class="s0">double</span><span class="s1">[][] values) { </span><span class="s2">//divide each value by the maximum magnitude of any of the values, if the maximum magnitude is over the ceiling</span><span class="s1"> 
+ 
+        </span><span class="s0">double </span><span class="s1">max = Utils.getMaxMagnitude(values); </span><span class="s2">//maximum magnitude</span><span class="s1"> 
+ 
+        </span><span class="s0">if </span><span class="s1">(max &lt;= ceiling) </span><span class="s0">return </span><span class="s1">values; </span><span class="s2">//if none of the values are over the specified ceiling, don't scale anything</span><span class="s1"> 
+ 
+        </span><span class="s0">return </span><span class="s1">multiplyValues(</span><span class="s4">1.0 </span><span class="s1">/ max, values); </span><span class="s2">//divide each value by the maximum magnitude</span><span class="s1"> 
+    } 
+ 
+    </span><span class="s0">public static double </span><span class="s1">average(</span><span class="s0">double </span><span class="s1">a, </span><span class="s0">double </span><span class="s1">b) { 
+        </span><span class="s0">return </span><span class="s1">(a + b) / </span><span class="s4">2</span><span class="s1">; 
+    } 
+ 
+    </span><span class="s0">public static double </span><span class="s1">angleDifference(</span><span class="s0">double </span><span class="s1">a, </span><span class="s0">double </span><span class="s1">b) { </span><span class="s2">//finds signed difference between two angles [-π,π]</span><span class="s1"> 
+        </span><span class="s0">double </span><span class="s1">dif = a - b; 
+        </span><span class="s0">return </span><span class="s1">dif &lt; -Math.PI ? dif + </span><span class="s4">2 </span><span class="s1">* Math.PI : dif &gt; Math.PI ? dif - Math.PI * </span><span class="s4">2 </span><span class="s1">: dif; 
+    } 
+ 
+    </span><span class="s0">public static double </span><span class="s1">toDegrees(</span><span class="s0">double </span><span class="s1">rads) { 
+        </span><span class="s0">return </span><span class="s1">rads * </span><span class="s4">180 </span><span class="s1">/ Math.PI; 
+    } 
+ 
+    </span><span class="s0">public static boolean </span><span class="s1">compare(</span><span class="s0">double </span><span class="s1">n, </span><span class="s0">double </span><span class="s1">comparingTo, </span><span class="s0">boolean </span><span class="s1">isGreaterThan) { 
+        </span><span class="s0">return </span><span class="s1">isGreaterThan ? n &gt; comparingTo : n &lt; comparingTo; 
+    } 
+ 
+} 
+</span></pre>
+</body>
+</html>

@@ -23,11 +23,11 @@ public class AutonShoot extends LinearOpMode {
         
         waitForStart(); //wait for the start button to be pressed
         
-        Hardware.getShooter().prepShot(7.1); //preps a shot
+        Hardware.getShooter().prepShot(6.9); //preps a shot
         Hardware.getSensors().driveByTime(-Math.PI / 2, 200, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
         Hardware.getWheels().softStop(300); //stops the robot gently to avoid jerk when launching the balls
         Hardware.sleep(1000); //allows shooter to get to the correct speed
-        Hardware.getShooter().shoot(7.1, true); //shoots balls
+        Hardware.getShooter().shoot(6.9, true); //shoots balls
         
         Hardware.sleep(9000); //sleeps for 9 seconds
         

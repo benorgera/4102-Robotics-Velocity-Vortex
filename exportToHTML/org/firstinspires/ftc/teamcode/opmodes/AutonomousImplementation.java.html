@@ -28,7 +28,7 @@ AutonomousImplementation.java</FONT>
  * Created by benorgera on 11/24/16. 
  */</span><span class="s1"> 
  
-</span><span class="s0">public class </span><span class="s1">AutonomousImplementation { </span><span class="s2">//this is the basic template for autonomous implementation. all other autonomouses reference this</span><span class="s1"> 
+</span><span class="s0">public class </span><span class="s1">AutonomousImplementation { 
  
     </span><span class="s0">private </span><span class="s1">Sensors sensors; 
     </span><span class="s0">private </span><span class="s1">Shooter shooter; 
@@ -42,7 +42,7 @@ AutonomousImplementation.java</FONT>
  
     </span><span class="s0">private final double </span><span class="s1">whiteLineSignalThreshold = </span><span class="s3">60</span><span class="s1">; </span><span class="s2">//the minimum color sensor reading required to signify finding the white line</span><span class="s1"> 
  
-    </span><span class="s0">public </span><span class="s1">AutonomousImplementation(</span><span class="s0">boolean </span><span class="s1">isRed, </span><span class="s0">boolean </span><span class="s1">isDoublePushing) { </span><span class="s2">//initializes all of our robot's components. also checks to see if we are red or not, and whether we are running a double push autonomous</span><span class="s1"> 
+    </span><span class="s0">public </span><span class="s1">AutonomousImplementation(</span><span class="s0">boolean </span><span class="s1">isRed, </span><span class="s0">boolean </span><span class="s1">isDoublePushing) { </span><span class="s2">//initializes all of our robot's component, noting our alliance and whether we are running a double push autonomous</span><span class="s1"> 
         Hardware.getLift(); 
         Hardware.getIntake(); 
         </span><span class="s0">this</span><span class="s1">.sensors = Hardware.getSensors(); 
@@ -50,7 +50,7 @@ AutonomousImplementation.java</FONT>
         </span><span class="s0">this</span><span class="s1">.isRed = isRed; 
         </span><span class="s0">this</span><span class="s1">.isDoublePushing = isDoublePushing; 
  
-        sensors.initImu(); 
+        sensors.initImu(); </span><span class="s2">//start up the adafruit imu</span><span class="s1"> 
     } 
  
     </span><span class="s0">public void </span><span class="s1">run() { 
