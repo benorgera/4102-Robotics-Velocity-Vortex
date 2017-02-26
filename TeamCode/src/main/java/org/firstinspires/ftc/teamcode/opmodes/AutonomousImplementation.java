@@ -38,7 +38,7 @@ public class AutonomousImplementation {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.67);
+        shooter.prepShot(6.65);
 
         Hardware.print("Moving away from wall");
         sensors.driveByTime(-Math.PI / 2, 200, false, 0.3);
@@ -47,7 +47,7 @@ public class AutonomousImplementation {
         Hardware.sleep(1000);
 
         Hardware.print("Shooting");
-        shooter.shoot(6.67, true);
+        shooter.shoot(6.65, true);
 
         if (isRed) {
             Hardware.print("Pulling away from wall");
@@ -60,7 +60,7 @@ public class AutonomousImplementation {
         sensors.driveByTime(isRed ? 1 : -1 * Math.PI / 2, 300, false, 0.35);
 
         Hardware.print("Finding first beacon line");
-        sensors.driveUntilLineReadingThreshold(isRed ? (14 * Math.PI / 15) : (9 * Math.PI / 8), whiteLineSignalThreshold, true, true, 0, 10000, 0.4); //translate to line in front of first beacon
+        sensors.driveUntilLineReadingThreshold(isRed ? (15 * Math.PI / 16) : (9 * Math.PI / 8), whiteLineSignalThreshold, true, true, 0, 10000, 0.4); //translate to line in front of first beacon
 
         Hardware.sleep(200);
 
