@@ -70,6 +70,7 @@ public class DriverControlled extends LinearOpMode {
 
     private void run() { //control to robot using gamepad input
 
+
         //--------------------------DRIVING-------------------------------
 
         wheels.drive((isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, (isSlowMode ? slowModeConstant : 1) * gamepad1.right_stick_x, !isSlowMode); //drives according to the left and right joysticks– left joystick drives, and right joystick rotates. if in slowmode, the robot can drive at lower speeds, and if not in front intake mode, the joysticks have opposite effects
@@ -115,6 +116,7 @@ public class DriverControlled extends LinearOpMode {
 
         wasShooting = gamepad2.b;
 
+
         //--------------------------Intake-------------------------------
 
         if (gamepad2.a && !wasTogglingIntake) //gamepad 2 a toggles the intake on and off
@@ -142,6 +144,9 @@ public class DriverControlled extends LinearOpMode {
             lift.lower();
         else
             lift.stop();
+
+
+        //--------------------------DATA-------------------------------
 
         telemetry.addData("SHOT", "" + Math.round(shotPower * 100) / 10); //prints out some nice data
         telemetry.addData("MODE", intakeIsFront ? "INTAKE" : "SHOOT");
