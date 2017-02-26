@@ -11,24 +11,24 @@ import org.firstinspires.ftc.teamcode.utilities.Hardware;
 @Autonomous(name = "Auton Blue", group = "4102")
 public class AutonBlue extends LinearOpMode {
 
-    private AutonomousImplementation a;
-
+    private AutonomousImplementation a; //uses an Autonomous Implementation class
+    
     @Override
     public void runOpMode() throws InterruptedException {
-        Hardware.init(hardwareMap, this, true, telemetry);
+        Hardware.init(hardwareMap, this, true, telemetry); //initializes hardware
 
         telemetry.update();
 
-        a = new AutonomousImplementation(false, false);
+        a = new AutonomousImplementation(false, false); //new Autonomous Implementation with isRed being false and isDoublePush being false
 
-        waitForStart();
+        waitForStart(); //wait for start to be pressed
 
         try {
-            a.run();
+            a.run(); //runs
         } catch (Exception e) {
-            Hardware.print("Exception: " + e.getMessage());
+            Hardware.print("Exception: " + e.getMessage()); //prints exceptions
         } finally {
-            Hardware.freezeAllMotorFunctions();
+            Hardware.freezeAllMotorFunctions(); //stops motors at the end
         }
     }
 }

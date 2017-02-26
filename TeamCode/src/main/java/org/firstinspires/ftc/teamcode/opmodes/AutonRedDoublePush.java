@@ -16,18 +16,18 @@ public class AutonRedDoublePush extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Hardware.init(hardwareMap, this, true, telemetry);
-
-        a = new AutonomousImplementation(true, true);
-
-        waitForStart();
-
+        Hardware.init(hardwareMap, this, true, telemetry); //initializes hardware
+        
+        a = new AutonomousImplementation(true, true); //new Autonomous Implementation with isRed being true and isDoublePush being true
+        
+        waitForStart(); //wait for start to be pressed
+        
         try {
-            a.run();
+            a.run(); //runs
         } catch (Exception e) {
-            Hardware.print("Exception: " + e.getMessage());
+            Hardware.print("Exception: " + e.getMessage()); //prints exceptions
         } finally {
-            Hardware.freezeAllMotorFunctions();
+            Hardware.freezeAllMotorFunctions(); //freezes motors at the end
         }
     }
 }

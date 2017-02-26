@@ -46,7 +46,7 @@ public class DriverControlled extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Hardware.init(hardwareMap, this, false, telemetry);
+        Hardware.init(hardwareMap, this, false, telemetry); //initializes hardware
 
         lift = Hardware.getLift();
         wheels = Hardware.getWheels();
@@ -56,7 +56,7 @@ public class DriverControlled extends LinearOpMode {
         telemetry.addData("4102", "Let's kick up");
         telemetry.update();
 
-        waitForStart(); //wait for the match to start
+        waitForStart(); //wait for the match to start (start button to be pressed)
 
         startTime = System.currentTimeMillis(); //store the start time, so we can print remaining match time
 
@@ -72,35 +72,35 @@ public class DriverControlled extends LinearOpMode {
 
         //--------------------------DRIVING-------------------------------
 
-        wheels.drive((isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, (isSlowMode ? slowModeConstant : 1) * gamepad1.right_stick_x, !isSlowMode);
+        wheels.drive((isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, (isSlowMode ? slowModeConstant : 1) * gamepad1.right_stick_x, !isSlowMode); //drives according to the left and right joysticks– left joystick drives, and right joystick rotates. if in slowmode, the robot can drive at lower speeds, and if not in front intake mode, the joysticks have opposite effects
 
         if (gamepad1.a && !wasTogglingDirection)
-            intakeIsFront = !intakeIsFront;
+            intakeIsFront = !intakeIsFront; //a on the first gamepad toggles which side of the robot is the front so we can adjust for shooting vs intaking
 
         wasTogglingDirection = gamepad1.a;
 
         if (gamepad1.b && !wasTogglingSlowMode)
-            isSlowMode =! isSlowMode;
+            isSlowMode =! isSlowMode; //b on the first gamepad toggles slow mode, which allows us to be more precise in our driving
 
         wasTogglingSlowMode = gamepad1.b;
 
 
         //--------------------------SHOOTER-------------------------------
 
-        if (gamepad2.dpad_right && !wasUppingShotPower)
+        if (gamepad2.dpad_right && !wasUppingShotPower) //the right dpad button on the second controller allows us to increase the power of our shot
             shotPower = Utils.trim(0, 10, shotPower + 0.5);
 
         wasUppingShotPower = gamepad2.dpad_right;
 
-        if (gamepad2.dpad_left && !wasDowningShotPower)
+        if (gamepad2.dpad_left && !wasDowningShotPower) //the left dpad button on the second controller allows us to decrease the power of our shot
             shotPower = Utils.trim(0, 10, shotPower - 0.5);
 
         wasDowningShotPower = gamepad2.dpad_left;
 
-        if (gamepad2.y && !wasPreppingShot && !isPreppingShot) {
+        if (gamepad2.y && !wasPreppingShot && !isPreppingShot) { //y on the second controller starts to get our shot motors up to speed
             isPreppingShot = true;
             shooter.prepShot(shotPower);
-        } else if (gamepad2.y && !wasPreppingShot){
+        } else if (gamepad2.y && !wasPreppingShot){ //if y is pressed again, the shooter resets without shooting
             shooter.stop();
             shooter.close();
             isPreppingShot = false;
@@ -108,7 +108,7 @@ public class DriverControlled extends LinearOpMode {
 
         wasPreppingShot = gamepad2.y;
 
-        if (gamepad2.b && !intake.isRunning() && !wasShooting) {
+        if (gamepad2.b && !intake.isRunning() && !wasShooting) { //we take a shot if b on the second controller is pressed and the intake isn't running
             shooter.shoot(shotPower, false);
             isPreppingShot = false;
         }
@@ -117,7 +117,7 @@ public class DriverControlled extends LinearOpMode {
 
         //--------------------------Intake-------------------------------
 
-        if (gamepad2.a && !wasTogglingIntake)
+        if (gamepad2.a && !wasTogglingIntake) //gamepad 2 a toggles the intake on and off
             if (intake.isRunning())
                 intake.stopIntaking();
             else
@@ -129,7 +129,7 @@ public class DriverControlled extends LinearOpMode {
 
         //--------------------------LIFT-------------------------------
 
-        if (gamepad2.x && !wasDroppingFork) {
+        if (gamepad2.x && !wasDroppingFork) { //pressing x on the second gamepad releases the servo holding the fork
             hasDroppedFork = true;
             lift.dropFork();
         }
@@ -143,7 +143,7 @@ public class DriverControlled extends LinearOpMode {
         else
             lift.stop();
 
-        telemetry.addData("SHOT", "" + Math.round(shotPower * 100) / 10);
+        telemetry.addData("SHOT", "" + Math.round(shotPower * 100) / 10); //prints out some nice data
         telemetry.addData("MODE", intakeIsFront ? "INTAKE" : "SHOOT");
         if (isSlowMode) telemetry.addData("SLOW MODE", "TRUE");
         telemetry.addData("TIME", getTimeString());
