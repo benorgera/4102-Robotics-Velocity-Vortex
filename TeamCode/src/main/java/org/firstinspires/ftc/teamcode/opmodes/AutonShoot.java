@@ -36,6 +36,6 @@ public class AutonShootRed extends LinearOpMode {
         
         Hardware.sleep(9000); //sleeps for 9 seconds
         
-        Hardware.getSensors().driveByTime(-Math.PI / 2, 2000, true, .5); //drives towards the cap ball to knock it over
+        Hardware.getSensors().driveByTime(-Math.PI / 2, 2000, true, 0.5); //drives towards the cap ball to knock it over
     }
 }
