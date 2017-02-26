@@ -37,7 +37,7 @@ public class AutonomousImplementation {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.64); //speeds up the wheels
+        shooter.prepShot(6.63); //speeds up the wheels
 
         Hardware.print("Moving away from wall");
         sensors.driveByTime(-Math.PI / 2, 200, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
@@ -46,7 +46,7 @@ public class AutonomousImplementation {
         Hardware.sleep(1000); //allows the shooting motors to finish getting to the right speed
 
         Hardware.print("Shooting");
-        shooter.shoot(6.64, true); //shoots the ball at the same prepshot speed
+        shooter.shoot(6.63, true); //shoots the ball at the same prepshot speed
 
         if (isRed) { //if we are red, our robot drives out a bit further and turns around so the button pusher is on the correct side
             Hardware.print("Pulling away from wall");
@@ -59,7 +59,7 @@ public class AutonomousImplementation {
         sensors.driveByTime(isRed ? 1 : -1 * Math.PI / 2, 300, false, 0.35);
 
         Hardware.print("Finding first beacon line"); //drives to the beacon line
-        sensors.driveUntilLineReadingThreshold(isRed ? (16 * Math.PI / 17) : (9 * Math.PI / 8), whiteLineSignalThreshold, true, true, 0, 10000, 0.4); //translate to line in front of first beacon
+        sensors.driveUntilLineReadingThreshold(isRed ? (9 * Math.PI / 10) : (9 * Math.PI / 8), whiteLineSignalThreshold, true, true, 0, 10000, 0.4); //translate to line in front of first beacon
 
         Hardware.sleep(200);
 
