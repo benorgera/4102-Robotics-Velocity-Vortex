@@ -112,7 +112,7 @@ public class Wheels {
             b.setPower(0);
     }
 
-    public void softStop(long time) {
+    public void softStop(long time) {   //gradually slows down a drive over time
 
         long stop = System.currentTimeMillis() + time;
         double[][] motorPowers = getMotorPowers();
