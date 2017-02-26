@@ -1,0 +1,174 @@
+<html>
+<head>
+<title>AutonomousImplementation.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,0,255); }
+.s4 { color: rgb(0,128,0); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+AutonomousImplementation.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">org.firstinspires.ftc.teamcode.opmodes; 
+ 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.utilities.Hardware; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.components.Sensors; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.components.Shooter; 
+ 
+</span><span class="s2">/** 
+ * Created by benorgera on 11/24/16. 
+ */</span><span class="s1"> 
+ 
+</span><span class="s0">public class </span><span class="s1">AutonomousImplementation { </span><span class="s2">//this is the basic template for autonomous implementation. all other autonomouses reference this</span><span class="s1"> 
+ 
+    </span><span class="s0">private </span><span class="s1">Sensors sensors; 
+    </span><span class="s0">private </span><span class="s1">Shooter shooter; 
+ 
+    </span><span class="s0">private final boolean </span><span class="s1">isRed; 
+    </span><span class="s0">private final boolean </span><span class="s1">isDoublePushing; 
+ 
+    </span><span class="s0">private final double </span><span class="s1">odsThresholdFindButton = </span><span class="s3">0.03</span><span class="s1">; 
+    </span><span class="s0">private final double </span><span class="s1">odsRealignThreshold = </span><span class="s3">0.049</span><span class="s1">; 
+ 
+ 
+    </span><span class="s0">private final double </span><span class="s1">whiteLineSignalThreshold = </span><span class="s3">60</span><span class="s1">; </span><span class="s2">//the minimum color sensor reading required to signify finding the white line</span><span class="s1"> 
+ 
+    </span><span class="s0">public </span><span class="s1">AutonomousImplementation(</span><span class="s0">boolean </span><span class="s1">isRed, </span><span class="s0">boolean </span><span class="s1">isDoublePushing) { </span><span class="s2">//initializes all of our robot's components. also checks to see if we are red or not, and whether we are running a double push autonomous</span><span class="s1"> 
+        Hardware.getLift(); 
+        Hardware.getIntake(); 
+        </span><span class="s0">this</span><span class="s1">.sensors = Hardware.getSensors(); 
+        </span><span class="s0">this</span><span class="s1">.shooter = Hardware.getShooter(); 
+        </span><span class="s0">this</span><span class="s1">.isRed = isRed; 
+        </span><span class="s0">this</span><span class="s1">.isDoublePushing = isDoublePushing; 
+ 
+        sensors.initImu(); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">run() { 
+        Hardware.print(</span><span class="s4">&quot;Color is &quot; </span><span class="s1">+ (isRed ? </span><span class="s4">&quot;red&quot; </span><span class="s1">: </span><span class="s4">&quot;blue&quot;</span><span class="s1">)); 
+ 
+        Hardware.print(</span><span class="s4">&quot;Prepping for shot&quot;</span><span class="s1">); 
+        shooter.prepShot(</span><span class="s3">6.64</span><span class="s1">); </span><span class="s2">//speeds up the wheels</span><span class="s1"> 
+ 
+        Hardware.print(</span><span class="s4">&quot;Moving away from wall&quot;</span><span class="s1">); 
+        sensors.driveByTime(-Math.PI / </span><span class="s3">2</span><span class="s1">, </span><span class="s3">200</span><span class="s1">, </span><span class="s0">false</span><span class="s1">, </span><span class="s3">0.3</span><span class="s1">); </span><span class="s2">//drives a short distance from the wall so our intake is not slowed by hitting the wall</span><span class="s1"> 
+ 
+        Hardware.getWheels().softStop(</span><span class="s3">300</span><span class="s1">); </span><span class="s2">//stops the robot gently to avoid jerk when launching the balls</span><span class="s1"> 
+        Hardware.sleep(</span><span class="s3">1000</span><span class="s1">); </span><span class="s2">//allows the shooting motors to finish getting to the right speed</span><span class="s1"> 
+ 
+        Hardware.print(</span><span class="s4">&quot;Shooting&quot;</span><span class="s1">); 
+        shooter.shoot(</span><span class="s3">6.64</span><span class="s1">, </span><span class="s0">true</span><span class="s1">); </span><span class="s2">//shoots the ball at the same prepshot speed</span><span class="s1"> 
+ 
+        </span><span class="s0">if </span><span class="s1">(isRed) { </span><span class="s2">//if we are red, our robot drives out a bit further and turns around so the button pusher is on the correct side</span><span class="s1"> 
+            Hardware.print(</span><span class="s4">&quot;Pulling away from wall&quot;</span><span class="s1">); 
+            sensors.driveByTime(-Math.PI / </span><span class="s3">2</span><span class="s1">, </span><span class="s3">300</span><span class="s1">, </span><span class="s0">true</span><span class="s1">); 
+            Hardware.print(</span><span class="s4">&quot;Turning around&quot;</span><span class="s1">); 
+            sensors.turn(-Math.PI, Math.PI / </span><span class="s3">13</span><span class="s1">, </span><span class="s3">0.4</span><span class="s1">); 
+        } 
+ 
+        Hardware.print(</span><span class="s4">&quot;Picking up momentum to find line&quot;</span><span class="s1">); </span><span class="s2">//makes sure we have the momentum to drive to the beacon and not get stuck</span><span class="s1"> 
+        sensors.driveByTime(isRed ? </span><span class="s3">1 </span><span class="s1">: -</span><span class="s3">1 </span><span class="s1">* Math.PI / </span><span class="s3">2</span><span class="s1">, </span><span class="s3">300</span><span class="s1">, </span><span class="s0">false</span><span class="s1">, </span><span class="s3">0.35</span><span class="s1">); 
+ 
+        Hardware.print(</span><span class="s4">&quot;Finding first beacon line&quot;</span><span class="s1">); </span><span class="s2">//drives to the beacon line</span><span class="s1"> 
+        sensors.driveUntilLineReadingThreshold(isRed ? (</span><span class="s3">16 </span><span class="s1">* Math.PI / </span><span class="s3">17</span><span class="s1">) : (</span><span class="s3">9 </span><span class="s1">* Math.PI / </span><span class="s3">8</span><span class="s1">), whiteLineSignalThreshold, </span><span class="s0">true</span><span class="s1">, </span><span class="s0">true</span><span class="s1">, </span><span class="s3">0</span><span class="s1">, </span><span class="s3">10000</span><span class="s1">, </span><span class="s3">0.4</span><span class="s1">); </span><span class="s2">//translate to line in front of first beacon</span><span class="s1"> 
+ 
+        Hardware.sleep(</span><span class="s3">200</span><span class="s1">); 
+ 
+        Hardware.print(</span><span class="s4">&quot;Capturing first beacon&quot;</span><span class="s1">); 
+        captureBeacon(); </span><span class="s2">//follows the line, and presses the correct beacon button– function below</span><span class="s1"> 
+ 
+        Hardware.print(</span><span class="s4">&quot;Driving by time to second beacon&quot;</span><span class="s1">); 
+        sensors.driveByTime(Math.PI / </span><span class="s3">2 </span><span class="s1">* (isRed ? </span><span class="s3">1 </span><span class="s1">: -</span><span class="s3">1</span><span class="s1">), </span><span class="s3">800</span><span class="s1">, </span><span class="s0">false</span><span class="s1">, </span><span class="s3">0.4</span><span class="s1">); </span><span class="s2">//translates to the next beacon</span><span class="s1"> 
+ 
+        Hardware.print(</span><span class="s4">&quot;Finding second beacon line&quot;</span><span class="s1">); 
+        sensors.driveUntilLineReadingThreshold(Math.PI / </span><span class="s3">2 </span><span class="s1">* (isRed ? </span><span class="s3">1 </span><span class="s1">: -</span><span class="s3">1</span><span class="s1">), whiteLineSignalThreshold, </span><span class="s0">false</span><span class="s1">, </span><span class="s0">true</span><span class="s1">, </span><span class="s3">0</span><span class="s1">, </span><span class="s3">1600</span><span class="s1">, </span><span class="s3">0.4</span><span class="s1">); </span><span class="s2">//translate to line in front of second beacon</span><span class="s1"> 
+ 
+        Hardware.sleep(</span><span class="s3">200</span><span class="s1">); 
+ 
+        realignOnLine(); </span><span class="s2">//compensates for the robot's momentum when driving to the second line</span><span class="s1"> 
+ 
+        Hardware.print(</span><span class="s4">&quot;Capturing second beacon&quot;</span><span class="s1">); 
+        captureBeacon(); </span><span class="s2">//follows line and presses correct beacon button</span><span class="s1"> 
+ 
+        Hardware.print(</span><span class="s4">&quot;Turning towards the cap ball&quot;</span><span class="s1">); 
+        sensors.turn(</span><span class="s3">2 </span><span class="s1">* Math.PI / </span><span class="s3">9 </span><span class="s1">* (isRed ? </span><span class="s3">1 </span><span class="s1">: -</span><span class="s3">1</span><span class="s1">), Math.PI / </span><span class="s3">30</span><span class="s1">, </span><span class="s3">0.4</span><span class="s1">); </span><span class="s2">//points itself towards the ball by the center vortex</span><span class="s1"> 
+ 
+        Hardware.getIntake().moveRampForShot(); </span><span class="s2">//moves the ramp up so it doesn't hit the center vortex and break itself</span><span class="s1"> 
+ 
+        Hardware.print(</span><span class="s4">&quot;Driving to the cap ball&quot;</span><span class="s1">); 
+        sensors.driveByTime(Math.PI / </span><span class="s3">2 </span><span class="s1">* (isRed ? -</span><span class="s3">1 </span><span class="s1">: </span><span class="s3">1</span><span class="s1">), </span><span class="s3">1600</span><span class="s1">, </span><span class="s0">true</span><span class="s1">, </span><span class="s3">1</span><span class="s1">); </span><span class="s2">//knocks over the cap ball and partial parks</span><span class="s1"> 
+    } 
+ 
+    </span><span class="s0">private void </span><span class="s1">captureBeacon() { 
+ 
+        Hardware.print(</span><span class="s4">&quot;Following line&quot;</span><span class="s1">); 
+        sensors.followLineUntilOdsThreshold(odsThresholdFindButton, </span><span class="s3">4000</span><span class="s1">, </span><span class="s0">false</span><span class="s1">, </span><span class="s3">0.165</span><span class="s1">); </span><span class="s2">//pull up to beacon</span><span class="s1"> 
+ 
+        Hardware.sleep(</span><span class="s3">250</span><span class="s1">); 
+ 
+        realignOnBeacon(); </span><span class="s2">//makes sure we are aligned on the beacon</span><span class="s1"> 
+ 
+        </span><span class="s0">if </span><span class="s1">(isDoublePushing) { </span><span class="s2">//if it is running the double push autonomous, it presses a button, waits and checks whether the color is correct, and if not it presses again.</span><span class="s1"> 
+            pushButton(); 
+            </span><span class="s0">long </span><span class="s1">readyTime = System.currentTimeMillis() + </span><span class="s3">5000</span><span class="s1">; </span><span class="s2">//5 second delay on beacons</span><span class="s1"> 
+ 
+            Hardware.sleep(</span><span class="s3">500</span><span class="s1">); </span><span class="s2">//just in case the color change takes time</span><span class="s1"> 
+ 
+            </span><span class="s0">if </span><span class="s1">(sensors.getBeaconColor()[isRed ? </span><span class="s3">0 </span><span class="s1">: </span><span class="s3">1</span><span class="s1">] &gt; sensors.getBeaconColor()[isRed ? </span><span class="s3">1 </span><span class="s1">: </span><span class="s3">0</span><span class="s1">]) { </span><span class="s2">//we need to push again</span><span class="s1"> 
+                realignOnBeacon(); </span><span class="s2">//realigns to beacon</span><span class="s1"> 
+ 
+                </span><span class="s0">if </span><span class="s1">(readyTime &gt; System.currentTimeMillis()) </span><span class="s2">//makes sure we have waited long enough, if not then it waits the remaining time</span><span class="s1"> 
+                    Hardware.sleep(readyTime - System.currentTimeMillis()); 
+ 
+                pushButton(); </span><span class="s2">//pushes the button</span><span class="s1"> 
+            } 
+        } </span><span class="s0">else </span><span class="s1">{ </span><span class="s2">//if we are running the normal autonomous, it finds the correct beacon button and presses it</span><span class="s1"> 
+            Hardware.print(</span><span class="s4">&quot;Finding button&quot;</span><span class="s1">); 
+ 
+            </span><span class="s0">if </span><span class="s1">(sensors.findBeaconButton(isRed, whiteLineSignalThreshold, </span><span class="s3">7000</span><span class="s1">, </span><span class="s3">0.13</span><span class="s1">)) { </span><span class="s2">//finds the correct beacon button based on sensor values</span><span class="s1"> 
+                Hardware.sleep(</span><span class="s3">500</span><span class="s1">); 
+                pushButton(); </span><span class="s2">//pushes said button</span><span class="s1"> 
+            } 
+        } 
+ 
+        backUpFromBeacon(); </span><span class="s2">//backs up because it will be too close for a translate/rotate</span><span class="s1"> 
+    } 
+ 
+    </span><span class="s0">private void </span><span class="s1">realignOnBeacon() { </span><span class="s2">//makes sure we are the correct distance from the beacon</span><span class="s1"> 
+        Hardware.print(</span><span class="s4">&quot;Realigning on beacon&quot;</span><span class="s1">); 
+        sensors.followLineUntilOdsThreshold(odsRealignThreshold, </span><span class="s3">3000</span><span class="s1">, </span><span class="s0">true</span><span class="s1">, </span><span class="s3">0.135</span><span class="s1">); 
+    } 
+ 
+    </span><span class="s0">private void </span><span class="s1">backUpFromBeacon() { </span><span class="s2">//backs away a little bit</span><span class="s1"> 
+        Hardware.print(</span><span class="s4">&quot;Backing up&quot;</span><span class="s1">); 
+        sensors.driveByTime(</span><span class="s3">0</span><span class="s1">, </span><span class="s3">600</span><span class="s1">, </span><span class="s0">true</span><span class="s1">); 
+    } 
+ 
+    </span><span class="s0">private void </span><span class="s1">pushButton() { </span><span class="s2">//drives forward to press the button</span><span class="s1"> 
+        Hardware.print(</span><span class="s4">&quot;Pushing button&quot;</span><span class="s1">); 
+ 
+        </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s3">0</span><span class="s1">; i &lt; </span><span class="s3">5</span><span class="s1">; i++) { </span><span class="s2">//incrementally drives forward five times in order to make sure the robot drives straigt</span><span class="s1"> 
+            sensors.driveByTime(Math.PI, </span><span class="s3">100</span><span class="s1">, </span><span class="s0">true</span><span class="s1">, </span><span class="s3">1</span><span class="s1">); 
+            Hardware.sleep(</span><span class="s3">100</span><span class="s1">); 
+        } 
+ 
+        sensors.driveByTime(Math.PI, </span><span class="s3">400</span><span class="s1">, </span><span class="s0">true</span><span class="s1">, </span><span class="s3">1</span><span class="s1">); </span><span class="s2">//drives the rest of the way forward to really press the button</span><span class="s1"> 
+    } 
+ 
+    </span><span class="s0">private void </span><span class="s1">realignOnLine() { </span><span class="s2">//realigns on the beacon line in case we pass it</span><span class="s1"> 
+        Hardware.print(</span><span class="s4">&quot;Realigning on beacon line&quot;</span><span class="s1">); 
+        sensors.driveUntilLineReadingThreshold(Math.PI / </span><span class="s3">2 </span><span class="s1">* (isRed ? -</span><span class="s3">1 </span><span class="s1">: </span><span class="s3">1</span><span class="s1">), whiteLineSignalThreshold, </span><span class="s0">false</span><span class="s1">, </span><span class="s0">true</span><span class="s1">, </span><span class="s3">0</span><span class="s1">, </span><span class="s3">10000</span><span class="s1">, </span><span class="s3">0.17</span><span class="s1">); 
+    } 
+} 
+</span></pre>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<html>
+<head>
+<title>Wheels.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,0,255); }
+.s4 { color: rgb(0,128,0); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+Wheels.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">org.firstinspires.ftc.teamcode.components; 
+ 
+</span><span class="s0">import </span><span class="s1">com.qualcomm.robotcore.hardware.DcMotor; 
+ 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.utilities.Hardware; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.utilities.Utils; 
+ 
+</span><span class="s2">/** 
+ * Created by benorgera on 10/24/16. 
+ */</span><span class="s1"> 
+</span><span class="s0">public class </span><span class="s1">Wheels { 
+    </span><span class="s0">private </span><span class="s1">DcMotor[][] wheelbase; 
+ 
+    </span><span class="s0">private boolean </span><span class="s1">isCompensatedTranslating = </span><span class="s0">false</span><span class="s1">; 
+ 
+    </span><span class="s2">//constants</span><span class="s1"> 
+    </span><span class="s0">private final double </span><span class="s1">channelModeStickThreshold = </span><span class="s3">0.1</span><span class="s1">; </span><span class="s2">//the max magnitude of a stick reading</span><span class="s1"> 
+ 
+    </span><span class="s0">private long </span><span class="s1">softStartLength; </span><span class="s2">//ms to bring robot to full speed</span><span class="s1"> 
+    </span><span class="s0">private long </span><span class="s1">softStartStartTime; </span><span class="s2">//ms time when movement started</span><span class="s1"> 
+    </span><span class="s0">private boolean </span><span class="s1">isSoftStarting = </span><span class="s0">false</span><span class="s1">; 
+ 
+ 
+    </span><span class="s0">private final double</span><span class="s1">[][] compensationConstants = { 
+            {</span><span class="s3">1</span><span class="s1">, </span><span class="s3">1</span><span class="s1">}, 
+            {</span><span class="s3">1</span><span class="s1">, </span><span class="s3">1</span><span class="s1">} 
+    }; 
+ 
+    </span><span class="s0">public </span><span class="s1">Wheels(DcMotor[][] wheelBase) { 
+ 
+        </span><span class="s0">this</span><span class="s1">.wheelbase = wheelBase; </span><span class="s2">//initialize wheel motors</span><span class="s1"> 
+ 
+        </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s3">0</span><span class="s1">; i &lt; </span><span class="s3">2</span><span class="s1">; i++) </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s3">0</span><span class="s1">; j &lt; </span><span class="s3">2</span><span class="s1">; j++) { </span><span class="s2">//set up motors</span><span class="s1"> 
+            wheelbase[i][j].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); 
+            wheelbase[i][j].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); 
+        } 
+ 
+        </span><span class="s2">//reverse the motors which face opposite directions (the right motors)</span><span class="s1"> 
+        wheelbase[</span><span class="s3">0</span><span class="s1">][</span><span class="s3">1</span><span class="s1">].setDirection(DcMotor.Direction.REVERSE); 
+        wheelBase[</span><span class="s3">1</span><span class="s1">][</span><span class="s3">1</span><span class="s1">].setDirection(DcMotor.Direction.REVERSE); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">readyCompensatedTranslate(</span><span class="s0">long </span><span class="s1">softStartTime) { 
+        </span><span class="s0">if </span><span class="s1">(softStartTime &gt; </span><span class="s3">0</span><span class="s1">) { 
+            softStartLength = softStartTime; 
+            softStartStartTime = System.currentTimeMillis(); 
+            isSoftStarting = </span><span class="s0">true</span><span class="s1">; 
+        } 
+ 
+        isCompensatedTranslating = </span><span class="s0">true</span><span class="s1">; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">stopCompensatedTranslating() { 
+        isCompensatedTranslating = </span><span class="s0">false</span><span class="s1">; 
+    } 
+ 
+    </span><span class="s0">private double </span><span class="s1">getSoftStartScalar() { 
+        </span><span class="s0">double </span><span class="s1">scalar = ((</span><span class="s0">double</span><span class="s1">) System.currentTimeMillis() - (</span><span class="s0">double</span><span class="s1">) softStartStartTime) / (</span><span class="s0">double</span><span class="s1">) softStartLength; 
+ 
+        </span><span class="s0">if </span><span class="s1">(scalar &gt;= </span><span class="s3">1</span><span class="s1">) isSoftStarting = </span><span class="s0">false</span><span class="s1">; 
+ 
+        </span><span class="s0">return </span><span class="s1">Utils.trim(</span><span class="s3">0</span><span class="s1">, </span><span class="s3">1</span><span class="s1">, scalar); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">drive(</span><span class="s0">double </span><span class="s1">xVel, </span><span class="s0">double </span><span class="s1">yVel, </span><span class="s0">double </span><span class="s1">angularVel, </span><span class="s0">boolean </span><span class="s1">isChannelMode) { </span><span class="s2">//translate/rotate the robot given velocity and angular velocity, and return a string representation of this algorithm</span><span class="s1"> 
+ 
+        xVel = -xVel; </span><span class="s2">//this is a fix for some trig bug (deleting this statement and changing 'Math.cos(theta - Math.PI / 4)' to 'Math.cos(theta + Math.PI / 4)' should do the trick</span><span class="s1"> 
+ 
+        </span><span class="s0">if </span><span class="s1">(isChannelMode) { </span><span class="s2">//in channel mode negligible velocities will be disregarded</span><span class="s1"> 
+            xVel = Math.abs(xVel) &lt; channelModeStickThreshold ? </span><span class="s3">0 </span><span class="s1">: xVel; 
+            yVel = Math.abs(yVel) &lt; channelModeStickThreshold ? </span><span class="s3">0 </span><span class="s1">: yVel; 
+            angularVel = Math.abs(angularVel) &lt; channelModeStickThreshold ? </span><span class="s3">0 </span><span class="s1">: angularVel; 
+        } 
+ 
+        </span><span class="s0">double </span><span class="s1">robotVel = Utils.trim(</span><span class="s3">0</span><span class="s1">, </span><span class="s3">1</span><span class="s1">, Utils.getMagnitude(xVel, yVel)), </span><span class="s2">//magnitude of robot velocity [0, 1]</span><span class="s1"> 
+                theta = Utils.atan3(yVel, xVel); </span><span class="s2">//robot translation angle [0, 2π]</span><span class="s1"> 
+ 
+        </span><span class="s0">double</span><span class="s1">[][] relativeWheelVels = Utils.multiplyValues(robotVel, </span><span class="s2">////multiply the scaled values by the desired robot velocity</span><span class="s1"> 
+                Utils.scaleValues(</span><span class="s3">0</span><span class="s1">, </span><span class="s0">new double</span><span class="s1">[][] {{ </span><span class="s2">//scale velocities to unit vectors [-1, 1]</span><span class="s1"> 
+                    Math.sin(theta - Math.PI / </span><span class="s3">4</span><span class="s1">), </span><span class="s2">//front left and back right wheel relative velocity (without angular velocity)</span><span class="s1"> 
+                    Math.cos(theta - Math.PI / </span><span class="s3">4</span><span class="s1">) </span><span class="s2">//front right and back left wheel relative velocity (without angular velocity)</span><span class="s1"> 
+        }})); 
+ 
+        </span><span class="s2">//power the wheels after scaling and accounting for angular velocity</span><span class="s1"> 
+        setMotorPowers( </span><span class="s2">//apply the scaled powers to the motors</span><span class="s1"> 
+                Utils.scaleValues(</span><span class="s3">1</span><span class="s1">, </span><span class="s0">new double</span><span class="s1">[][] { </span><span class="s2">//scale the velocities to unit vectors, only if any of them have a magnitude greater than one</span><span class="s1"> 
+                        { 
+                                compensationConstants[</span><span class="s3">0</span><span class="s1">][</span><span class="s3">0</span><span class="s1">] * (relativeWheelVels[</span><span class="s3">0</span><span class="s1">][</span><span class="s3">0</span><span class="s1">] + angularVel), </span><span class="s2">//front left wheel relative velocity (with angular velocity)</span><span class="s1"> 
+                                compensationConstants[</span><span class="s3">0</span><span class="s1">][</span><span class="s3">1</span><span class="s1">] * (relativeWheelVels[</span><span class="s3">0</span><span class="s1">][</span><span class="s3">1</span><span class="s1">] - angularVel) </span><span class="s2">//front right wheel relative velocity (with angular velocity)</span><span class="s1"> 
+                        }, { 
+                        compensationConstants[</span><span class="s3">1</span><span class="s1">][</span><span class="s3">0</span><span class="s1">] * (relativeWheelVels[</span><span class="s3">0</span><span class="s1">][</span><span class="s3">1</span><span class="s1">] + angularVel), </span><span class="s2">//back left wheel relative velocity (with angular velocity)</span><span class="s1"> 
+                        compensationConstants[</span><span class="s3">1</span><span class="s1">][</span><span class="s3">1</span><span class="s1">] * (relativeWheelVels[</span><span class="s3">0</span><span class="s1">][</span><span class="s3">0</span><span class="s1">] - angularVel) </span><span class="s2">//back right wheel relative velocity (with angular velocity)</span><span class="s1"> 
+                } 
+                }) 
+        ); 
+    } 
+ 
+    </span><span class="s0">private </span><span class="s1">String setMotorPowers(</span><span class="s0">double</span><span class="s1">[][] wheelPowers) { </span><span class="s2">//apply power to the motors, and return string representation of the wheel powers</span><span class="s1"> 
+        </span><span class="s0">if </span><span class="s1">(isCompensatedTranslating) 
+            wheelPowers = Utils.multiplyValues(Hardware.getGyroConstant(), wheelPowers); 
+        </span><span class="s0">if </span><span class="s1">(isSoftStarting) 
+            wheelPowers = Utils.multiplyValues(getSoftStartScalar(), wheelPowers); 
+ 
+        </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s3">0</span><span class="s1">; i &lt; </span><span class="s3">2</span><span class="s1">; i++) </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s3">0</span><span class="s1">; j &lt; </span><span class="s3">2</span><span class="s1">; j++) 
+            wheelbase[i][j].setPower(wheelPowers[i][j]); 
+ 
+        </span><span class="s0">return </span><span class="s4">&quot;{ [&quot; </span><span class="s1">+ Utils.toString(wheelPowers[</span><span class="s3">0</span><span class="s1">][</span><span class="s3">0</span><span class="s1">]) + </span><span class="s4">&quot;, &quot; </span><span class="s1">+ Utils.toString(wheelPowers[</span><span class="s3">0</span><span class="s1">][</span><span class="s3">1</span><span class="s1">]) + </span><span class="s4">&quot;], [&quot; </span><span class="s1">+ Utils.toString(wheelPowers[</span><span class="s3">1</span><span class="s1">][</span><span class="s3">0</span><span class="s1">]) + </span><span class="s4">&quot;, &quot; </span><span class="s1">+ Utils.toString(wheelPowers[</span><span class="s3">1</span><span class="s1">][</span><span class="s3">1</span><span class="s1">]) + </span><span class="s4">&quot;] }&quot;</span><span class="s1">; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">stop() { </span><span class="s2">//stop the robot</span><span class="s1"> 
+        </span><span class="s0">for </span><span class="s1">(DcMotor[] a : wheelbase) </span><span class="s0">for </span><span class="s1">(DcMotor b : a) 
+            b.setPower(</span><span class="s3">0</span><span class="s1">); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">softStop(</span><span class="s0">long </span><span class="s1">time) {   </span><span class="s2">//gradually slows down a drive over time</span><span class="s1"> 
+ 
+        </span><span class="s0">long </span><span class="s1">stop = System.currentTimeMillis() + time; 
+        </span><span class="s0">double</span><span class="s1">[][] motorPowers = getMotorPowers(); 
+ 
+        </span><span class="s0">while </span><span class="s1">(System.currentTimeMillis() &lt; stop) 
+            setMotorPowers(Utils.multiplyValues((stop - System.currentTimeMillis()) / time, motorPowers)); 
+ 
+        stop(); 
+    } 
+ 
+    </span><span class="s0">private double</span><span class="s1">[][] getMotorPowers() { 
+        </span><span class="s0">double</span><span class="s1">[][] powers = </span><span class="s0">new double</span><span class="s1">[</span><span class="s3">2</span><span class="s1">][</span><span class="s3">2</span><span class="s1">]; 
+ 
+        </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s3">0</span><span class="s1">; i &lt; wheelbase.length; i++) 
+            </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s3">0</span><span class="s1">; j &lt; wheelbase[i].length; j++) 
+                powers[i][j] = wheelbase[i][j].getPower(); 
+ 
+        </span><span class="s0">return </span><span class="s1">powers; 
+    } 
+ 
+} 
+</span></pre>
+</body>
+</html>

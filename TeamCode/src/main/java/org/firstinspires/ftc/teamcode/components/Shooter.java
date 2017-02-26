@@ -1,16 +1,8 @@
 package org.firstinspires.ftc.teamcode.components;
 
-import com.qualcomm.hardware.hitechnic.HiTechnicNxtColorSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorImpl;
-import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.DifferentialControlLoopCoefficients;
-
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
 import org.firstinspires.ftc.teamcode.utilities.Utils;
 
@@ -56,7 +48,8 @@ public class Shooter {
 
         int count = 0;
 
-        while (takeShot((count == 1 && isAuton) || count == 2) && Hardware.active()) count++; //while there's another ball remaining, shoot
+        //while there's another ball remaining, shoot
+        while (takeShot((count == 1 && isAuton) || count == 2) && Hardware.active()) count++;
 
         //reset stuff
         Hardware.getIntake().stopElevator();
@@ -77,16 +70,14 @@ public class Shooter {
         //if this command times out, false is returned and no balls remain so no more shots should be taken
         boolean takingAnotherShot = waitForNextBall(isLastShot);
 
-        Hardware.print(takingAnotherShot ? "taking" : "not taking" + " another shot");
-
-        Hardware.print("stop elevator");
-
-        if (takingAnotherShot) {
+        if (takingAnotherShot) { //about to shoot again
+            //supply negative power to stop the elevator quickly
             Hardware.getIntake().runElevator(-0.3);
             Hardware.sleep(20);
-            Hardware.getIntake().stopElevator();;
-            Hardware.sleep(700);
-        } else {
+
+            Hardware.getIntake().stopElevator(); //stop elevator
+            Hardware.sleep(700); //wait for PID to regain desired velocity
+        } else { //no shots remain, stop and return
             Hardware.getIntake().stopElevator();
         }
 
@@ -98,26 +89,25 @@ public class Shooter {
 
         long started = System.currentTimeMillis();
 
-        Hardware.print("while has ball");
         while (hasBall() && Hardware.active()); //wait for the ball currently being shot to pass through
 
         long lastHadBall = System.currentTimeMillis();
 
-        Hardware.print("had ball for " + (lastHadBall - started) + " ms");
+        Hardware.print("Had ball for " + (lastHadBall - started) + " ms");
 
+        //we know this was our last shot because it was shot 2 in auton or 3 in teleop
         if (isLastShot) {
-            Hardware.sleep(350);
-            return false;
+            Hardware.sleep(350); //wait for the last shot to pass
+            return false; //don't shoot again
         }
 
-        long waitForBall = 1000;
+        long waitForBall = 1000; //how long the shooter waits to see another ball before assuming none remain
 
         //continue running the elevator (waiting) until you see a new ball, or you time out
         //waiting will only cease after at least 50ms have passed since last sensing a ball
-        Hardware.print("while not next ball");
         while (Hardware.active() && !hasBall() && (System.currentTimeMillis() - lastHadBall) < waitForBall || System.currentTimeMillis() - lastHadBall < 150);
 
-        Hardware.print("waited " + (System.currentTimeMillis() - lastHadBall) + "ms for next ball");
+        Hardware.print("Waited " + (System.currentTimeMillis() - lastHadBall) + "ms for next ball");
         return System.currentTimeMillis() - lastHadBall < waitForBall; //return true unless no additional balls were found
     }
 
@@ -128,30 +118,30 @@ public class Shooter {
 
     //returns true if a ball is sensed in the elevator, ready to be shot
     private boolean hasBall() {
-        long stop = System.currentTimeMillis() + 75;
+        long stop = System.currentTimeMillis() + 75; //take readings for 75 ms
 
         double total = 0;
         int count = 0;
 
+        //average the color sensor readings
         while (System.currentTimeMillis() < stop) {
             count++;
             total += getAlpha();
         }
 
-        Hardware.print("avg: " + total / count);
-        Hardware.print("c: " + count);
-
-        return total / count > alphaThreshold;
+        return total / count > alphaThreshold; //return true if our readings were high enough to signify a ball being sensed
     }
 
     public void stop() {
         setDiskMotorPowers(0);
     }
 
+    //close shooter door
     public void close() {
         door.setPosition(doorPositions[1]);
     }
 
+    //open shooter door
     private void open() {
         door.setPosition(doorPositions[0]);
     }

@@ -1,0 +1,124 @@
+<html>
+<head>
+<title>PID.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+PID.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">org.firstinspires.ftc.teamcode.components; 
+ 
+</span><span class="s0">import </span><span class="s1">com.qualcomm.robotcore.hardware.DcMotor; 
+ 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.utilities.Hardware; 
+ 
+</span><span class="s2">/** 
+ * Created by benorgera on 2/24/17. 
+ */</span><span class="s1"> 
+ 
+</span><span class="s0">public class </span><span class="s1">PID </span><span class="s0">implements </span><span class="s1">Runnable { 
+ 
+    </span><span class="s0">private </span><span class="s1">DcMotor[] motors;   </span><span class="s2">//motors being controlled by the PID</span><span class="s1"> 
+ 
+    </span><span class="s0">private double </span><span class="s1">ngVelDesired;    </span><span class="s2">//our desired motor speed</span><span class="s1"> 
+ 
+    </span><span class="s0">private final long </span><span class="s1">dTDesired = </span><span class="s3">100</span><span class="s1">; </span><span class="s2">//the amount of time we want to sleep for each loop</span><span class="s1"> 
+ 
+    </span><span class="s0">private final double </span><span class="s1">kP = </span><span class="s3">1</span><span class="s1">;    </span><span class="s2">//proportional coefficient</span><span class="s1"> 
+    </span><span class="s0">private final double </span><span class="s1">kI = </span><span class="s3">0</span><span class="s1">;    </span><span class="s2">//integral coefficient</span><span class="s1"> 
+    </span><span class="s0">private final double </span><span class="s1">kD = </span><span class="s3">0</span><span class="s1">;    </span><span class="s2">//derivative coefficient</span><span class="s1"> 
+ 
+    </span><span class="s0">private double</span><span class="s1">[] motorPowers;   </span><span class="s2">//to store the motor powers</span><span class="s1"> 
+    </span><span class="s0">private double</span><span class="s1">[] integrals;     </span><span class="s2">//the integral of the error throughout running the PID</span><span class="s1"> 
+    </span><span class="s0">private double</span><span class="s1">[] previousErrors;    </span><span class="s2">//the error from the last loop</span><span class="s1"> 
+ 
+    </span><span class="s0">private double </span><span class="s1">percentErrorTolerance;   </span><span class="s2">//how close we need to be to our desired speed to consider ourselves done</span><span class="s1"> 
+    </span><span class="s0">private double </span><span class="s1">derivativeTolerance;     </span><span class="s2">//how much change we can have in the error and still consider ourselves at a stable speed (done)</span><span class="s1"> 
+ 
+    </span><span class="s0">private boolean</span><span class="s1">[] reachedNgVel = {</span><span class="s0">false</span><span class="s1">, </span><span class="s0">false</span><span class="s1">}; 
+ 
+    </span><span class="s2">//initializes the PID</span><span class="s1"> 
+    </span><span class="s0">public </span><span class="s1">PID(DcMotor[] motors, </span><span class="s0">double </span><span class="s1">ngVelDesired, </span><span class="s0">double </span><span class="s1">initialPower, </span><span class="s0">double </span><span class="s1">percentErrorTolerance, </span><span class="s0">double </span><span class="s1">derivativeTolerance) { 
+        </span><span class="s0">this</span><span class="s1">.motors = motors; 
+        </span><span class="s0">this</span><span class="s1">.ngVelDesired = ngVelDesired; 
+ 
+        </span><span class="s0">this</span><span class="s1">.motorPowers = </span><span class="s0">new double</span><span class="s1">[] {initialPower, initialPower}; 
+        </span><span class="s0">this</span><span class="s1">.integrals = </span><span class="s0">new double</span><span class="s1">[] {</span><span class="s3">0</span><span class="s1">, </span><span class="s3">0</span><span class="s1">}; 
+        </span><span class="s0">this</span><span class="s1">.previousErrors = </span><span class="s0">new double</span><span class="s1">[] {</span><span class="s3">0</span><span class="s1">, </span><span class="s3">0</span><span class="s1">}; 
+ 
+        </span><span class="s0">this</span><span class="s1">.derivativeTolerance = derivativeTolerance; 
+        </span><span class="s0">this</span><span class="s1">.percentErrorTolerance = percentErrorTolerance; 
+    } 
+ 
+ 
+    </span><span class="s0">public void </span><span class="s1">run() { 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active() &amp;&amp; !Thread.currentThread().isInterrupted() &amp;&amp; Thread.currentThread().isAlive()) { 
+            </span><span class="s0">double</span><span class="s1">[] initialPositions = { motors[</span><span class="s3">0</span><span class="s1">].getCurrentPosition(), motors[</span><span class="s3">1</span><span class="s1">].getCurrentPosition() };     </span><span class="s2">//getting the initial encoder values of our motors</span><span class="s1"> 
+            </span><span class="s0">long </span><span class="s1">initialTime = System.currentTimeMillis();  </span><span class="s2">//time at beginning of loop</span><span class="s1"> 
+            Hardware.sleep(dTDesired);  </span><span class="s2">//wait for some change to happen</span><span class="s1"> 
+            </span><span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s3">0</span><span class="s1">; i &lt; </span><span class="s3">2</span><span class="s1">; i++) 
+                motorPowers[i] += getOutput(i, initialPositions[i], previousErrors[i], initialTime);    </span><span class="s2">//add PID output to the motor powers for each motor</span><span class="s1"> 
+        } 
+    } 
+ 
+    </span><span class="s2">//gives us how much to change the motor power by</span><span class="s1"> 
+    </span><span class="s0">private double </span><span class="s1">getOutput(</span><span class="s0">int </span><span class="s1">index, </span><span class="s0">double </span><span class="s1">initialPosition, </span><span class="s0">double </span><span class="s1">previousError, </span><span class="s0">long </span><span class="s1">initialTime) { 
+        </span><span class="s0">if </span><span class="s1">(reachedNgVel[index])    </span><span class="s2">//if we are already at the desired speed, return 0 (no change in power)</span><span class="s1"> 
+            </span><span class="s0">return </span><span class="s3">0</span><span class="s1">; 
+ 
+        </span><span class="s0">long </span><span class="s1">dt = System.currentTimeMillis() - initialTime;     </span><span class="s2">//time elapsed since loop started</span><span class="s1"> 
+        </span><span class="s0">double </span><span class="s1">dTheta = motors[index].getCurrentPosition() - initialPosition,   </span><span class="s2">//change in encoder values</span><span class="s1"> 
+                ngVel = dTheta / dt,    </span><span class="s2">//current speed of motor</span><span class="s1"> 
+                error = </span><span class="s0">this</span><span class="s1">.ngVelDesired - ngVel,  </span><span class="s2">//how much off we are from our desired speed</span><span class="s1"> 
+                proportion = kP * error,    </span><span class="s2">//the adjustment proportional to how much error we have</span><span class="s1"> 
+ 
+                </span><span class="s2">//the adjustment proportional to the rate of change in the error. This helps reduce overcompensation</span><span class="s1"> 
+                derivative = kD * (error - previousError) / dt, 
+ 
+                </span><span class="s2">//the adjustment proportional to the sum of all the prior errors. Helps get rid of steady state error</span><span class="s1"> 
+                integral = integrals[index] += kI * error * dt; 
+ 
+        </span><span class="s0">double </span><span class="s1">output = proportion + integral + derivative;     </span><span class="s2">//adjust the motor power by the sum of P I and D</span><span class="s1"> 
+ 
+        previousErrors[index] = error;  </span><span class="s2">//store our error as the new previous error</span><span class="s1"> 
+ 
+        </span><span class="s2">//if our speed is within a desired percent tolerance of our desired speed,</span><span class="s1"> 
+        </span><span class="s2">//and our derivative is small enough (meaning that we aren't still oscillating a lot</span><span class="s1"> 
+        </span><span class="s2">//we have reached our desired speed an</span><span class="s1"> 
+        </span><span class="s0">if </span><span class="s1">(Math.abs(error) / ngVel &lt; percentErrorTolerance &amp;&amp; Math.abs(derivative) &lt; derivativeTolerance) { 
+            reachedNgVel[index] = </span><span class="s0">true</span><span class="s1">; 
+            </span><span class="s0">return </span><span class="s3">0</span><span class="s1">; 
+        } 
+ 
+        </span><span class="s0">return </span><span class="s1">output; 
+    } 
+ 
+    </span><span class="s2">//the motors are ready if both of them have reached their desired speeds</span><span class="s1"> 
+    </span><span class="s2">//called by the program running the PID to check if it is done</span><span class="s1"> 
+    </span><span class="s0">public boolean </span><span class="s1">ready() { 
+        </span><span class="s0">return </span><span class="s1">reachedNgVel[</span><span class="s3">0</span><span class="s1">] &amp;&amp; reachedNgVel[</span><span class="s3">1</span><span class="s1">]; 
+    } 
+ 
+    </span><span class="s2">//resets encoders and reachedNgVel</span><span class="s1"> 
+    </span><span class="s0">public void </span><span class="s1">reset() { 
+        reachedNgVel = </span><span class="s0">new boolean</span><span class="s1">[] {</span><span class="s0">false</span><span class="s1">, </span><span class="s0">false</span><span class="s1">}; 
+        </span><span class="s0">for </span><span class="s1">(DcMotor m : motors) { 
+            m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); 
+            m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); 
+        } 
+    } 
+} 
+</span></pre>
+</body>
+</html>

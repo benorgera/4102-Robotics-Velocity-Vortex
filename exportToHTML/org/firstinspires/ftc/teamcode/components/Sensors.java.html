@@ -1,0 +1,420 @@
+<html>
+<head>
+<title>Sensors.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,0,255); }
+.s4 { color: rgb(0,128,0); font-weight: bold; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+Sensors.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">org.firstinspires.ftc.teamcode.components; 
+ 
+</span><span class="s0">import </span><span class="s1">com.qualcomm.hardware.adafruit.BNO055IMU; 
+</span><span class="s0">import </span><span class="s1">com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor; 
+</span><span class="s0">import </span><span class="s1">com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor; 
+</span><span class="s0">import </span><span class="s1">com.qualcomm.robotcore.hardware.ColorSensor; 
+</span><span class="s0">import </span><span class="s1">com.qualcomm.robotcore.hardware.VoltageSensor; 
+ 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.robotcore.external.navigation.AngleUnit; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.robotcore.external.navigation.AxesOrder; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.robotcore.external.navigation.AxesReference; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.robotcore.external.navigation.Orientation; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.robotcore.external.navigation.Position; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.robotcore.external.navigation.Velocity; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.utilities.GyroPoll; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.utilities.Hardware; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.utilities.Utils; 
+ 
+</span><span class="s2">/** 
+ * Created by benorgera on 10/25/16. 
+ */</span><span class="s1"> 
+</span><span class="s0">public class </span><span class="s1">Sensors { 
+ 
+    </span><span class="s0">private </span><span class="s1">Orientation angles; 
+ 
+    </span><span class="s0">private </span><span class="s1">BNO055IMU imu; 
+    </span><span class="s0">private </span><span class="s1">ColorSensor leftColorSensor; 
+    </span><span class="s0">private </span><span class="s1">ColorSensor rightColorSensor; 
+    </span><span class="s0">private </span><span class="s1">ModernRoboticsAnalogOpticalDistanceSensor[] ods; 
+    </span><span class="s0">private </span><span class="s1">ModernRoboticsI2cColorSensor beaconSensor; 
+    </span><span class="s0">private </span><span class="s1">VoltageSensor voltage; 
+ 
+    </span><span class="s0">private </span><span class="s1">Integrator integrator; 
+ 
+    </span><span class="s0">private </span><span class="s1">Wheels wheels; 
+ 
+    </span><span class="s0">private double </span><span class="s1">initialHeading = </span><span class="s3">0</span><span class="s1">; 
+ 
+    </span><span class="s0">private final double </span><span class="s1">lostBeaconDifferenceThreshold = </span><span class="s3">0.025</span><span class="s1">; 
+ 
+    </span><span class="s0">private final double </span><span class="s1">compensatedTranslateSpeed = </span><span class="s3">0.25</span><span class="s1">; 
+ 
+    </span><span class="s0">private final double </span><span class="s1">headingAccuracyThreshold = </span><span class="s3">1 </span><span class="s1">* Math.PI / </span><span class="s3">180</span><span class="s1">; </span><span class="s2">//1 degrees</span><span class="s1"> 
+ 
+    </span><span class="s0">private double </span><span class="s1">strafeConstant = </span><span class="s3">1.71</span><span class="s1">; </span><span class="s2">//amount of extra power supplied based on horizontal component of translation angle (strafing takes more power)</span><span class="s1"> 
+    </span><span class="s0">private double </span><span class="s1">ngConstant = </span><span class="s3">0.6</span><span class="s1">; </span><span class="s2">//rotational speed given based on deviation from 0 degrees</span><span class="s1"> 
+ 
+    </span><span class="s0">private </span><span class="s1">Thread gyroPoll; 
+ 
+    </span><span class="s0">public </span><span class="s1">Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsLeft, ModernRoboticsAnalogOpticalDistanceSensor odsRight, ModernRoboticsI2cColorSensor beaconSensor, VoltageSensor voltage) { 
+        </span><span class="s0">this</span><span class="s1">.imu = imu; 
+        </span><span class="s0">this</span><span class="s1">.voltage = voltage; 
+        </span><span class="s0">this</span><span class="s1">.leftColorSensor = leftColorSensor; 
+        </span><span class="s0">this</span><span class="s1">.rightColorSensor = rightColorSensor; 
+        </span><span class="s0">this</span><span class="s1">.ods = </span><span class="s0">new </span><span class="s1">ModernRoboticsAnalogOpticalDistanceSensor[] {odsLeft, odsRight}; 
+        </span><span class="s0">this</span><span class="s1">.wheels = Hardware.getWheels(); 
+        </span><span class="s0">this</span><span class="s1">.beaconSensor = beaconSensor; 
+        beaconSensor.enableLed(</span><span class="s0">false</span><span class="s1">); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">initImu() { 
+ 
+        BNO055IMU.Parameters parameters = </span><span class="s0">new </span><span class="s1">BNO055IMU.Parameters(); 
+        parameters.mode                = BNO055IMU.SensorMode.NDOF; 
+        parameters.angleUnit           = BNO055IMU.AngleUnit.RADIANS; 
+        parameters.temperatureUnit     = BNO055IMU.TempUnit.CELSIUS; 
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC; 
+</span><span class="s2">//        parameters.calibrationDataFile = &quot;AdafruitIMUCalibration.json&quot;; // see the calibration sample opmode</span><span class="s1"> 
+        parameters.loggingEnabled      = </span><span class="s0">true</span><span class="s1">; 
+        parameters.loggingTag          = </span><span class="s4">&quot;IMU&quot;</span><span class="s1">; 
+        parameters.accelerationIntegrationAlgorithm = integrator = </span><span class="s0">new </span><span class="s1">Integrator(); 
+ 
+        imu.initialize(parameters); 
+ 
+        </span><span class="s2">//remap the axes to the orientation the imu is mounted in</span><span class="s1"> 
+        imu.write8(BNO055IMU.Register.AXIS_MAP_CONFIG, </span><span class="s3">0x21</span><span class="s1">); 
+        imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN, </span><span class="s3">0x01</span><span class="s1">); 
+ 
+        resetHeading(); 
+    } 
+ 
+    </span><span class="s0">public double </span><span class="s1">getHeading() { </span><span class="s2">// [-π, π]</span><span class="s1"> 
+        </span><span class="s0">return </span><span class="s1">Utils.angleDifference(getRawHeading(), initialHeading); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">resetHeading() { 
+        initialHeading = getRawHeading(); 
+    } 
+ 
+    </span><span class="s0">public double </span><span class="s1">getRawHeading() { 
+        angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX); 
+        </span><span class="s0">return </span><span class="s1">-AngleUnit.RADIANS.normalize(AngleUnit.RADIANS.fromUnit(angles.angleUnit, angles.firstAngle)); 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">Velocity getVelocity() { 
+        </span><span class="s0">return </span><span class="s1">imu.getVelocity(); 
+    } 
+ 
+    </span><span class="s0">public </span><span class="s1">Position getPosition() { 
+        </span><span class="s0">return </span><span class="s1">imu.getPosition(); 
+    } 
+ 
+    </span><span class="s0">public double</span><span class="s1">[] getOpticalDistance() { 
+        </span><span class="s0">return new double</span><span class="s1">[] { 
+                ods[</span><span class="s3">0</span><span class="s1">].getLightDetected(), 
+                ods[</span><span class="s3">1</span><span class="s1">].getLightDetected() 
+        }; 
+    } 
+ 
+    </span><span class="s0">public int</span><span class="s1">[] getBeaconColor() { 
+        </span><span class="s0">return new int</span><span class="s1">[] {beaconSensor.blue(), beaconSensor.red()}; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">resetIntegrator() { 
+        integrator.reset(); 
+    } 
+ 
+    </span><span class="s0">public double </span><span class="s1">getInitialHeading() { 
+        </span><span class="s0">return </span><span class="s1">initialHeading; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">compensatedTranslate(</span><span class="s0">double </span><span class="s1">thetaDesired, </span><span class="s0">double </span><span class="s1">speed) { </span><span class="s2">//translate robot with rotation compensation (must be called on a loop)</span><span class="s1"> 
+        </span><span class="s0">double </span><span class="s1">power = (speed + getVoltageConstant(speed)) * (</span><span class="s3">1 </span><span class="s1">+ strafeConstant * Math.abs(Math.cos(thetaDesired))), 
+                ngVel = Utils.trim(-</span><span class="s3">1</span><span class="s1">, </span><span class="s3">1</span><span class="s1">, -</span><span class="s3">1 </span><span class="s1">* getHeading() * ngConstant); </span><span class="s2">//compensate for rotation by accounting for change in heading</span><span class="s1"> 
+ 
+ 
+ 
+        wheels.drive(Math.cos(thetaDesired) * power, Math.sin(thetaDesired) * power, ngVel, </span><span class="s0">false</span><span class="s1">); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">compensatedTranslate(</span><span class="s0">double </span><span class="s1">thetaDesired) { </span><span class="s2">//translate robot with rotation compensation (must be called on a loop)</span><span class="s1"> 
+        compensatedTranslate(thetaDesired, compensatedTranslateSpeed); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">centerOnZero() { 
+        </span><span class="s0">double </span><span class="s1">heading = getHeading(), 
+                previousHeading = heading, 
+                power = </span><span class="s3">0.13</span><span class="s1">; 
+        </span><span class="s0">long </span><span class="s1">checkTime = System.currentTimeMillis() + </span><span class="s3">1000</span><span class="s1">; 
+ 
+        </span><span class="s0">while </span><span class="s1">(Math.abs(heading) &gt; headingAccuracyThreshold &amp;&amp; Hardware.active()) { 
+            wheels.drive(</span><span class="s3">0</span><span class="s1">, </span><span class="s3">0</span><span class="s1">, power * ((heading = getHeading()) &gt; </span><span class="s3">0 </span><span class="s1">? -</span><span class="s3">1 </span><span class="s1">: </span><span class="s3">1</span><span class="s1">), </span><span class="s0">false</span><span class="s1">); 
+ 
+            </span><span class="s0">if </span><span class="s1">(System.currentTimeMillis() &gt;= checkTime) { </span><span class="s2">//if its been 250 ms, consider upping the power and ready the next check</span><span class="s1"> 
+ 
+                </span><span class="s0">if </span><span class="s1">(Math.abs(previousHeading - heading) &lt; headingAccuracyThreshold) </span><span class="s2">//if the robot hasn't rotated at 1 deg / s</span><span class="s1"> 
+                    power += </span><span class="s3">0.03</span><span class="s1">; 
+ 
+                previousHeading = heading; 
+                checkTime = System.currentTimeMillis() + </span><span class="s3">1000</span><span class="s1">; 
+            } 
+        } 
+        wheels.stop(); 
+    } 
+ 
+    </span><span class="s0">private double </span><span class="s1">getVoltageConstant(</span><span class="s0">double </span><span class="s1">speed) {       </span><span class="s2">//scales up motor powers based on how low our battery voltage is to make a more consistent drive</span><span class="s1"> 
+        </span><span class="s0">double </span><span class="s1">minVoltage = </span><span class="s3">12.8</span><span class="s1">, 
+                maxVoltage = </span><span class="s3">13.7</span><span class="s1">, 
+                range = maxVoltage - minVoltage, 
+                maxAdditionalSpeed = </span><span class="s3">0.05</span><span class="s1">, 
+                v = voltage.getVoltage(), 
+                difVolt = (maxVoltage - v) / range, 
+                difSpeed = Utils.trim(</span><span class="s3">0</span><span class="s1">, </span><span class="s3">1</span><span class="s1">, speed / </span><span class="s3">0.35</span><span class="s1">); 
+ 
+        </span><span class="s0">return </span><span class="s1">v &gt;= maxVoltage ? </span><span class="s3">0 </span><span class="s1">: (difVolt * maxAdditionalSpeed * difSpeed); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">turn(</span><span class="s0">double </span><span class="s1">theta, </span><span class="s0">double </span><span class="s1">tolerance, </span><span class="s0">double </span><span class="s1">speed) { </span><span class="s2">//positive is clockwise, max turn is PI</span><span class="s1"> 
+ 
+        </span><span class="s0">boolean </span><span class="s1">isCounterClockwise = theta &gt; </span><span class="s3">0</span><span class="s1">; 
+ 
+        </span><span class="s0">double </span><span class="s1">storedHeading = initialHeading, 
+                threshold = theta + tolerance * (isCounterClockwise ? -</span><span class="s3">1 </span><span class="s1">: </span><span class="s3">1</span><span class="s1">);      </span><span class="s2">//allows for the turn to stop a little before it turns fully, helps prevent overshooting angle</span><span class="s1"> 
+ 
+        </span><span class="s0">long </span><span class="s1">start = System.currentTimeMillis(); 
+ 
+        resetHeading(); 
+ 
+ 
+        </span><span class="s2">//while we haven't reached our threshold yet, or its been too little time (&lt;300 ms), turn towards the threshold</span><span class="s1"> 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active() &amp;&amp; (Utils.compare(-getHeading(), threshold, !isCounterClockwise) || System.currentTimeMillis() - start &lt; </span><span class="s3">300</span><span class="s1">)) 
+            wheels.drive(</span><span class="s3">0</span><span class="s1">, </span><span class="s3">0</span><span class="s1">, (isCounterClockwise ? -</span><span class="s3">1 </span><span class="s1">: </span><span class="s3">1</span><span class="s1">) * speed, </span><span class="s0">false</span><span class="s1">); 
+ 
+        wheels.stop(); 
+ 
+        initialHeading = (storedHeading + -theta) % (</span><span class="s3">2 </span><span class="s1">* Math.PI);      </span><span class="s2">//sets our heading to was it was initally plus how much we should have turned</span><span class="s1"> 
+    } 
+ 
+    </span><span class="s0">public double </span><span class="s1">getStrafeConstant() { 
+        </span><span class="s0">return </span><span class="s1">strafeConstant; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setStrafeConstant(</span><span class="s0">double </span><span class="s1">s) { 
+        strafeConstant = s; 
+    } 
+ 
+    </span><span class="s0">public double </span><span class="s1">getNgConstant() { 
+        </span><span class="s0">return </span><span class="s1">ngConstant; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setNgConstant(</span><span class="s0">double </span><span class="s1">n) { 
+        ngConstant = n; 
+    } 
+ 
+    </span><span class="s0">private void </span><span class="s1">readyCompensatedTranslate(</span><span class="s0">long </span><span class="s1">softStartTime) { 
+        wheels.readyCompensatedTranslate(softStartTime); 
+        (gyroPoll = </span><span class="s0">new </span><span class="s1">Thread(</span><span class="s0">new </span><span class="s1">GyroPoll(imu))).start(); 
+    } 
+ 
+    </span><span class="s0">private void </span><span class="s1">stopCompensatedTranslate() { 
+        gyroPoll.interrupt(); 
+        wheels.stopCompensatedTranslating(); 
+    } 
+ 
+    </span><span class="s0">public double</span><span class="s1">[] getLineReadings() { 
+        </span><span class="s0">return new double</span><span class="s1">[] { 
+                leftColorSensor.green(), </span><span class="s2">//green is a measure of white</span><span class="s1"> 
+                rightColorSensor.green() 
+        }; 
+    } 
+ 
+    </span><span class="s0">private void </span><span class="s1">followLine(</span><span class="s0">double </span><span class="s1">speed, </span><span class="s0">boolean </span><span class="s1">isGoingForwards) { 
+        </span><span class="s0">double</span><span class="s1">[] readings = getLineReadings(); 
+        </span><span class="s0">double </span><span class="s1">left = readings[</span><span class="s3">0</span><span class="s1">], 
+                right = readings[</span><span class="s3">1</span><span class="s1">]; 
+ 
+        </span><span class="s0">if </span><span class="s1">(Math.abs(left - right) &lt;= </span><span class="s3">40</span><span class="s1">) { </span><span class="s2">//both sensors equally on the white line</span><span class="s1"> 
+            compensatedTranslate(isGoingForwards ? Math.PI + Math.PI / </span><span class="s3">23 </span><span class="s1">: </span><span class="s3">0</span><span class="s1">, speed); 
+        } </span><span class="s0">else </span><span class="s1">{ </span><span class="s2">//left more on the white line turn left, right turn right</span><span class="s1"> 
+            compensatedTranslate((isGoingForwards ? Math.PI : </span><span class="s3">0</span><span class="s1">) + (Math.PI / </span><span class="s3">8 </span><span class="s1">* (left &gt; right ? </span><span class="s3">1.4 </span><span class="s1">: -</span><span class="s3">1</span><span class="s1">) * (isGoingForwards ? </span><span class="s3">1 </span><span class="s1">: -</span><span class="s3">1</span><span class="s1">)), speed); 
+        } 
+    } 
+ 
+    </span><span class="s0">public boolean </span><span class="s1">findBeaconButton(</span><span class="s0">boolean </span><span class="s1">isRed, </span><span class="s0">double </span><span class="s1">whiteLineThreshold, </span><span class="s0">long </span><span class="s1">timeout, </span><span class="s0">double </span><span class="s1">speed) { 
+ 
+        </span><span class="s0">boolean </span><span class="s1">goingForward = </span><span class="s0">true</span><span class="s1">, 
+                shouldRestart = </span><span class="s0">false</span><span class="s1">; 
+ 
+        </span><span class="s0">double </span><span class="s1">previousReading = getBeaconColor()[isRed ? </span><span class="s3">1 </span><span class="s1">: </span><span class="s3">0</span><span class="s1">], 
+                currentReading, 
+                maxColor = </span><span class="s3">0</span><span class="s1">, 
+                directionSwitches = </span><span class="s3">0</span><span class="s1">; 
+ 
+        </span><span class="s0">long </span><span class="s1">lastDirectionSwitch = System.currentTimeMillis(); 
+        timeout += lastDirectionSwitch; 
+ 
+ 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active() &amp;&amp; System.currentTimeMillis() &lt; timeout) {     </span><span class="s2">//makes sure we don't take too long</span><span class="s1"> 
+ 
+            </span><span class="s0">if </span><span class="s1">((currentReading = getBeaconColor()[isRed ? </span><span class="s3">1 </span><span class="s1">: </span><span class="s3">0</span><span class="s1">]) &gt; maxColor)  </span><span class="s2">//if we have just read our highest reading so far, make that the max</span><span class="s1"> 
+                maxColor = currentReading; 
+ 
+            </span><span class="s0">if </span><span class="s1">(directionSwitches &gt;= </span><span class="s3">3 </span><span class="s1">&amp;&amp; currentReading &gt;= maxColor) {     </span><span class="s2">//we are in front of the center of the color</span><span class="s1"> 
+                wheels.stop(); 
+                </span><span class="s0">return true</span><span class="s1">; 
+            } </span><span class="s0">else if </span><span class="s1">(directionSwitches &gt; </span><span class="s3">5</span><span class="s1">) {     </span><span class="s2">//if we pass back and forth several times, but don't see our max again, reduce the max and try again</span><span class="s1"> 
+                maxColor--; 
+                directionSwitches = </span><span class="s3">4</span><span class="s1">; 
+            } 
+ 
+            </span><span class="s0">if </span><span class="s1">(System.currentTimeMillis() - lastDirectionSwitch &gt; </span><span class="s3">3000</span><span class="s1">) {      </span><span class="s2">//if we have driven off of the beacon, drive back to the line and restart</span><span class="s1"> 
+                Hardware.print(</span><span class="s4">&quot;Restarted find beacon button&quot;</span><span class="s1">); 
+                driveUntilLineReadingThreshold(Math.PI / </span><span class="s3">2 </span><span class="s1">* (goingForward ? </span><span class="s3">3 </span><span class="s1">: </span><span class="s3">1</span><span class="s1">), whiteLineThreshold, </span><span class="s0">false</span><span class="s1">, </span><span class="s0">true</span><span class="s1">, </span><span class="s3">0</span><span class="s1">, </span><span class="s3">10000</span><span class="s1">, speed); 
+                shouldRestart = </span><span class="s0">true</span><span class="s1">; 
+                </span><span class="s0">break</span><span class="s1">; 
+            } </span><span class="s0">else if </span><span class="s1">(currentReading &lt; previousReading &amp;&amp; System.currentTimeMillis() - lastDirectionSwitch &gt; </span><span class="s3">300</span><span class="s1">) {    </span><span class="s2">//if our readings start to decline, we are going the wrong way and should switch direction</span><span class="s1"> 
+                goingForward = !goingForward; 
+                directionSwitches++; 
+                lastDirectionSwitch = System.currentTimeMillis(); 
+            } 
+ 
+            Hardware.clearLog(); 
+            Hardware.print(</span><span class="s4">&quot;Reading: &quot; </span><span class="s1">+ currentReading); 
+            Hardware.print(</span><span class="s4">&quot;Direction switches: &quot; </span><span class="s1">+ directionSwitches); 
+            Hardware.print(</span><span class="s4">&quot;Threshold: &quot; </span><span class="s1">+ maxColor); 
+ 
+            compensatedTranslate(Math.PI / </span><span class="s3">2 </span><span class="s1">* (goingForward ? </span><span class="s3">1 </span><span class="s1">: </span><span class="s3">3</span><span class="s1">), speed); 
+ 
+            previousReading = currentReading; 
+        } 
+ 
+        </span><span class="s0">return </span><span class="s1">shouldRestart ? findBeaconButton(isRed, whiteLineThreshold, timeout - System.currentTimeMillis(), speed) : </span><span class="s0">false</span><span class="s1">;    </span><span class="s2">//if we need to restart, restart</span><span class="s1"> 
+    } 
+ 
+    </span><span class="s0">public boolean </span><span class="s1">findBeaconButton(</span><span class="s0">boolean </span><span class="s1">isRed, </span><span class="s0">double </span><span class="s1">whiteLineReadingThreshold, </span><span class="s0">long </span><span class="s1">timeout) { 
+        </span><span class="s0">return </span><span class="s1">findBeaconButton(</span><span class="s0">false</span><span class="s1">, whiteLineReadingThreshold, timeout, </span><span class="s3">0.125</span><span class="s1">); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">driveUntilOdsThreshold(</span><span class="s0">double </span><span class="s1">odsThreshold, </span><span class="s0">double </span><span class="s1">speed) {     </span><span class="s2">//drives until a specified ods value</span><span class="s1"> 
+        </span><span class="s0">double</span><span class="s1">[] reading = getOpticalDistance(); 
+        </span><span class="s0">boolean </span><span class="s1">isGoingForwards = Utils.getMaxMagnitude(reading) &lt; odsThreshold;    </span><span class="s2">//figure out if we need to go forwards or backwards</span><span class="s1"> 
+ 
+        </span><span class="s2">//while we have not reached the ods threshold, and the difference between the 2 ods's is not large (meaning we lost the beacon)</span><span class="s1"> 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active() &amp;&amp; isGoingForwards ? (Utils.average((reading = getOpticalDistance())[</span><span class="s3">0</span><span class="s1">], reading[</span><span class="s3">1</span><span class="s1">]) &lt; odsThreshold) : (Utils.average((reading = getOpticalDistance())[</span><span class="s3">0</span><span class="s1">], reading[</span><span class="s3">1</span><span class="s1">]) &gt; odsThreshold) &amp;&amp; Math.abs(reading[</span><span class="s3">0</span><span class="s1">] - reading[</span><span class="s3">1</span><span class="s1">]) &lt; lostBeaconDifferenceThreshold) 
+            compensatedTranslate(isGoingForwards ? Math.PI : </span><span class="s3">0</span><span class="s1">, speed); 
+        wheels.stop(); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">pulseUntilOdsThreshold(</span><span class="s0">double </span><span class="s1">odsThreshold, </span><span class="s0">double </span><span class="s1">speed) {      </span><span class="s2">//pulses until a specified ods value. tends to be straighter than drive</span><span class="s1"> 
+        </span><span class="s0">double</span><span class="s1">[] reading = getOpticalDistance(); 
+        </span><span class="s0">boolean </span><span class="s1">isGoingForwards = Utils.getMaxMagnitude(reading) &lt; odsThreshold;    </span><span class="s2">//figure out if we need to go forwards or backwards</span><span class="s1"> 
+ 
+        </span><span class="s0">long </span><span class="s1">start = System.currentTimeMillis(); 
+ 
+        </span><span class="s2">//while we have not reached the ods threshold, and the difference between the 2 ods's is not large (meaning we lost the beacon)</span><span class="s1"> 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active() &amp;&amp; isGoingForwards ? (Utils.average((reading = getOpticalDistance())[</span><span class="s3">0</span><span class="s1">], reading[</span><span class="s3">1</span><span class="s1">]) &lt; odsThreshold) : (Utils.average((reading = getOpticalDistance())[</span><span class="s3">0</span><span class="s1">], reading[</span><span class="s3">1</span><span class="s1">]) &gt; odsThreshold) &amp;&amp; Math.abs(reading[</span><span class="s3">0</span><span class="s1">] - reading[</span><span class="s3">1</span><span class="s1">]) &lt; lostBeaconDifferenceThreshold) { 
+            </span><span class="s0">if </span><span class="s1">((System.currentTimeMillis() - start) % </span><span class="s3">200 </span><span class="s1">&lt; </span><span class="s3">100</span><span class="s1">)   </span><span class="s2">//drive for 100 ms, stop for 100 ms</span><span class="s1"> 
+                compensatedTranslate(isGoingForwards ? Math.PI : </span><span class="s3">0</span><span class="s1">, speed); 
+            </span><span class="s0">else</span><span class="s1"> 
+                wheels.stop(); 
+        } 
+        wheels.stop(); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">pulseUntilOdsThreshold(</span><span class="s0">double </span><span class="s1">odsThreshold) { 
+        pulseUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">driveUntilOdsThreshold(</span><span class="s0">double </span><span class="s1">odsThreshold) { 
+        driveUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">followLineUntilOdsThreshold(</span><span class="s0">double </span><span class="s1">odsThreshold, </span><span class="s0">long </span><span class="s1">timeout, </span><span class="s0">boolean </span><span class="s1">canGoBackwards, </span><span class="s0">double </span><span class="s1">speed) {  </span><span class="s2">//follows the line until a specified ods value</span><span class="s1"> 
+        timeout += System.currentTimeMillis(); 
+        </span><span class="s0">double</span><span class="s1">[] reading = getOpticalDistance(); 
+        </span><span class="s0">boolean </span><span class="s1">isGoingForwards = Utils.getMaxMagnitude(reading) &lt; odsThreshold; 
+ 
+        </span><span class="s0">if </span><span class="s1">(!canGoBackwards &amp;&amp; !isGoingForwards) </span><span class="s0">return</span><span class="s1">; 
+ 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active() &amp;&amp; Utils.compare(Utils.average((reading = getOpticalDistance())[</span><span class="s3">0</span><span class="s1">], reading[</span><span class="s3">1</span><span class="s1">]), odsThreshold, !isGoingForwards) &amp;&amp; System.currentTimeMillis() &lt; timeout &amp;&amp; Math.abs(reading[</span><span class="s3">0</span><span class="s1">] - reading[</span><span class="s3">1</span><span class="s1">]) &lt; lostBeaconDifferenceThreshold) 
+            followLine(speed, isGoingForwards); 
+        wheels.stop(); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">followLineUntilOdsThreshold(</span><span class="s0">double </span><span class="s1">odsThreshold, </span><span class="s0">long </span><span class="s1">timeout, </span><span class="s0">boolean </span><span class="s1">canGoBackwards) { 
+        followLineUntilOdsThreshold(odsThreshold, timeout, canGoBackwards, compensatedTranslateSpeed); 
+    } 
+ 
+ 
+    </span><span class="s2">//translates at a given theta and speed until we reach a white line</span><span class="s1"> 
+    </span><span class="s0">public boolean </span><span class="s1">driveUntilLineReadingThreshold(</span><span class="s0">double </span><span class="s1">theta, </span><span class="s0">double </span><span class="s1">whiteLineReadingThreshold, </span><span class="s0">boolean </span><span class="s1">shouldPollGyro, </span><span class="s0">boolean </span><span class="s1">shouldStop, </span><span class="s0">long </span><span class="s1">minTime, </span><span class="s0">long </span><span class="s1">maxTime, </span><span class="s0">double </span><span class="s1">speed) { 
+        </span><span class="s0">long </span><span class="s1">time = System.currentTimeMillis(); 
+ 
+        maxTime += time;    </span><span class="s2">//if greater than this, we are taking to long and should timeout</span><span class="s1"> 
+        minTime += time;    </span><span class="s2">//if less than this, we haven't gone long enough (maybe we re-read a line we were already on)</span><span class="s1"> 
+ 
+        </span><span class="s0">if </span><span class="s1">(shouldPollGyro) readyCompensatedTranslate(</span><span class="s3">0</span><span class="s1">); 
+ 
+        </span><span class="s0">int </span><span class="s1">sufficientReadings = </span><span class="s3">0</span><span class="s1">,     </span><span class="s2">//number of readings that meet our threshold</span><span class="s1"> 
+                neededSufficientReadings = </span><span class="s3">1</span><span class="s1">;   </span><span class="s2">//number of readings that we need to consider ourdelves on the line, not a fluke</span><span class="s1"> 
+ 
+        </span><span class="s2">//drive while we haven't gotten enough readings that meet our threshold, and the time we have been driving is between our min and max time</span><span class="s1"> 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active() &amp;&amp; (sufficientReadings &lt; neededSufficientReadings &amp;&amp; (time = System.currentTimeMillis()) &lt; maxTime || (time = System.currentTimeMillis()) &lt; minTime)) { 
+            compensatedTranslate(theta, speed); 
+            </span><span class="s0">if </span><span class="s1">(Utils.getMaxMagnitude(getLineReadings()) &gt; whiteLineReadingThreshold)       </span><span class="s2">//if we see the line, add 1 to sufficientReadings</span><span class="s1"> 
+                sufficientReadings++; 
+        } 
+ 
+        </span><span class="s0">if </span><span class="s1">(shouldStop) wheels.stop(); 
+ 
+        </span><span class="s0">if </span><span class="s1">(shouldPollGyro) stopCompensatedTranslate(); 
+ 
+        </span><span class="s0">return </span><span class="s1">time &lt; maxTime;      </span><span class="s2">//if we actually got to the line, or just timed out</span><span class="s1"> 
+    } 
+ 
+    </span><span class="s0">public boolean </span><span class="s1">driveUntilLineReadingThreshold(</span><span class="s0">double </span><span class="s1">theta, </span><span class="s0">double </span><span class="s1">whiteLineReadingThreshold, </span><span class="s0">boolean </span><span class="s1">shouldPollGyro, </span><span class="s0">boolean </span><span class="s1">shouldStop, </span><span class="s0">long </span><span class="s1">minTime, </span><span class="s0">long </span><span class="s1">maxTime) { 
+        </span><span class="s0">return </span><span class="s1">driveUntilLineReadingThreshold(theta, whiteLineReadingThreshold, shouldPollGyro, shouldStop, minTime, maxTime, compensatedTranslateSpeed); 
+    } 
+ 
+    </span><span class="s2">//just drive by time, no sensor values needed</span><span class="s1"> 
+    </span><span class="s0">public void </span><span class="s1">driveByTime(</span><span class="s0">double </span><span class="s1">theta, </span><span class="s0">long </span><span class="s1">time, </span><span class="s0">boolean </span><span class="s1">shouldStop, </span><span class="s0">double </span><span class="s1">speed) { 
+        </span><span class="s0">long </span><span class="s1">stop = System.currentTimeMillis() + time; 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active() &amp;&amp; System.currentTimeMillis() &lt; stop) 
+            compensatedTranslate(theta, speed); 
+        </span><span class="s0">if </span><span class="s1">(shouldStop) wheels.stop(); 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">driveByTime(</span><span class="s0">double </span><span class="s1">theta, </span><span class="s0">long </span><span class="s1">time, </span><span class="s0">boolean </span><span class="s1">shouldStop) { 
+        driveByTime(theta, time, shouldStop, compensatedTranslateSpeed); 
+    } 
+ 
+    </span><span class="s2">//just drive by time, no sensor values needed, and no compensation</span><span class="s1"> 
+    </span><span class="s0">public void </span><span class="s1">uncompensatedDriveByTime(</span><span class="s0">double </span><span class="s1">xVel, </span><span class="s0">double </span><span class="s1">yVel, </span><span class="s0">double </span><span class="s1">ngVel, </span><span class="s0">long </span><span class="s1">time) { 
+        </span><span class="s0">long </span><span class="s1">stop = System.currentTimeMillis() + time; 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active() &amp;&amp; System.currentTimeMillis() &lt; stop) 
+            wheels.drive(xVel, yVel, ngVel, </span><span class="s0">false</span><span class="s1">); 
+        wheels.stop(); 
+    } 
+ 
+    </span><span class="s2">//turn for a time</span><span class="s1"> 
+    </span><span class="s0">public void </span><span class="s1">turnByTime(</span><span class="s0">long </span><span class="s1">time, </span><span class="s0">double </span><span class="s1">ngVel) { 
+        </span><span class="s0">long </span><span class="s1">stop = System.currentTimeMillis() + time; 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active() &amp;&amp; System.currentTimeMillis() &lt; stop) 
+            wheels.drive(</span><span class="s3">0</span><span class="s1">, </span><span class="s3">0</span><span class="s1">, ngVel, </span><span class="s0">false</span><span class="s1">); 
+        wheels.stop(); 
+    } 
+} 
+</span></pre>
+</body>
+</html>

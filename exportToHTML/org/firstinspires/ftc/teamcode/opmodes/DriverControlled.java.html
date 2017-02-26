@@ -1,0 +1,188 @@
+<html>
+<head>
+<title>DriverControlled.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,128,0); font-weight: bold; }
+.s4 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+DriverControlled.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">org.firstinspires.ftc.teamcode.opmodes; 
+ 
+</span><span class="s0">import </span><span class="s1">com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; 
+</span><span class="s0">import </span><span class="s1">com.qualcomm.robotcore.eventloop.opmode.TeleOp; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.utilities.Hardware; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.components.Intake; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.components.Lift; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.components.Shooter; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.utilities.Utils; 
+</span><span class="s0">import </span><span class="s1">org.firstinspires.ftc.teamcode.components.Wheels; 
+ 
+</span><span class="s2">/** 
+ * Created by benorgera on 10/24/16. 
+ */</span><span class="s1"> 
+@TeleOp(name = </span><span class="s3">&quot;Shmoney Yerd L17&quot;</span><span class="s1">, group = </span><span class="s3">&quot;4102&quot;</span><span class="s1">) 
+</span><span class="s0">public class </span><span class="s1">DriverControlled </span><span class="s0">extends </span><span class="s1">LinearOpMode { 
+ 
+    </span><span class="s2">//modes</span><span class="s1"> 
+    </span><span class="s0">private boolean </span><span class="s1">isSlowMode = </span><span class="s0">false</span><span class="s1">; 
+    </span><span class="s0">private boolean </span><span class="s1">intakeIsFront = </span><span class="s0">true</span><span class="s1">; 
+ 
+    </span><span class="s2">//components</span><span class="s1"> 
+    </span><span class="s0">private </span><span class="s1">Lift lift; 
+    </span><span class="s0">private </span><span class="s1">Shooter shooter; 
+    </span><span class="s0">private </span><span class="s1">Wheels wheels; 
+    </span><span class="s0">private </span><span class="s1">Intake intake; 
+ 
+    </span><span class="s0">private double </span><span class="s1">shotPower = </span><span class="s4">6</span><span class="s1">; 
+ 
+    </span><span class="s0">private boolean </span><span class="s1">wasPreppingShot = </span><span class="s0">false</span><span class="s1">; 
+    </span><span class="s0">private boolean </span><span class="s1">wasTogglingDirection = </span><span class="s0">false</span><span class="s1">; 
+    </span><span class="s0">private boolean </span><span class="s1">wasTogglingSlowMode = </span><span class="s0">false</span><span class="s1">; 
+    </span><span class="s0">private boolean </span><span class="s1">wasUppingShotPower = </span><span class="s0">false</span><span class="s1">; 
+    </span><span class="s0">private boolean </span><span class="s1">wasDowningShotPower = </span><span class="s0">false</span><span class="s1">; 
+    </span><span class="s0">private boolean </span><span class="s1">wasShooting = </span><span class="s0">false</span><span class="s1">; 
+    </span><span class="s0">private boolean </span><span class="s1">wasTogglingIntake = </span><span class="s0">false</span><span class="s1">; 
+    </span><span class="s0">private boolean </span><span class="s1">wasDroppingFork = </span><span class="s0">false</span><span class="s1">; 
+ 
+    </span><span class="s0">private boolean </span><span class="s1">hasDroppedFork = </span><span class="s0">false</span><span class="s1">; 
+ 
+    </span><span class="s0">private boolean </span><span class="s1">isPreppingShot = </span><span class="s0">false</span><span class="s1">; 
+ 
+    </span><span class="s0">private long </span><span class="s1">startTime; 
+ 
+    </span><span class="s0">private final double </span><span class="s1">slowModeConstant = </span><span class="s4">0.3</span><span class="s1">; 
+ 
+    @Override 
+    </span><span class="s0">public void </span><span class="s1">runOpMode() { 
+        Hardware.init(hardwareMap, </span><span class="s0">this</span><span class="s1">, </span><span class="s0">false</span><span class="s1">, telemetry); </span><span class="s2">//initializes hardware</span><span class="s1"> 
+ 
+        lift = Hardware.getLift(); 
+        wheels = Hardware.getWheels(); 
+        intake = Hardware.getIntake(); 
+        shooter = Hardware.getShooter(); 
+ 
+        telemetry.addData(</span><span class="s3">&quot;4102&quot;</span><span class="s1">, </span><span class="s3">&quot;Let's kick up&quot;</span><span class="s1">); 
+        telemetry.update(); 
+ 
+        waitForStart(); </span><span class="s2">//wait for the match to start (start button to be pressed)</span><span class="s1"> 
+ 
+        startTime = System.currentTimeMillis(); </span><span class="s2">//store the start time, so we can print remaining match time</span><span class="s1"> 
+ 
+        </span><span class="s0">while </span><span class="s1">(Hardware.active()) run(); </span><span class="s2">//control to robot using gamepad input while the opMode is active</span><span class="s1"> 
+ 
+        Hardware.freezeAllMotorFunctions(); </span><span class="s2">//stop all motors in case any are running</span><span class="s1"> 
+ 
+        telemetry.addData(</span><span class="s3">&quot;4102&quot;</span><span class="s1">, </span><span class="s3">&quot;We kicked up&quot;</span><span class="s1">); 
+        telemetry.update(); 
+    } 
+ 
+    </span><span class="s0">private void </span><span class="s1">run() { </span><span class="s2">//control to robot using gamepad input</span><span class="s1"> 
+ 
+ 
+        </span><span class="s2">//--------------------------DRIVING-------------------------------</span><span class="s1"> 
+ 
+        wheels.drive((isSlowMode ? slowModeConstant : </span><span class="s4">1</span><span class="s1">) * (intakeIsFront ? </span><span class="s4">1 </span><span class="s1">: -</span><span class="s4">1</span><span class="s1">) * gamepad1.left_stick_x, (isSlowMode ? slowModeConstant : </span><span class="s4">1</span><span class="s1">) * (intakeIsFront ? -</span><span class="s4">1 </span><span class="s1">: </span><span class="s4">1</span><span class="s1">) * gamepad1.left_stick_y, (isSlowMode ? slowModeConstant : </span><span class="s4">1</span><span class="s1">) * gamepad1.right_stick_x, !isSlowMode); </span><span class="s2">//drives according to the left and right joysticks– left joystick drives, and right joystick rotates. if in slowmode, the robot can drive at lower speeds, and if not in front intake mode, the joysticks have opposite effects</span><span class="s1"> 
+ 
+        </span><span class="s0">if </span><span class="s1">(gamepad1.a &amp;&amp; !wasTogglingDirection) 
+            intakeIsFront = !intakeIsFront; </span><span class="s2">//a on the first gamepad toggles which side of the robot is the front so we can adjust for shooting vs intaking</span><span class="s1"> 
+ 
+        wasTogglingDirection = gamepad1.a; 
+ 
+        </span><span class="s0">if </span><span class="s1">(gamepad1.b &amp;&amp; !wasTogglingSlowMode) 
+            isSlowMode =! isSlowMode; </span><span class="s2">//b on the first gamepad toggles slow mode, which allows us to be more precise in our driving</span><span class="s1"> 
+ 
+        wasTogglingSlowMode = gamepad1.b; 
+ 
+ 
+        </span><span class="s2">//--------------------------SHOOTER-------------------------------</span><span class="s1"> 
+ 
+        </span><span class="s0">if </span><span class="s1">(gamepad2.dpad_right &amp;&amp; !wasUppingShotPower) </span><span class="s2">//the right dpad button on the second controller allows us to increase the power of our shot</span><span class="s1"> 
+            shotPower = Utils.trim(</span><span class="s4">0</span><span class="s1">, </span><span class="s4">10</span><span class="s1">, shotPower + </span><span class="s4">0.5</span><span class="s1">); 
+ 
+        wasUppingShotPower = gamepad2.dpad_right; 
+ 
+        </span><span class="s0">if </span><span class="s1">(gamepad2.dpad_left &amp;&amp; !wasDowningShotPower) </span><span class="s2">//the left dpad button on the second controller allows us to decrease the power of our shot</span><span class="s1"> 
+            shotPower = Utils.trim(</span><span class="s4">0</span><span class="s1">, </span><span class="s4">10</span><span class="s1">, shotPower - </span><span class="s4">0.5</span><span class="s1">); 
+ 
+        wasDowningShotPower = gamepad2.dpad_left; 
+ 
+        </span><span class="s0">if </span><span class="s1">(gamepad2.y &amp;&amp; !wasPreppingShot &amp;&amp; !isPreppingShot) { </span><span class="s2">//y on the second controller starts to get our shot motors up to speed</span><span class="s1"> 
+            isPreppingShot = </span><span class="s0">true</span><span class="s1">; 
+            shooter.prepShot(shotPower); 
+        } </span><span class="s0">else if </span><span class="s1">(gamepad2.y &amp;&amp; !wasPreppingShot){ </span><span class="s2">//if y is pressed again, the shooter resets without shooting</span><span class="s1"> 
+            shooter.stop(); 
+            shooter.close(); 
+            isPreppingShot = </span><span class="s0">false</span><span class="s1">; 
+        } 
+ 
+        wasPreppingShot = gamepad2.y; 
+ 
+        </span><span class="s0">if </span><span class="s1">(gamepad2.b &amp;&amp; !intake.isRunning() &amp;&amp; !wasShooting) { </span><span class="s2">//we take a shot if b on the second controller is pressed and the intake isn't running</span><span class="s1"> 
+            shooter.shoot(shotPower, </span><span class="s0">false</span><span class="s1">); 
+            isPreppingShot = </span><span class="s0">false</span><span class="s1">; 
+        } 
+ 
+        wasShooting = gamepad2.b; 
+ 
+ 
+        </span><span class="s2">//--------------------------Intake-------------------------------</span><span class="s1"> 
+ 
+        </span><span class="s0">if </span><span class="s1">(gamepad2.a &amp;&amp; !wasTogglingIntake) </span><span class="s2">//gamepad 2 a toggles the intake on and off</span><span class="s1"> 
+            </span><span class="s0">if </span><span class="s1">(intake.isRunning()) 
+                intake.stopIntaking(); 
+            </span><span class="s0">else</span><span class="s1"> 
+                intake.startIntaking(!gamepad2.left_bumper); 
+ 
+        wasTogglingIntake = gamepad2.a; 
+ 
+ 
+ 
+        </span><span class="s2">//--------------------------LIFT-------------------------------</span><span class="s1"> 
+ 
+        </span><span class="s0">if </span><span class="s1">(gamepad2.x &amp;&amp; !wasDroppingFork) { </span><span class="s2">//pressing x on the second gamepad releases the servo holding the fork</span><span class="s1"> 
+            hasDroppedFork = </span><span class="s0">true</span><span class="s1">; 
+            lift.dropFork(); 
+        } 
+ 
+        wasDroppingFork = gamepad2.x; 
+ 
+        </span><span class="s0">if </span><span class="s1">(gamepad2.dpad_up &amp;&amp; hasDroppedFork) </span><span class="s2">//raise the lift if we've dropped the fork</span><span class="s1"> 
+            lift.raise(); 
+        </span><span class="s0">else if </span><span class="s1">(gamepad2.dpad_down &amp;&amp; hasDroppedFork) </span><span class="s2">//lower the lift if we've dropped the fork</span><span class="s1"> 
+            lift.lower(); 
+        </span><span class="s0">else</span><span class="s1"> 
+            lift.stop(); 
+ 
+ 
+        </span><span class="s2">//--------------------------DATA-------------------------------</span><span class="s1"> 
+ 
+        telemetry.addData(</span><span class="s3">&quot;SHOT&quot;</span><span class="s1">, </span><span class="s3">&quot;&quot; </span><span class="s1">+ Math.round(shotPower * </span><span class="s4">100</span><span class="s1">) / </span><span class="s4">10</span><span class="s1">); </span><span class="s2">//prints out some nice data</span><span class="s1"> 
+        telemetry.addData(</span><span class="s3">&quot;MODE&quot;</span><span class="s1">, intakeIsFront ? </span><span class="s3">&quot;INTAKE&quot; </span><span class="s1">: </span><span class="s3">&quot;SHOOT&quot;</span><span class="s1">); 
+        </span><span class="s0">if </span><span class="s1">(isSlowMode) telemetry.addData(</span><span class="s3">&quot;SLOW MODE&quot;</span><span class="s1">, </span><span class="s3">&quot;TRUE&quot;</span><span class="s1">); 
+        telemetry.addData(</span><span class="s3">&quot;TIME&quot;</span><span class="s1">, getTimeString()); 
+        telemetry.update(); 
+    } 
+ 
+    </span><span class="s0">private </span><span class="s1">String getTimeString() { </span><span class="s2">//get remaining match time as a string</span><span class="s1"> 
+        </span><span class="s0">int </span><span class="s1">deltaSeconds = </span><span class="s4">120 </span><span class="s1">- (</span><span class="s0">int</span><span class="s1">) (System.currentTimeMillis() - startTime) / </span><span class="s4">1000</span><span class="s1">, 
+                deltaMin = deltaSeconds / </span><span class="s4">60</span><span class="s1">, 
+                seconds = deltaSeconds % </span><span class="s4">60</span><span class="s1">; 
+ 
+        </span><span class="s0">return </span><span class="s3">&quot;&quot; </span><span class="s1">+ deltaMin + </span><span class="s3">&quot;:&quot; </span><span class="s1">+ ((</span><span class="s3">&quot;&quot; </span><span class="s1">+ seconds).length() == </span><span class="s4">1 </span><span class="s1">? </span><span class="s3">&quot;0&quot; </span><span class="s1">+ seconds : seconds) + (seconds &lt;= </span><span class="s4">30 </span><span class="s1">&amp;&amp; deltaMin == </span><span class="s4">0 </span><span class="s1">? </span><span class="s3">&quot;  END GAME&quot; </span><span class="s1">: </span><span class="s3">&quot;&quot;</span><span class="s1">); 
+    } 
+} 
+</span></pre>
+</body>
+</html>
