@@ -153,7 +153,7 @@ public class Sensors {
         wheels.stop();
     }
 
-    private double getVoltageConstant(double speed) {
+    private double getVoltageConstant(double speed) {       //scales up motor powers based on how low our battery voltage is to make a more consistent drive
         double minVoltage = 12.8,
                 maxVoltage = 13.7,
                 range = maxVoltage - minVoltage,
@@ -170,19 +170,20 @@ public class Sensors {
         boolean isCounterClockwise = theta > 0;
 
         double storedHeading = initialHeading,
-                threshold = theta + tolerance * (isCounterClockwise ? -1 : 1);
+                threshold = theta + tolerance * (isCounterClockwise ? -1 : 1);      //allows for the turn to stop a little before it turns fully, helps prevent overshooting angle
 
         long start = System.currentTimeMillis();
 
         resetHeading();
 
 
+        //while we haven't reached our threshold yet, or its been too little time (<300 ms), turn towards the threshold
         while (Hardware.active() && (Utils.compare(-getHeading(), threshold, !isCounterClockwise) || System.currentTimeMillis() - start < 300))
             wheels.drive(0, 0, (isCounterClockwise ? -1 : 1) * speed, false);
 
         wheels.stop();
 
-        initialHeading = (storedHeading + -theta) % (2 * Math.PI);
+        initialHeading = (storedHeading + -theta) % (2 * Math.PI);      //sets our heading to was it was initally plus how much we should have turned
     }
 
     public double getStrafeConstant() {
@@ -244,25 +245,25 @@ public class Sensors {
         timeout += lastDirectionSwitch;
 
 
-        while (Hardware.active() && System.currentTimeMillis() < timeout) {
+        while (Hardware.active() && System.currentTimeMillis() < timeout) {     //makes sure we don't take too long
 
-            if ((currentReading = getBeaconColor()[isRed ? 1 : 0]) > maxColor)
+            if ((currentReading = getBeaconColor()[isRed ? 1 : 0]) > maxColor)  //if we have just read our highest reading so far, make that the max
                 maxColor = currentReading;
 
-            if (directionSwitches >= 3 && currentReading >= maxColor) {
+            if (directionSwitches >= 3 && currentReading >= maxColor) {     //we are in front of the center of the color
                 wheels.stop();
                 return true;
-            } else if (directionSwitches > 5) {
+            } else if (directionSwitches > 5) {     //if we pass back and forth several times, but don't see our max again, reduce the max and try again
                 maxColor--;
                 directionSwitches = 4;
             }
 
-            if (System.currentTimeMillis() - lastDirectionSwitch > 3000) {
+            if (System.currentTimeMillis() - lastDirectionSwitch > 3000) {      //if we have driven off of the beacon, drive back to the line and restart
                 Hardware.print("Restarted find beacon button");
                 driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 3 : 1), whiteLineThreshold, false, true, 0, 10000, speed);
                 shouldRestart = true;
                 break;
-            } else if (currentReading < previousReading && System.currentTimeMillis() - lastDirectionSwitch > 300) {
+            } else if (currentReading < previousReading && System.currentTimeMillis() - lastDirectionSwitch > 300) {    //if our readings start to decline, we are going the wrong way and should switch direction
                 goingForward = !goingForward;
                 directionSwitches++;
                 lastDirectionSwitch = System.currentTimeMillis();
@@ -278,30 +279,32 @@ public class Sensors {
             previousReading = currentReading;
         }
 
-        return shouldRestart ? findBeaconButton(isRed, whiteLineThreshold, timeout - System.currentTimeMillis(), speed) : false;
+        return shouldRestart ? findBeaconButton(isRed, whiteLineThreshold, timeout - System.currentTimeMillis(), speed) : false;    //if we need to restart, restart
     }
 
     public boolean findBeaconButton(boolean isRed, double whiteLineReadingThreshold, long timeout) {
         return findBeaconButton(false, whiteLineReadingThreshold, timeout, 0.125);
     }
 
-    public void driveUntilOdsThreshold(double odsThreshold, double speed) {
+    public void driveUntilOdsThreshold(double odsThreshold, double speed) {     //drives until a specified ods value
         double[] reading = getOpticalDistance();
-        boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;
+        boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;    //figure out if we need to go forwards or backwards
 
+        //while we have not reached the ods threshold, and the difference between the 2 ods's is not large (meaning we lost the beacon)
         while (Hardware.active() && isGoingForwards ? (Utils.average((reading = getOpticalDistance())[0], reading[1]) < odsThreshold) : (Utils.average((reading = getOpticalDistance())[0], reading[1]) > odsThreshold) && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold)
             compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
         wheels.stop();
     }
 
-    public void pulseUntilOdsThreshold(double odsThreshold, double speed) {
+    public void pulseUntilOdsThreshold(double odsThreshold, double speed) {      //pulses until a specified ods value. tends to be straighter than drive
         double[] reading = getOpticalDistance();
-        boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;
+        boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;    //figure out if we need to go forwards or backwards
 
         long start = System.currentTimeMillis();
 
+        //while we have not reached the ods threshold, and the difference between the 2 ods's is not large (meaning we lost the beacon)
         while (Hardware.active() && isGoingForwards ? (Utils.average((reading = getOpticalDistance())[0], reading[1]) < odsThreshold) : (Utils.average((reading = getOpticalDistance())[0], reading[1]) > odsThreshold) && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold) {
-            if ((System.currentTimeMillis() - start) % 200 < 100)
+            if ((System.currentTimeMillis() - start) % 200 < 100)   //drive for 100 ms, stop for 100 ms
                 compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
             else
                 wheels.stop();
@@ -317,7 +320,7 @@ public class Sensors {
         driveUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed);
     }
 
-    public void followLineUntilOdsThreshold(double odsThreshold, long timeout, boolean canGoBackwards, double speed) {
+    public void followLineUntilOdsThreshold(double odsThreshold, long timeout, boolean canGoBackwards, double speed) {  //follows the line until a specified ods value
         timeout += System.currentTimeMillis();
         double[] reading = getOpticalDistance();
         boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;
@@ -334,20 +337,22 @@ public class Sensors {
     }
 
 
+    //translates at a given theta and speed until we reach a white line
     public boolean driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime, double speed) {
         long time = System.currentTimeMillis();
 
-        maxTime += time;
-        minTime += time;
+        maxTime += time;    //if greater than this, we are taking to long and should timeout
+        minTime += time;    //if less than this, we haven't gone long enough (maybe we re-read a line we were already on)
 
         if (shouldPollGyro) readyCompensatedTranslate(0);
 
-        int sufficientReadings = 0,
-                neededSufficientReadings = 1;
+        int sufficientReadings = 0,     //number of readings that meet our threshold
+                neededSufficientReadings = 1;   //number of readings that we need to consider ourdelves on the line, not a fluke
 
+        //drive while we haven't gotten enough readings that meet our threshold, and the time we have been driving is between our min and max time
         while (Hardware.active() && (sufficientReadings < neededSufficientReadings && (time = System.currentTimeMillis()) < maxTime || (time = System.currentTimeMillis()) < minTime)) {
             compensatedTranslate(theta, speed);
-            if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)
+            if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)       //if we see the line, add 1 to sufficientReadings
                 sufficientReadings++;
         }
 
@@ -355,13 +360,14 @@ public class Sensors {
 
         if (shouldPollGyro) stopCompensatedTranslate();
 
-        return time < maxTime;
+        return time < maxTime;      //if we actually got to the line, or just timed out
     }
 
     public boolean driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime) {
         return driveUntilLineReadingThreshold(theta, whiteLineReadingThreshold, shouldPollGyro, shouldStop, minTime, maxTime, compensatedTranslateSpeed);
     }
 
+    //just drive by time, no sensor values needed
     public void driveByTime(double theta, long time, boolean shouldStop, double speed) {
         long stop = System.currentTimeMillis() + time;
         while (Hardware.active() && System.currentTimeMillis() < stop)
@@ -373,6 +379,7 @@ public class Sensors {
         driveByTime(theta, time, shouldStop, compensatedTranslateSpeed);
     }
 
+    //just drive by time, no sensor values needed, and no compensation
     public void uncompensatedDriveByTime(double xVel, double yVel, double ngVel, long time) {
         long stop = System.currentTimeMillis() + time;
         while (Hardware.active() && System.currentTimeMillis() < stop)
@@ -380,6 +387,7 @@ public class Sensors {
         wheels.stop();
     }
 
+    //turn for a time
     public void turnByTime(long time, double ngVel) {
         long stop = System.currentTimeMillis() + time;
         while (Hardware.active() && System.currentTimeMillis() < stop)
