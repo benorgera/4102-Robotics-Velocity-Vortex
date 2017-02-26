@@ -60,7 +60,7 @@ public class AutonomousImplementation {
         sensors.driveByTime(isRed ? 1 : -1 * Math.PI / 2, 300, false, 0.35);
 
         Hardware.print("Finding first beacon line");
-        sensors.driveUntilLineReadingThreshold(isRed ? (15 * Math.PI / 16) : (9 * Math.PI / 8), whiteLineSignalThreshold, true, true, 0, 10000, 0.4); //translate to line in front of first beacon
+        sensors.driveUntilLineReadingThreshold(isRed ? (16 * Math.PI / 17) : (9 * Math.PI / 8), whiteLineSignalThreshold, true, true, 0, 10000, 0.4); //translate to line in front of first beacon
 
         Hardware.sleep(200);
 
