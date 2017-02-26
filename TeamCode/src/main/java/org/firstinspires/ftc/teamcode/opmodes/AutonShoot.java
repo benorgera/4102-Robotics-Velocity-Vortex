@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
+import org.firstinspires.ftc.teamcode.components.Sensors;
+import org.firstinspires.ftc.teamcode.components.Shooter;
 import org.firstinspires.ftc.teamcode.utilities.Utils;
 import org.firstinspires.ftc.teamcode.components.Wheels;
 
@@ -27,16 +28,14 @@ public class AutonShootRed extends LinearOpMode {
         
         waitForStart(); //wait for the start button to be pressed
         
-        Hardware.getShooter().shoot(7.3, true); //makes a shot
+        Hardware.getShooter().prepShot(7.3); //preps a shot
+        Hardware.getSensors().driveByTime(-Math.PI / 2, 200, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
+        Hardware.getWheels().softStop(300); //stops the robot gently to avoid jerk when launching the balls
+        Hardware.sleep(1000); //allows shooter to get to the correct speed
+        Hardware.getShooter.shoot(7.3, true); //shoots balls
         
-        Hardware.sleep(10000); //sleeps for 10 seconds
+        Hardware.sleep(9000); //sleeps for 9 seconds
         
-        driveByTime(2000, 0, -0.5, 0); //drives towards the cap ball to knock it over
+        Hardware.getSensors().driveByTime(-Math.PI / 2, 2000, true, .5); //drives towards the cap ball to knock it over
     }
-    
-    private void driveByTime(long ms, double xVel, double yVel, double angularVel) { //allows us to drive for a certain amount of time
-        wheels.drive(xVel, yVel, angularVel, false);
-        Hardware.sleep(ms);
-        wheels.stop();
-    }
-}-
+}
