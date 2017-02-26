@@ -105,7 +105,10 @@ public class Shooter {
 
         Hardware.print("had ball for " + (lastHadBall - started) + " ms");
 
-        if (isLastShot) return false;
+        if (isLastShot) {
+            Hardware.sleep(350);
+            return false;
+        }
 
         //continue running the elevator (waiting) until you see a new ball, or you time out
         //waiting will only cease after at least 50ms have passed since last sensing a ball
