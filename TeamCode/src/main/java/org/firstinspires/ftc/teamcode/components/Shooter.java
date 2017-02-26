@@ -85,7 +85,7 @@ public class Shooter {
             Hardware.getIntake().runElevator(-0.3);
             Hardware.sleep(20);
             Hardware.getIntake().stopElevator();;
-            Hardware.sleep(600);
+            Hardware.sleep(700);
         } else {
             Hardware.getIntake().stopElevator();
         }
