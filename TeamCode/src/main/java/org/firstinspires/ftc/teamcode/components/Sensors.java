@@ -224,7 +224,7 @@ public class Sensors {
                 right = readings[1];
 
         if (Math.abs(left - right) <= 40) { //both sensors equally on the white line
-            compensatedTranslate(isGoingForwards ? Math.PI + Math.PI / 23 : 0, speed);
+            compensatedTranslate(isGoingForwards ? Math.PI + Math.PI / 30 : 0, speed);
         } else { //left more on the white line turn left, right turn right
             compensatedTranslate((isGoingForwards ? Math.PI : 0) + (Math.PI / 8 * (left > right ? 1.2 : -1) * (isGoingForwards ? 1 : -1)), speed);
         }
