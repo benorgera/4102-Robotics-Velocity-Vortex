@@ -100,7 +100,7 @@ public class AutonomousImplementation {
     private void pushButton() { //drives forward to press the button
         Hardware.print("Pushing button");
 
-        for (int i = 0; i < 5; i++) { //incrementally drives forward five times in order to make sure the robot drives straight
+        for (int i = 0; i < 5; i++) { //incrementally drives forward four times in order to make sure the robot drives straight
             sensors.driveByTime(Math.PI, 100, true, 1);
             Hardware.sleep(100);
         }
@@ -110,7 +110,7 @@ public class AutonomousImplementation {
 
     private void driveToLine(boolean intakeForward) {
         Hardware.print("Drive to line");
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), whiteLineSignalThreshold, false, true, 0, 10000, 0.4);
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), whiteLineSignalThreshold, false, true, 0, 7000, 0.4);
 
         Hardware.print("Realign on line");
         sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), whiteLineSignalThreshold, false, true, 200, 1000, 0.17);
