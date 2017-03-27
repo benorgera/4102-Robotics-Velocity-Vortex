@@ -4,6 +4,7 @@ import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -22,6 +23,7 @@ public class Sensors {
 
     private Orientation angles;
 
+    private TouchSensor touchSensor;
     private BNO055IMU imu;
     private ColorSensor leftColorSensor;
     private ColorSensor rightColorSensor;
@@ -46,7 +48,7 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsLeft, ModernRoboticsAnalogOpticalDistanceSensor odsRight, ModernRoboticsI2cColorSensor beaconSensor, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsLeft, ModernRoboticsAnalogOpticalDistanceSensor odsRight, ModernRoboticsI2cColorSensor beaconSensor, TouchSensor touchSensor, VoltageSensor voltage) {
         this.imu = imu;
         this.voltage = voltage;
         this.leftColorSensor = leftColorSensor;
@@ -54,6 +56,7 @@ public class Sensors {
         this.ods = new ModernRoboticsAnalogOpticalDistanceSensor[] {odsLeft, odsRight};
         this.wheels = Hardware.getWheels();
         this.beaconSensor = beaconSensor;
+        this.touchSensor = touchSensor;
         beaconSensor.enableLed(false);
     }
 
@@ -164,7 +167,7 @@ public class Sensors {
         return v >= maxVoltage ? 0 : (difVolt * maxAdditionalSpeed * difSpeed);
     }
 
-    public void turn(double theta, double tolerance, double speed) { //positive is clockwise, max turn is PI
+    public void turn(double theta, double tolerance, double speed) { //positive is counterclockwise, max turn is PI
 
         boolean isCounterClockwise = theta > 0;
 
@@ -183,6 +186,34 @@ public class Sensors {
         wheels.stop();
 
         initialHeading = (storedHeading + -theta) % (2 * Math.PI);      //sets our heading to was it was initally plus how much we should have turned
+    }
+
+    public void parallelPark(double thetaTranslateFinal, double deltaThetaTranslate, double translateSpeed, double deltaTranslateTolerance, double turnTheta, double turnSpeed, double turnTolerance) { //positive is counterclockwise, max turn is PI
+
+        boolean isCounterClockwise = turnTheta > 0;
+
+        //add tolerance change in translation angle (measured from final), so translate is slightly towards wall (this causes the parallel park effect)
+        deltaThetaTranslate += deltaTranslateTolerance * (deltaThetaTranslate > 0 ? -1 : 1);
+
+        double storedHeading = initialHeading,
+                threshold = turnTheta + turnTolerance * (isCounterClockwise ? -1 : 1),  //allows for the turn to stop a little before it turns fully, helps prevent overshooting angle
+                thetaRemaining;
+
+        long start = System.currentTimeMillis();
+
+        resetHeading();
+
+        //while we haven't reached our threshold yet, or its been too little time (<300 ms), turn towards the threshold
+        while (Hardware.active() && ((thetaRemaining = Utils.difference(-getHeading(), threshold, !isCounterClockwise)) > 0 || System.currentTimeMillis() - start < 300)) {
+            double proportionRemaining = Math.abs(thetaRemaining / threshold),
+                    translateTheta = thetaTranslateFinal - deltaThetaTranslate * proportionRemaining;
+
+            wheels.drive(translateSpeed * Math.cos(translateTheta), translateSpeed *  Math.sin(translateTheta), (isCounterClockwise ? -1 : 1) * turnSpeed, false);
+        }
+
+        wheels.stop();
+
+        initialHeading = (storedHeading + -turnTheta) % (2 * Math.PI);      //sets our heading to was it was initally plus how much we should have turned
     }
 
     public double getStrafeConstant() {
@@ -393,4 +424,14 @@ public class Sensors {
             wheels.drive(0, 0, ngVel, false);
         wheels.stop();
     }
+
+    public void driveUntilTouchReading(double vel, boolean isRed) {
+        while (Hardware.active() && !touchSensor.isPressed())
+            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
+    }
+
+    public void driveUntilTouchReading(boolean isRed) {
+        driveUntilTouchReading(0.6, isRed);
+    }
+
 }

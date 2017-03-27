@@ -48,54 +48,35 @@ public class AutonomousImplementation {
         Hardware.print("Shooting");
         shooter.shoot(6.63, true); //shoots the ball at the same prepshot speed
 
-        if (isRed) { //if we are red, our robot drives out a bit further and turns around so the button pusher is on the correct side
-            Hardware.print("Pulling away from wall");
-            sensors.driveByTime(-Math.PI / 2, 300, true);
-            Hardware.print("Turning around");
-            sensors.turn(-Math.PI, Math.PI / 13, 0.4);
+        Hardware.print("Pulling away for turn");
+        sensors.driveByTime(-Math.PI / 2, 300, true);
+
+        Hardware.print("Turning towards wall");
+        sensors.turn(Math.PI / 4 * (isRed ? -3 : 1), isRed ? Math.PI / 13 : Math.PI / 30, 0.4);
+
+        Hardware.print("Driving to wall");
+        sensors.driveUntilTouchReading(0.6, isRed);
+
+        Hardware.print("Parallel Parking");
+        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), Math.PI / 4 * (isRed ? 1 : -1), 0.25, Math.PI / 20, Math.PI / 4 * (isRed ? -1 : 1), 0.4, Math.PI / 30);
+
+        //drive to and capture each beacon
+        for (int i = 0; i < 2; i++) {
+            Hardware.print("Finding first beacon line"); //drives to the beacon line
+            driveToLine((i == 0) == isRed);
+
+            Hardware.print("Capturing first beacon");
+            captureBeacon(); //press proper button
         }
 
-        Hardware.print("Picking up momentum to find line"); //makes sure we have the momentum to drive to the beacon and not get stuck
-        sensors.driveByTime(isRed ? 1 : -1 * Math.PI / 2, 300, false, 0.35);
+        Hardware.print("Backing up from wall");
+        sensors.driveByTime(0, 500, true, 0.4);
 
-        Hardware.print("Finding first beacon line"); //drives to the beacon line
-        sensors.driveUntilLineReadingThreshold(isRed ? (8 * Math.PI / 9) : (9 * Math.PI / 8), whiteLineSignalThreshold, true, true, 0, 10000, 0.4); //translate to line in front of first beacon
-
-        Hardware.sleep(200);
-
-        Hardware.print("Capturing first beacon");
-        captureBeacon(); //follows the line, and presses the correct beacon button– function below
-
-        Hardware.print("Driving by time to second beacon");
-        sensors.driveByTime(Math.PI / 2 * (isRed ? 1 : -1), 800, false, 0.4); //translates to the next beacon
-
-        Hardware.print("Finding second beacon line");
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? 1 : -1), whiteLineSignalThreshold, false, true, 0, 1600, 0.4); //translate to line in front of second beacon
-
-        Hardware.sleep(200);
-
-        realignOnLine(); //compensates for the robot's momentum when driving to the second line
-
-        Hardware.print("Capturing second beacon");
-        captureBeacon(); //follows line and presses correct beacon button
-
-        Hardware.print("Turning towards the cap ball");
-        sensors.turn(2 * Math.PI / 9 * (isRed ? 1 : -1), Math.PI / 30, 0.4); //points itself towards the ball by the center vortex
-
-        Hardware.getIntake().moveRampForShot(); //moves the ramp up so it doesn't hit the center vortex and break itself
-
-        Hardware.print("Driving to the cap ball");
-        sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 1600, true, 1); //knocks over the cap ball and partial parks
+        Hardware.print("Partial Parking");
+        sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 400, true, 1);
     }
 
     private void captureBeacon() {
-
-        Hardware.print("Following line");
-        sensors.followLineUntilOdsThreshold(odsThresholdFindButton, 4000, false, 0.165); //pull up to beacon
-
-        Hardware.sleep(250);
-
-        realignOnBeacon(); //makes sure we are aligned on the beacon
 
         if (isDoublePushing) { //if it is running the double push autonomous, it presses a button, waits and checks whether the color is correct, and if not it presses again.
             pushButton();
@@ -104,7 +85,6 @@ public class AutonomousImplementation {
             Hardware.sleep(500); //just in case the color change takes time
 
             if (sensors.getBeaconColor()[isRed ? 0 : 1] > sensors.getBeaconColor()[isRed ? 1 : 0]) { //we need to push again
-                realignOnBeacon(); //realigns to beacon
 
                 if (readyTime > System.currentTimeMillis()) //makes sure we have waited long enough, if not then it waits the remaining time
                     Hardware.sleep(readyTime - System.currentTimeMillis());
@@ -119,24 +99,12 @@ public class AutonomousImplementation {
                 pushButton(); //pushes said button
             }
         }
-
-        backUpFromBeacon(); //backs up because it will be too close for a translate/rotate
-    }
-
-    private void realignOnBeacon() { //makes sure we are the correct distance from the beacon
-        Hardware.print("Realigning on beacon");
-        sensors.followLineUntilOdsThreshold(odsRealignThreshold, 3000, true, 0.135);
-    }
-
-    private void backUpFromBeacon() { //backs away a little bit
-        Hardware.print("Backing up");
-        sensors.driveByTime(0, 600, true);
     }
 
     private void pushButton() { //drives forward to press the button
         Hardware.print("Pushing button");
 
-        for (int i = 0; i < 5; i++) { //incrementally drives forward five times in order to make sure the robot drives straigt
+        for (int i = 0; i < 5; i++) { //incrementally drives forward five times in order to make sure the robot drives straight
             sensors.driveByTime(Math.PI, 100, true, 1);
             Hardware.sleep(100);
         }
@@ -144,8 +112,11 @@ public class AutonomousImplementation {
         sensors.driveByTime(Math.PI, 400, true, 1); //drives the rest of the way forward to really press the button
     }
 
-    private void realignOnLine() { //realigns on the beacon line in case we pass it
-        Hardware.print("Realigning on beacon line");
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (isRed ? -1 : 1), whiteLineSignalThreshold, false, true, 0, 10000, 0.17);
+    private void driveToLine(boolean intakeForward) {
+        Hardware.print("Drive to line");
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), whiteLineSignalThreshold, false, true, 0, 10000, 0.4);
+
+        Hardware.print("Realign on line");
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), whiteLineSignalThreshold, false, true, 200, 1000, 0.17);
     }
 }

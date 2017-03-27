@@ -79,4 +79,7 @@ public class Utils {
         return isGreaterThan ? n > comparingTo : n < comparingTo;
     }
 
+    public static double difference(double n, double comparingTo, boolean isGreaterThan) { //always returns positive number
+        return isGreaterThan ? n - comparingTo : comparingTo - n;
+    }
 }
