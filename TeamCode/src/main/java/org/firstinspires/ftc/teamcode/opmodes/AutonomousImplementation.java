@@ -16,10 +16,6 @@ public class AutonomousImplementation {
     private final boolean isRed;
     private final boolean isDoublePushing;
 
-    private final double odsThresholdFindButton = 0.03;
-    private final double odsRealignThreshold = 0.049;
-
-
     private final double whiteLineSignalThreshold = 60; //the minimum color sensor reading required to signify finding the white line
 
     public AutonomousImplementation(boolean isRed, boolean isDoublePushing) { //initializes all of our robot's component, noting our alliance and whether we are running a double push autonomous
@@ -73,7 +69,7 @@ public class AutonomousImplementation {
         sensors.driveByTime(0, 500, true, 0.4);
 
         Hardware.print("Partial Parking");
-        sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 400, true, 1);
+        sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 1000, true, 1);
     }
 
     private void captureBeacon() {
