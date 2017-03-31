@@ -4,6 +4,7 @@ import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -23,11 +24,11 @@ public class Sensors {
 
     private Orientation angles;
 
-    private TouchSensor touchSensor;
+    private TouchSensor[] touchSensors;
     private BNO055IMU imu;
     private ColorSensor leftColorSensor;
     private ColorSensor rightColorSensor;
-    private ModernRoboticsAnalogOpticalDistanceSensor[] ods;
+    private ModernRoboticsAnalogOpticalDistanceSensor ods;
     private ModernRoboticsI2cColorSensor beaconSensor;
     private VoltageSensor voltage;
 
@@ -36,8 +37,6 @@ public class Sensors {
     private Wheels wheels;
 
     private double initialHeading = 0;
-
-    private final double lostBeaconDifferenceThreshold = 0.025;
 
     private final double compensatedTranslateSpeed = 0.25;
 
@@ -48,15 +47,15 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor odsLeft, ModernRoboticsAnalogOpticalDistanceSensor odsRight, ModernRoboticsI2cColorSensor beaconSensor, TouchSensor touchSensor, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor, TouchSensor[] touchSensors, VoltageSensor voltage) {
         this.imu = imu;
         this.voltage = voltage;
         this.leftColorSensor = leftColorSensor;
         this.rightColorSensor = rightColorSensor;
-        this.ods = new ModernRoboticsAnalogOpticalDistanceSensor[] {odsLeft, odsRight};
+        this.ods = ods;
         this.wheels = Hardware.getWheels();
         this.beaconSensor = beaconSensor;
-        this.touchSensor = touchSensor;
+        this.touchSensors = touchSensors;
         beaconSensor.enableLed(false);
     }
 
@@ -102,11 +101,8 @@ public class Sensors {
         return imu.getPosition();
     }
 
-    public double[] getOpticalDistance() {
-        return new double[] {
-                ods[0].getLightDetected(),
-                ods[1].getLightDetected()
-        };
+    public double getOpticalDistance() {
+        return ods.getLightDetected();
     }
 
     public int[] getBeaconColor() {
@@ -317,23 +313,23 @@ public class Sensors {
     }
 
     public void driveUntilOdsThreshold(double odsThreshold, double speed) {     //drives until a specified ods value
-        double[] reading = getOpticalDistance();
-        boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;    //figure out if we need to go forwards or backwards
+        double reading = getOpticalDistance();
+        boolean isGoingForwards = reading < odsThreshold;    //figure out if we need to go forwards or backwards
 
         //while we have not reached the ods threshold, and the difference between the 2 ods's is not large (meaning we lost the beacon)
-        while (Hardware.active() && isGoingForwards ? (Utils.average((reading = getOpticalDistance())[0], reading[1]) < odsThreshold) : (Utils.average((reading = getOpticalDistance())[0], reading[1]) > odsThreshold) && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold)
+        while (Hardware.active() && isGoingForwards ? ((reading = getOpticalDistance()) < odsThreshold) : (reading = getOpticalDistance()) > odsThreshold)
             compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
         wheels.stop();
     }
 
     public void pulseUntilOdsThreshold(double odsThreshold, double speed) {      //pulses until a specified ods value. tends to be straighter than drive
-        double[] reading = getOpticalDistance();
-        boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;    //figure out if we need to go forwards or backwards
+        double reading = getOpticalDistance();
+        boolean isGoingForwards = reading < odsThreshold;    //figure out if we need to go forwards or backwards
 
         long start = System.currentTimeMillis();
 
         //while we have not reached the ods threshold, and the difference between the 2 ods's is not large (meaning we lost the beacon)
-        while (Hardware.active() && isGoingForwards ? (Utils.average((reading = getOpticalDistance())[0], reading[1]) < odsThreshold) : (Utils.average((reading = getOpticalDistance())[0], reading[1]) > odsThreshold) && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold) {
+        while (Hardware.active() && isGoingForwards ? ((reading = getOpticalDistance()) < odsThreshold) : ((reading = getOpticalDistance()) > odsThreshold)) {
             if ((System.currentTimeMillis() - start) % 200 < 100)   //drive for 100 ms, stop for 100 ms
                 compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
             else
@@ -352,12 +348,12 @@ public class Sensors {
 
     public void followLineUntilOdsThreshold(double odsThreshold, long timeout, boolean canGoBackwards, double speed) {  //follows the line until a specified ods value
         timeout += System.currentTimeMillis();
-        double[] reading = getOpticalDistance();
-        boolean isGoingForwards = Utils.getMaxMagnitude(reading) < odsThreshold;
+        double reading = getOpticalDistance();
+        boolean isGoingForwards = reading < odsThreshold;
 
         if (!canGoBackwards && !isGoingForwards) return;
 
-        while (Hardware.active() && Utils.compare(Utils.average((reading = getOpticalDistance())[0], reading[1]), odsThreshold, !isGoingForwards) && System.currentTimeMillis() < timeout && Math.abs(reading[0] - reading[1]) < lostBeaconDifferenceThreshold)
+        while (Hardware.active() && Utils.compare((reading = getOpticalDistance()), odsThreshold, !isGoingForwards) && System.currentTimeMillis() < timeout)
             followLine(speed, isGoingForwards);
         wheels.stop();
     }
@@ -426,12 +422,16 @@ public class Sensors {
     }
 
     public void driveUntilTouchReading(double vel, boolean isRed) {
-        while (Hardware.active() && !touchSensor.isPressed())
+        while (Hardware.active() && !touchSensorPressed())
             compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
     }
 
     public void driveUntilTouchReading(boolean isRed) {
         driveUntilTouchReading(0.6, isRed);
+    }
+
+    private boolean touchSensorPressed() {
+        return touchSensors[0].isPressed() || touchSensors[1].isPressed();
     }
 
 }
