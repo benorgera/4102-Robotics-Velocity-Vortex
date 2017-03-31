@@ -98,10 +98,10 @@ public class DriverControlled extends LinearOpMode {
 
         wasDowningShotPower = gamepad2.dpad_left;
 
-        if (gamepad2.y && !wasPreppingShot && !isPreppingShot) { //y on the second controller starts to get our shot motors up to speed
+        if (gamepad2.y && !wasPreppingShot && !isPreppingShot && !intake.isRunning()) { //y on the second controller starts to get our shot motors up to speed
             isPreppingShot = true;
             shooter.prepShot(shotPower);
-        } else if (gamepad2.y && !wasPreppingShot){ //if y is pressed again, the shooter resets without shooting
+        } else if (gamepad2.y && !wasPreppingShot && !intake.isRunning()){ //if y is pressed again, the shooter resets without shooting
             shooter.stop();
             shooter.close();
             isPreppingShot = false;
@@ -118,6 +118,8 @@ public class DriverControlled extends LinearOpMode {
 
 
         //--------------------------Intake-------------------------------
+
+        intake.setFlaps(gamepad2.right_bumper);
 
         if (gamepad2.a && !wasTogglingIntake) //gamepad 2 a toggles the intake on and off
             if (intake.isRunning())
