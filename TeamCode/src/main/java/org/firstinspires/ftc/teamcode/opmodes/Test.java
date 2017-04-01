@@ -78,8 +78,6 @@ public class Test extends LinearOpMode {
                     wheels.drive(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, false);
             }
 
-            if (gamepad2.a) sensors.findBeaconButton(gamepad1.y, whiteLineSignalThreshold, 7000);
-
             if (gamepad1.x) sensors.resetHeading();
 
 
@@ -177,7 +175,7 @@ public class Test extends LinearOpMode {
             telemetry.addData("sst", softMotionTime);
             telemetry.addData("rH | iH | head", Utils.toString(Utils.toDegrees(sensors.getRawHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getInitialHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getHeading())));
             telemetry.addData("ng | strafe", Utils.toString(sensors.getNgConstant()) + " | " + Utils.toString(sensors.getStrafeConstant()));
-            telemetry.addData("blue | red | left | right",  Utils.toString(sensors.getBeaconColor()[0]) + " | " + Utils.toString(sensors.getBeaconColor()[1]) + " | " + Utils.toString(sensors.getOpticalDistance()[0]) + " | " + Utils.toString(sensors.getOpticalDistance()[1]));
+            telemetry.addData("blue | red | ods",  Utils.toString(sensors.getBeaconColor()[0]) + " | " + Utils.toString(sensors.getBeaconColor()[1]) + Utils.toString(sensors.getOpticalDistance()));
             telemetry.addData("line readings", sensors.getLineReadings()[0] + ", " + sensors.getLineReadings()[1]);
 
             telemetry.update();
