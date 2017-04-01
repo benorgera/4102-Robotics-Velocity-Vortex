@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.utilities;
 
+import android.widget.Button;
+
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
@@ -8,7 +10,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.components.ButtonPusher;
 import org.firstinspires.ftc.teamcode.components.Intake;
 import org.firstinspires.ftc.teamcode.components.Lift;
 import org.firstinspires.ftc.teamcode.components.Sensors;
@@ -27,6 +33,7 @@ public class Hardware {
 
     private static double gyroConstant = 1;
 
+    private static ButtonPusher buttonPusher;
     private static LinearOpMode opMode;
     private static Lift lift;
     private static Wheels wheels;
@@ -77,14 +84,25 @@ public class Hardware {
         ) : wheels;
     }
 
+    public static ButtonPusher getButtonPusher() {
+        return buttonPusher == null ? buttonPusher = new ButtonPusher(
+                isAuton,
+                map.servo.get("pusher-left"),
+                map.servo.get("pusher-right")
+        ) : buttonPusher;
+    }
+
     public static Sensors getSensors() {
         return sensors == null ? sensors = new Sensors(
                 map.get(BNO055IMU.class, "imu"),
                 map.colorSensor.get("left-color-sensor"),
                 map.colorSensor.get("right-color-sensor"),
-                (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods-left"),
-                (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods-right"),
+                (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
                 (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor"),
+                new TouchSensor[] {
+                        map.touchSensor.get("left-touch-sensor"),
+                        map.touchSensor.get("right-touch-sensor")
+                },
                 map.voltageSensor.iterator().next()
         ) : sensors;
     }
@@ -101,7 +119,19 @@ public class Hardware {
     }
 
     public static Intake getIntake() {
-        return intake == null ? intake = new Intake(map.dcMotor.get("intake"), map.servo.get("ramp"), isAuton) : intake;
+        return intake == null ? intake = new Intake(
+                map.dcMotor.get("intake"),
+                map.servo.get("ramp"),
+                isAuton,
+                new Servo[] {
+                        map.servo.get("left-flap"),
+                        map.servo.get("right-flap")
+                },
+
+                new Servo[] {
+                        map.servo.get("left-spinner"),
+                        map.servo.get("right-spinner")
+                }) : intake;
     }
 
     public static Lift getLift() {
@@ -127,6 +157,7 @@ public class Hardware {
     }
 
     private static void clean() {
+        buttonPusher = null;
         output = null;
         map = null;
         lift = null;

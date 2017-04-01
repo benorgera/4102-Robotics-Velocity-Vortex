@@ -31,6 +31,7 @@ public class Sensors {
     private ModernRoboticsAnalogOpticalDistanceSensor ods;
     private ModernRoboticsI2cColorSensor beaconSensor;
     private VoltageSensor voltage;
+    private ButtonPusher buttonPusher;
 
     private Integrator integrator;
 
@@ -54,6 +55,7 @@ public class Sensors {
         this.rightColorSensor = rightColorSensor;
         this.ods = ods;
         this.wheels = Hardware.getWheels();
+        this.buttonPusher = Hardware.getButtonPusher();
         this.beaconSensor = beaconSensor;
         this.touchSensors = touchSensors;
         beaconSensor.enableLed(false);
@@ -257,60 +259,25 @@ public class Sensors {
         }
     }
 
-    public boolean findBeaconButton(boolean isRed, double whiteLineThreshold, long timeout, double speed) {
+    public void captureBeacon(boolean isRed) {
+        buttonPusher.push(isRed == leftIsRed());
+    }
 
-        boolean goingForward = true,
-                shouldRestart = false;
+    private boolean leftIsRed() {
+        long stop = System.currentTimeMillis() + 500;
 
-        double previousReading = getBeaconColor()[isRed ? 1 : 0],
-                currentReading,
-                maxColor = 0,
-                directionSwitches = 0;
+        double redTotal = 0,
+                 blueTotal = 0;
 
-        long lastDirectionSwitch = System.currentTimeMillis();
-        timeout += lastDirectionSwitch;
-
-
-        while (Hardware.active() && System.currentTimeMillis() < timeout) {     //makes sure we don't take too long
-
-            if ((currentReading = getBeaconColor()[isRed ? 1 : 0]) > maxColor)  //if we have just read our highest reading so far, make that the max
-                maxColor = currentReading;
-
-            if (directionSwitches >= 3 && currentReading >= maxColor) {     //we are in front of the center of the color
-                wheels.stop();
-                return true;
-            } else if (directionSwitches > 5) {     //if we pass back and forth several times, but don't see our max again, reduce the max and try again
-                maxColor--;
-                directionSwitches = 4;
-            }
-
-            if (System.currentTimeMillis() - lastDirectionSwitch > 3000) {      //if we have driven off of the beacon, drive back to the line and restart
-                Hardware.print("Restarted find beacon button");
-                driveUntilLineReadingThreshold(Math.PI / 2 * (goingForward ? 3 : 1), whiteLineThreshold, false, true, 0, 10000, speed);
-                shouldRestart = true;
-                break;
-            } else if (currentReading < previousReading && System.currentTimeMillis() - lastDirectionSwitch > 300) {    //if our readings start to decline, we are going the wrong way and should switch direction
-                goingForward = !goingForward;
-                directionSwitches++;
-                lastDirectionSwitch = System.currentTimeMillis();
-            }
-
-            Hardware.clearLog();
-            Hardware.print("Reading: " + currentReading);
-            Hardware.print("Direction switches: " + directionSwitches);
-            Hardware.print("Threshold: " + maxColor);
-
-            compensatedTranslate(Math.PI / 2 * (goingForward ? 1 : 3), speed);
-
-            previousReading = currentReading;
+        while (System.currentTimeMillis() < stop) {
+            blueTotal += beaconSensor.blue();
+            redTotal += beaconSensor.red();
+            Hardware.sleep(10);
         }
 
-        return shouldRestart ? findBeaconButton(isRed, whiteLineThreshold, timeout - System.currentTimeMillis(), speed) : false;    //if we need to restart, restart
+        return redTotal > blueTotal;
     }
 
-    public boolean findBeaconButton(boolean isRed, double whiteLineReadingThreshold, long timeout) {
-        return findBeaconButton(false, whiteLineReadingThreshold, timeout, 0.125);
-    }
 
     public void driveUntilOdsThreshold(double odsThreshold, double speed) {     //drives until a specified ods value
         double reading = getOpticalDistance();

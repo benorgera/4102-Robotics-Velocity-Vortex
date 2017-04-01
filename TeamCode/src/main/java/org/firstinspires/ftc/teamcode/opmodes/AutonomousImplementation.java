@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import org.firstinspires.ftc.teamcode.components.ButtonPusher;
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
@@ -14,7 +15,6 @@ public class AutonomousImplementation {
     private Shooter shooter;
 
     private final boolean isRed;
-    private final boolean isDoublePushing;
 
     private final double whiteLineSignalThreshold = 60; //the minimum color sensor reading required to signify finding the white line
 
@@ -24,7 +24,6 @@ public class AutonomousImplementation {
         this.sensors = Hardware.getSensors();
         this.shooter = Hardware.getShooter();
         this.isRed = isRed;
-        this.isDoublePushing = isDoublePushing;
 
         sensors.initImu(); //start up the adafruit imu
     }
@@ -62,7 +61,7 @@ public class AutonomousImplementation {
             driveToLine((i == 0) == isRed);
 
             Hardware.print("Capturing first beacon");
-            captureBeacon(); //press proper button
+            sensors.captureBeacon(isRed); //press proper button
         }
 
         Hardware.print("Backing up from wall");
@@ -70,31 +69,6 @@ public class AutonomousImplementation {
 
         Hardware.print("Partial Parking");
         sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 1000, true, 1);
-    }
-
-    private void captureBeacon() {
-
-        if (isDoublePushing) { //if it is running the double push autonomous, it presses a button, waits and checks whether the color is correct, and if not it presses again.
-            pushButton();
-            long readyTime = System.currentTimeMillis() + 5000; //5 second delay on beacons
-
-            Hardware.sleep(500); //just in case the color change takes time
-
-            if (sensors.getBeaconColor()[isRed ? 0 : 1] > sensors.getBeaconColor()[isRed ? 1 : 0]) { //we need to push again
-
-                if (readyTime > System.currentTimeMillis()) //makes sure we have waited long enough, if not then it waits the remaining time
-                    Hardware.sleep(readyTime - System.currentTimeMillis());
-
-                pushButton(); //pushes the button
-            }
-        } else { //if we are running the normal autonomous, it finds the correct beacon button and presses it
-            Hardware.print("Finding button");
-
-            if (sensors.findBeaconButton(isRed, whiteLineSignalThreshold, 7000, 0.13)) { //finds the correct beacon button based on sensor values
-                Hardware.sleep(500);
-                pushButton(); //pushes said button
-            }
-        }
     }
 
     private void pushButton() { //drives forward to press the button
