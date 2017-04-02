@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.components;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utilities.DelayedAction;
+import org.firstinspires.ftc.teamcode.utilities.Hardware;
 
 /**
  * Created by benorgera on 3/31/17.
@@ -13,11 +14,11 @@ public class ButtonPusher {
     private Servo left;
     private Servo right;
 
-    public ButtonPusher (boolean isAuton, Servo left, Servo right) {
+    public ButtonPusher (Servo left, Servo right) {
         this.left = left;
         this.right = right;
 
-        if (isAuton)
+        if (Hardware.isAuton())
             retract();
         else
             semiextend();
@@ -35,13 +36,9 @@ public class ButtonPusher {
     }
 
     public void push(boolean isLeft) {
-        if (isLeft) {
-            left.setPosition(0.4);
-            (new Thread(new DelayedAction(left, 500, 1))).start();
-        } else {
-            right.setPosition(0.4);
-            (new Thread(new DelayedAction(right, 500, 1))).start();
-        }
+        (isLeft ? left : right).setPosition(0.1);
+        Hardware.sleep(1000);
+        (isLeft ? left : right).setPosition(1);
     }
 
 

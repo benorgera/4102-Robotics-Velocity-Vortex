@@ -76,7 +76,7 @@ public class Shooter {
             Hardware.sleep(20);
 
             Hardware.getIntake().stopElevator(); //stop elevator
-            Hardware.sleep(700); //wait for PID to regain desired velocity
+            Hardware.sleep(Hardware.isAuton() ? 1500 : 700); //wait for PID to regain desired velocity
         } else { //no shots remain, stop and return
             Hardware.getIntake().stopElevator();
         }

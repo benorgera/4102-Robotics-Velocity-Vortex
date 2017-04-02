@@ -50,6 +50,11 @@ public class Hardware {
         opMode.sleep(ms);
     }
 
+    public static boolean isAuton() {
+        return isAuton;
+    }
+
+
     public static void init(HardwareMap map, LinearOpMode opMode, boolean isAuton, Telemetry t) {
         clean();
         Hardware.opMode = opMode;
@@ -89,7 +94,6 @@ public class Hardware {
 
     public static ButtonPusher getButtonPusher() {
         return buttonPusher == null ? buttonPusher = new ButtonPusher(
-                isAuton,
                 map.servo.get("left-pusher"),
                 map.servo.get("right-pusher")
         ) : buttonPusher;
@@ -128,7 +132,6 @@ public class Hardware {
         return intake == null ? intake = new Intake(
                 map.dcMotor.get("intake"),
                 map.servo.get("ramp"),
-                isAuton,
                 new Servo[] {
                         map.servo.get("left-flap"),
                         map.servo.get("right-flap")

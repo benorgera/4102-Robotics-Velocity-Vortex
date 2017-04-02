@@ -2,5 +2,9 @@
     {
         "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/drawable-mdpi-v4/ic_launcher.png",
         "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Velocity Vortex 4102/FtcRobotController/unspecified/res/drawable-mdpi-v4/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/drawable-mdpi-v4/ic_launcher.png",
+        "source": "/Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Velcocity Vortex 4102/FtcRobotController/unspecified/res/drawable-mdpi-v4/ic_launcher.png"
     }
 ]

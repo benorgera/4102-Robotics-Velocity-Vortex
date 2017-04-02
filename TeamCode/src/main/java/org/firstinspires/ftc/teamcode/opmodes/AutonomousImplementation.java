@@ -17,8 +17,6 @@ public class AutonomousImplementation {
     private final double thetaToWall = 2 * Math.PI / 9;
     private final boolean isRed;
 
-    private final double whiteLineSignalThreshold = 60; //the minimum color sensor reading required to signify finding the white line
-
     public AutonomousImplementation(boolean isRed, boolean isDoublePushing) { //initializes all of our robot's component, noting our alliance and whether we are running a double push autonomous
         Hardware.getLift();
         Hardware.getIntake();
@@ -33,16 +31,16 @@ public class AutonomousImplementation {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.63); //speeds up the wheels
+        shooter.prepShot(6.2); //speeds up the wheels
 
         Hardware.print("Moving away from wall");
         sensors.driveByTime(-Math.PI / 2, 200, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
 
         Hardware.getWheels().softStop(300); //stops the robot gently to avoid jerk when launching the balls
-        Hardware.sleep(1000); //allows the shooting motors to finish getting to the right speed
+        Hardware.sleep(2000); //allows the shooting motors to finish getting to the right speed
 
         Hardware.print("Shooting");
-        shooter.shoot(6.63, true); //shoots the ball at the same prepshot speed
+        shooter.shoot(6.2, true); //shoots the ball at the same prepshot speed
 
         Hardware.print("Pulling away for turn");
         sensors.driveByTime(-Math.PI / 2, 300, true);
@@ -51,15 +49,20 @@ public class AutonomousImplementation {
         sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 30, 0.4);
 
         Hardware.print("Driving to wall");
-        sensors.driveUntilTouchReading(0.6, isRed);
+        sensors.driveUntilLineOrTouch(0.25, isRed);
+        sensors.driveUntilTouchReading(0.09, isRed);
 
         Hardware.print("Parallel Parking");
-        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.25, Math.PI / 20, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 30);
+        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.25, Math.PI / 15, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 30);
+
+        hugWall();
 
         //drive to and capture each beacon
         for (int i = 0; i < 2; i++) {
             Hardware.print("Finding first beacon line"); //drives to the beacon line
             driveToLine((i == 0) == isRed);
+
+            hugWall();
 
             Hardware.print("Capturing first beacon");
             sensors.captureBeacon(isRed); //press proper button
@@ -85,9 +88,14 @@ public class AutonomousImplementation {
 
     private void driveToLine(boolean intakeForward) {
         Hardware.print("Drive to line");
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), whiteLineSignalThreshold, false, true, 0, 7000, 0.4);
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), false, true, 500, 7000, 0.4);
 
         Hardware.print("Realign on line");
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), whiteLineSignalThreshold, false, true, 200, 1000, 0.17);
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, 1000, 0.17);
     }
+
+    private void hugWall() {
+        sensors.driveByTime(Math.PI, 200, true, 0.4);
+    }
+
 }

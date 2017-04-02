@@ -40,6 +40,8 @@ public class Sensors {
 
     private double initialHeading = 0;
 
+    private final double whiteLineSignalThreshold = 60; //the minimum color sensor reading required to signify finding the white line
+
     private final double compensatedTranslateSpeed = 0.25;
 
     private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1 degrees
@@ -333,7 +335,7 @@ public class Sensors {
 
 
     //translates at a given theta and speed until we reach a white line
-    public boolean driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime, double speed) {
+    public boolean driveUntilLineReadingThreshold(double theta, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime, double speed) {
         long time = System.currentTimeMillis();
 
         maxTime += time;    //if greater than this, we are taking to long and should timeout
@@ -341,15 +343,9 @@ public class Sensors {
 
         if (shouldPollGyro) readyCompensatedTranslate(0);
 
-        int sufficientReadings = 0,     //number of readings that meet our threshold
-                neededSufficientReadings = 1;   //number of readings that we need to consider ourdelves on the line, not a fluke
-
         //drive while we haven't gotten enough readings that meet our threshold, and the time we have been driving is between our min and max time
-        while (Hardware.active() && (sufficientReadings < neededSufficientReadings && (time = System.currentTimeMillis()) < maxTime || (time = System.currentTimeMillis()) < minTime)) {
+        while (Hardware.active() && (!lineSensed() && (time = System.currentTimeMillis()) < maxTime || (time = System.currentTimeMillis()) < minTime))
             compensatedTranslate(theta, speed);
-            if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineReadingThreshold)       //if we see the line, add 1 to sufficientReadings
-                sufficientReadings++;
-        }
 
         if (shouldStop) wheels.stop();
 
@@ -358,8 +354,8 @@ public class Sensors {
         return time < maxTime;      //if we actually got to the line, or just timed out
     }
 
-    public boolean driveUntilLineReadingThreshold(double theta, double whiteLineReadingThreshold, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime) {
-        return driveUntilLineReadingThreshold(theta, whiteLineReadingThreshold, shouldPollGyro, shouldStop, minTime, maxTime, compensatedTranslateSpeed);
+    public boolean driveUntilLineReadingThreshold(double theta, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime) {
+        return driveUntilLineReadingThreshold(theta, shouldPollGyro, shouldStop, minTime, maxTime, compensatedTranslateSpeed);
     }
 
     //just drive by time, no sensor values needed
@@ -393,6 +389,7 @@ public class Sensors {
     public void driveUntilTouchReading(double vel, boolean isRed) {
         while (Hardware.active() && !touchSensorPressed())
             compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
+        wheels.stop();
     }
 
     public void driveUntilTouchReading(boolean isRed) {
@@ -402,5 +399,16 @@ public class Sensors {
     public boolean touchSensorPressed() {
         return touchSensors[0].isPressed() || touchSensors[1].isPressed();
     }
+
+    private boolean lineSensed() {
+        return Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold;
+    }
+
+    public void driveUntilLineOrTouch(double vel, boolean isRed) {
+        while (Hardware.active() && !touchSensorPressed() && !lineSensed())
+            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
+        wheels.stop();
+    }
+
 
 }

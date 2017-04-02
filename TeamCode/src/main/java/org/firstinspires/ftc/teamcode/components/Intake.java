@@ -24,19 +24,20 @@ public class Intake {
 
     private final double[] rampPositions = {0, 0.235, 392}; //down, holding and closed respectively
 
-    public Intake(DcMotor intake, Servo ramp, boolean isAuton, Servo[] flaps, CRServo[] spinners) {
+    public Intake(DcMotor intake, Servo ramp, Servo[] flaps, CRServo[] spinners) {
         this.intake = intake;
         this.ramp = ramp;
         this.flaps = flaps;
         this.spinners = spinners;
 
-        ramp.setPosition(rampPositions[(isRampDown = !isAuton) ? 0 : 1]);
+        ramp.setPosition(rampPositions[(isRampDown = !Hardware.isAuton()) ? 0 : 1]);
         setFlaps(false);
-        runSpinners(); //run spinners to free them
 
-        Hardware.sleep(1000);
-
-        stopSpinners();
+        if (Hardware.isAuton()) {
+            runSpinners(); //run spinners to free them
+            Hardware.sleep(1000);
+            stopSpinners();
+        }
 
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
