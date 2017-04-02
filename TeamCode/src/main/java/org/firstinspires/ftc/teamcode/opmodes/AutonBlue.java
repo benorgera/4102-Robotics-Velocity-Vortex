@@ -19,7 +19,7 @@ public class AutonBlue extends LinearOpMode {
 
         telemetry.update();
 
-        a = new AutonomousImplementation(false, false); //new Autonomous Implementation with isRed being false and isDoublePush being false
+        a = new AutonomousImplementation(false); //new Autonomous Implementation with isRed being false and isDoublePush being false
 
         waitForStart(); //wait for start to be pressed
 

@@ -42,14 +42,13 @@ public class Shooter {
         setDiskMotorPowers(speed / 10); //bring motors up to speed by starting the PID
     }
 
-    public void shoot(double speed, boolean isAuton) {
-        setDiskMotorPowers(speed / 10); //adjust speed (maybe it was prepped lower)
+    public void shoot() {
         Hardware.getWheels().stop(); //stop the robot in case its moving
 
         int count = 0;
 
         //while there's another ball remaining, shoot
-        while (takeShot((count == 1 && isAuton) || count == 2) && Hardware.active()) count++;
+        while (takeShot((count == 1 && Hardware.isAuton()) || count == 2) && Hardware.active()) count++;
 
         //reset stuff
         Hardware.getIntake().stopElevator();

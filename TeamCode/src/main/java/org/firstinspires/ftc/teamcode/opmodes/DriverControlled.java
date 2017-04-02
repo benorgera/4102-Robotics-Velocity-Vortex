@@ -42,7 +42,7 @@ public class DriverControlled extends LinearOpMode {
 
     private long startTime;
 
-    private final double slowModeConstant = 0.3;
+    private final double slowModeConstant = 0.5;
 
     @Override
     public void runOpMode() {
@@ -109,8 +109,8 @@ public class DriverControlled extends LinearOpMode {
 
         wasPreppingShot = gamepad2.y;
 
-        if (gamepad2.b && !intake.isRunning() && !wasShooting) { //we take a shot if b on the second controller is pressed and the intake isn't running
-            shooter.shoot(shotPower, false);
+        if (gamepad2.b && !intake.isRunning() && isPreppingShot && !wasShooting) { //we take a shot if b on the second controller is pressed and the intake isn't running, and the shooter has been prepped
+            shooter.shoot();
             isPreppingShot = false;
         }
 

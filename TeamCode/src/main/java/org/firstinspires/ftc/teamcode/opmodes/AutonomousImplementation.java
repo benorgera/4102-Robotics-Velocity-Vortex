@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import org.firstinspires.ftc.teamcode.components.ButtonPusher;
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
 import org.firstinspires.ftc.teamcode.components.Sensors;
 import org.firstinspires.ftc.teamcode.components.Shooter;
@@ -17,7 +16,7 @@ public class AutonomousImplementation {
     private final double thetaToWall = 2 * Math.PI / 9;
     private final boolean isRed;
 
-    public AutonomousImplementation(boolean isRed, boolean isDoublePushing) { //initializes all of our robot's component, noting our alliance and whether we are running a double push autonomous
+    public AutonomousImplementation(boolean isRed) { //initializes all of our robot's component, noting our alliance and whether we are running a double push autonomous
         Hardware.getLift();
         Hardware.getIntake();
         this.sensors = Hardware.getSensors();
@@ -37,10 +36,10 @@ public class AutonomousImplementation {
         sensors.driveByTime(-Math.PI / 2, 200, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
 
         Hardware.getWheels().softStop(300); //stops the robot gently to avoid jerk when launching the balls
-        Hardware.sleep(2000); //allows the shooting motors to finish getting to the right speed
+        Hardware.sleep(1500); //allows the shooting motors to finish getting to the right speed
 
         Hardware.print("Shooting");
-        shooter.shoot(6.2, true); //shoots the ball at the same prepshot speed
+        shooter.shoot(); //shoots the ball at the same prepshot speed
 
         Hardware.print("Pulling away for turn");
         sensors.driveByTime(-Math.PI / 2, 300, true);
@@ -69,21 +68,10 @@ public class AutonomousImplementation {
         }
 
         Hardware.print("Backing up from wall");
-        sensors.driveByTime(0, 500, true, 0.4);
+        sensors.driveByTime(0, 500, true, 1);
 
         Hardware.print("Partial Parking");
         sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 1000, true, 1);
-    }
-
-    private void pushButton() { //drives forward to press the button
-        Hardware.print("Pushing button");
-
-        for (int i = 0; i < 5; i++) { //incrementally drives forward four times in order to make sure the robot drives straight
-            sensors.driveByTime(Math.PI, 100, true, 1);
-            Hardware.sleep(100);
-        }
-
-        sensors.driveByTime(Math.PI, 400, true, 1); //drives the rest of the way forward to really press the button
     }
 
     private void driveToLine(boolean intakeForward) {

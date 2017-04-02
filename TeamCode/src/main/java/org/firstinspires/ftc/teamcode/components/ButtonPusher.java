@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.components;
 
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.utilities.DelayedAction;
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
 
 /**

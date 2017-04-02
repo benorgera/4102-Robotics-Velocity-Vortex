@@ -4,8 +4,6 @@ import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.I2cAddr;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -251,18 +249,6 @@ public class Sensors {
         };
     }
 
-    private void followLine(double speed, boolean isGoingForwards) {
-        double[] readings = getLineReadings();
-        double left = readings[0],
-                right = readings[1];
-
-        if (Math.abs(left - right) <= 40) { //both sensors equally on the white line
-            compensatedTranslate(isGoingForwards ? Math.PI + Math.PI / 30 : 0, speed);
-        } else { //left more on the white line turn left, right turn right
-            compensatedTranslate((isGoingForwards ? Math.PI : 0) + (Math.PI / 8 * (left > right ? 1.2 : -1) * (isGoingForwards ? 1 : -1)), speed);
-        }
-    }
-
     public void captureBeacon(boolean isRed) {
         buttonPusher.push(isRed == leftIsRed());
     }
@@ -281,58 +267,6 @@ public class Sensors {
 
         return redTotal > blueTotal;
     }
-
-
-    public void driveUntilOdsThreshold(double odsThreshold, double speed) {     //drives until a specified ods value
-        double reading = getOpticalDistance();
-        boolean isGoingForwards = reading < odsThreshold;    //figure out if we need to go forwards or backwards
-
-        //while we have not reached the ods threshold, and the difference between the 2 ods's is not large (meaning we lost the beacon)
-        while (Hardware.active() && isGoingForwards ? ((reading = getOpticalDistance()) < odsThreshold) : (reading = getOpticalDistance()) > odsThreshold)
-            compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
-        wheels.stop();
-    }
-
-    public void pulseUntilOdsThreshold(double odsThreshold, double speed) {      //pulses until a specified ods value. tends to be straighter than drive
-        double reading = getOpticalDistance();
-        boolean isGoingForwards = reading < odsThreshold;    //figure out if we need to go forwards or backwards
-
-        long start = System.currentTimeMillis();
-
-        //while we have not reached the ods threshold, and the difference between the 2 ods's is not large (meaning we lost the beacon)
-        while (Hardware.active() && isGoingForwards ? ((reading = getOpticalDistance()) < odsThreshold) : ((reading = getOpticalDistance()) > odsThreshold)) {
-            if ((System.currentTimeMillis() - start) % 200 < 100)   //drive for 100 ms, stop for 100 ms
-                compensatedTranslate(isGoingForwards ? Math.PI : 0, speed);
-            else
-                wheels.stop();
-        }
-        wheels.stop();
-    }
-
-    public void pulseUntilOdsThreshold(double odsThreshold) {
-        pulseUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed);
-    }
-
-    public void driveUntilOdsThreshold(double odsThreshold) {
-        driveUntilOdsThreshold(odsThreshold, compensatedTranslateSpeed);
-    }
-
-    public void followLineUntilOdsThreshold(double odsThreshold, long timeout, boolean canGoBackwards, double speed) {  //follows the line until a specified ods value
-        timeout += System.currentTimeMillis();
-        double reading = getOpticalDistance();
-        boolean isGoingForwards = reading < odsThreshold;
-
-        if (!canGoBackwards && !isGoingForwards) return;
-
-        while (Hardware.active() && Utils.compare((reading = getOpticalDistance()), odsThreshold, !isGoingForwards) && System.currentTimeMillis() < timeout)
-            followLine(speed, isGoingForwards);
-        wheels.stop();
-    }
-
-    public void followLineUntilOdsThreshold(double odsThreshold, long timeout, boolean canGoBackwards) {
-        followLineUntilOdsThreshold(odsThreshold, timeout, canGoBackwards, compensatedTranslateSpeed);
-    }
-
 
     //translates at a given theta and speed until we reach a white line
     public boolean driveUntilLineReadingThreshold(double theta, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime, double speed) {
@@ -354,10 +288,6 @@ public class Sensors {
         return time < maxTime;      //if we actually got to the line, or just timed out
     }
 
-    public boolean driveUntilLineReadingThreshold(double theta, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime) {
-        return driveUntilLineReadingThreshold(theta, shouldPollGyro, shouldStop, minTime, maxTime, compensatedTranslateSpeed);
-    }
-
     //just drive by time, no sensor values needed
     public void driveByTime(double theta, long time, boolean shouldStop, double speed) {
         long stop = System.currentTimeMillis() + time;
@@ -370,30 +300,9 @@ public class Sensors {
         driveByTime(theta, time, shouldStop, compensatedTranslateSpeed);
     }
 
-    //just drive by time, no sensor values needed, and no compensation
-    public void uncompensatedDriveByTime(double xVel, double yVel, double ngVel, long time) {
-        long stop = System.currentTimeMillis() + time;
-        while (Hardware.active() && System.currentTimeMillis() < stop)
-            wheels.drive(xVel, yVel, ngVel, false);
-        wheels.stop();
-    }
-
-    //turn for a time
-    public void turnByTime(long time, double ngVel) {
-        long stop = System.currentTimeMillis() + time;
-        while (Hardware.active() && System.currentTimeMillis() < stop)
-            wheels.drive(0, 0, ngVel, false);
-        wheels.stop();
-    }
-
     public void driveUntilTouchReading(double vel, boolean isRed) {
         while (Hardware.active() && !touchSensorPressed())
             compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
-        wheels.stop();
-    }
-
-    public void driveUntilTouchReading(boolean isRed) {
-        driveUntilTouchReading(0.6, isRed);
     }
 
     public boolean touchSensorPressed() {

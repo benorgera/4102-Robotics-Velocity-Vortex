@@ -18,7 +18,7 @@ public class AutonRed extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Hardware.init(hardwareMap, this, true, telemetry); //initializes hardware
 
-        a = new AutonomousImplementation(true, false); //new Autonomous Implementation with isRed being true and isDoublePush being false
+        a = new AutonomousImplementation(true); //new Autonomous Implementation with isRed being true and isDoublePush being false
 
         waitForStart(); //wait for start to be pressed
 
