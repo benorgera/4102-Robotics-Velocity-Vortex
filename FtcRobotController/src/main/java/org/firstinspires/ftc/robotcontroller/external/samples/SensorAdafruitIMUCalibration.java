@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
-//import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
+import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -100,11 +100,13 @@ import java.util.Locale;
  * it appears that in a SensorMode that doesn't use the magnetometer (for example), the
  * magnetometer cannot actually be calibrated.</p>
  *
+ * @see AdafruitBNO055IMU
  * @see com.qualcomm.hardware.adafruit.BNO055IMU.Parameters#calibrationDataFile
  * @see <a href="https://www.bosch-sensortec.com/bst/products/all_products/bno055">BNO055 product page</a>
  * @see <a href="https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST_BNO055_DS000_14.pdf">BNO055 specification</a>
  */
 @TeleOp(name = "Sensor: Adafruit IMU Calibration", group = "Sensor")
+@Disabled                            // Uncomment this to add to the opmode list
 public class SensorAdafruitIMUCalibration extends LinearOpMode
     {
     //----------------------------------------------------------------------------------------------
