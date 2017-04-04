@@ -22,7 +22,7 @@ public class Intake {
 
     private boolean isRunning = false;
 
-    private final double[] rampPositions = {0, 0.235, 392}; //down, holding and closed respectively
+    private final double[] rampPositions = {0.03, 0.235, 392}; //down, holding and closed respectively
 
     public Intake(DcMotor intake, Servo ramp, Servo[] flaps, CRServo[] spinners) {
         this.intake = intake;
@@ -30,7 +30,7 @@ public class Intake {
         this.flaps = flaps;
         this.spinners = spinners;
 
-        ramp.setPosition(rampPositions[(isRampDown = !Hardware.isAuton()) ? 0 : 1]);
+        ramp.setPosition(rampPositions[(isRampDown = Hardware.isAuton()) ? 1 : 0]);
         setFlaps(false);
 
         if (Hardware.isAuton()) {
@@ -82,7 +82,8 @@ public class Intake {
         intake.setPower(1);
     }
 
-    public void stopElevator() {
+    public void stop() {
+        stopSpinners();
         intake.setPower(0);
     }
 

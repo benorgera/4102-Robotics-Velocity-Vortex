@@ -48,11 +48,11 @@ public class AutonomousImplementation {
         sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 30, 0.4);
 
         Hardware.print("Driving to wall");
-        sensors.driveUntilLineOrTouch(0.25, isRed);
+        sensors.driveUntilLineOrTouchOrRange(0.3, isRed);
         sensors.driveUntilTouchReading(0.09, isRed);
 
         Hardware.print("Parallel Parking");
-        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.25, Math.PI / 15, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 30);
+        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.25, Math.PI / 15, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25);
 
         hugWall();
 

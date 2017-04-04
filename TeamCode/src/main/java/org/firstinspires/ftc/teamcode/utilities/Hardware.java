@@ -5,6 +5,7 @@ import android.widget.Button;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -113,6 +114,10 @@ public class Hardware {
                         map.touchSensor.get("left-touch-sensor"),
                         map.touchSensor.get("right-touch-sensor")
                 },
+                new ModernRoboticsI2cRangeSensor[] {
+                        (ModernRoboticsI2cRangeSensor) map.touchSensor.get("lift-range-sensor"),
+                        (ModernRoboticsI2cRangeSensor) map.touchSensor.get("intake-range-sensor")
+                },
                 map.voltageSensor.iterator().next()
         ) : sensors;
     }
@@ -167,7 +172,6 @@ public class Hardware {
 
     public static void clean() {
         buttonPusher = null;
-        output = null;
         map = null;
         lift = null;
         wheels = null;
@@ -177,6 +181,8 @@ public class Hardware {
         opMode = null;
         t = null;
         isAuton = false;
+        output = "\n";
+        gyroConstant = 1;
     }
 
     public static void setGyroConstant(double d) {

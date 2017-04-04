@@ -51,7 +51,7 @@ public class Shooter {
         while (takeShot((count == 1 && Hardware.isAuton()) || count == 2) && Hardware.active()) count++;
 
         //reset stuff
-        Hardware.getIntake().stopElevator();
+        Hardware.getIntake().stop();
         stop(); //stop the PID
         close();
         Hardware.getIntake().dropRamp(0); //reset ramp for next intaking
@@ -74,10 +74,10 @@ public class Shooter {
             Hardware.getIntake().runElevator(-0.3);
             Hardware.sleep(20);
 
-            Hardware.getIntake().stopElevator(); //stop elevator
+            Hardware.getIntake().stop(); //stop elevator
             Hardware.sleep(Hardware.isAuton() ? 1500 : 700); //wait for PID to regain desired velocity
         } else { //no shots remain, stop and return
-            Hardware.getIntake().stopElevator();
+            Hardware.getIntake().stop();
         }
 
         return takingAnotherShot; //return true if another shot is to be taken

@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.components;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
@@ -31,6 +33,8 @@ public class Sensors {
     private ModernRoboticsI2cColorSensor beaconSensor;
     private VoltageSensor voltage;
     private ButtonPusher buttonPusher;
+    private ModernRoboticsI2cRangeSensor[] rangeSensors;
+
 
     private Integrator integrator;
 
@@ -49,7 +53,7 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor, TouchSensor[] touchSensors, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor, TouchSensor[] touchSensors, ModernRoboticsI2cRangeSensor[] rangeSensors, VoltageSensor voltage) {
         this.imu = imu;
         this.voltage = voltage;
         this.leftColorSensor = leftColorSensor;
@@ -58,6 +62,7 @@ public class Sensors {
         this.wheels = Hardware.getWheels();
         this.buttonPusher = Hardware.getButtonPusher();
         this.beaconSensor = beaconSensor;
+        this.rangeSensors = rangeSensors;
 
         this.touchSensors = touchSensors;
         beaconSensor.enableLed(true);
@@ -140,7 +145,7 @@ public class Sensors {
                 power = 0.13;
         long checkTime = System.currentTimeMillis() + 1000;
 
-        while (Math.abs(heading) > headingAccuracyThreshold && Hardware.active()) {
+        while (Hardware.active() && Math.abs(heading) > headingAccuracyThreshold) {
             wheels.drive(0, 0, power * ((heading = getHeading()) > 0 ? -1 : 1), false);
 
             if (System.currentTimeMillis() >= checkTime) { //if its been 250 ms, consider upping the power and ready the next check
@@ -259,7 +264,7 @@ public class Sensors {
         double redTotal = 0,
                  blueTotal = 0;
 
-        while (System.currentTimeMillis() < stop) {
+        while (Hardware.active() && System.currentTimeMillis() < stop) {
             blueTotal += beaconSensor.blue();
             redTotal += beaconSensor.red();
             Hardware.sleep(10);
@@ -301,23 +306,26 @@ public class Sensors {
     }
 
     public void driveUntilTouchReading(double vel, boolean isRed) {
-        while (Hardware.active() && !touchSensorPressed())
+        while (Hardware.active() && !touchSensorPressed(isRed))
             compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
     }
 
-    public boolean touchSensorPressed() {
-        return touchSensors[0].isPressed() || touchSensors[1].isPressed();
+    public boolean touchSensorPressed(boolean isIntakeSide) {
+        return touchSensors[isIntakeSide ? 1 : 0].isPressed();
+    }
+
+    public double getRange(boolean isIntakeSide) {
+        return rangeSensors[isIntakeSide ? 1 : 0].getDistance(DistanceUnit.INCH);
     }
 
     private boolean lineSensed() {
         return Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold;
     }
 
-    public void driveUntilLineOrTouch(double vel, boolean isRed) {
-        while (Hardware.active() && !touchSensorPressed() && !lineSensed())
+    public void driveUntilLineOrTouchOrRange(double vel, boolean isRed) {
+        while (Hardware.active() && !touchSensorPressed(isRed) && !lineSensed() && getRange(isRed) > 10)
             compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
         wheels.stop();
     }
-
 
 }

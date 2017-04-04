@@ -21,9 +21,6 @@ MERGED from [:Blocks-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velc
 MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:61:5-93
 MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:22:5-181:19
 MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:19:5-24:19
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:61:5-93
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:22:5-181:19
-MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:19:5-24:19
 	android:label
 		ADDED from [Velcocity Vortex 4102:FtcRobotController:unspecified] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Velcocity Vortex 4102/FtcRobotController/unspecified/AndroidManifest.xml:15:9-41
 	android:exported
@@ -48,12 +45,7 @@ MERGED from [:Hardware-release:] /Users/benorgera/Documents/CHS Robotics/Code/Ve
 MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:8:5-10:41
 MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:5:5-7:41
 MERGED from [:WirelessP2p-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/WirelessP2p-release/AndroidManifest.xml:5:5-7:41
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:5:5-7:41
-MERGED from [:Hardware-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Hardware-release/AndroidManifest.xml:5:5-7:41
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:8:5-10:41
 MERGED from [:ModernRobotics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/ModernRobotics-release/AndroidManifest.xml:5:5-7:41
-MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:5:5-7:41
-MERGED from [:WirelessP2p-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/WirelessP2p-release/AndroidManifest.xml:5:5-7:41
 	android:targetSdkVersion
 		INJECTED from /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/src/main/AndroidManifest.xml
 		INJECTED from /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/src/main/AndroidManifest.xml
@@ -101,7 +93,6 @@ ADDED from [Velcocity Vortex 4102:FtcRobotController:unspecified] /Users/benorge
 uses-permission#android.permission.ACCESS_WIFI_STATE
 ADDED from [:Inspection-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Inspection-release/AndroidManifest.xml:11:5-76
 MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:9:5-11:35
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:9:5-11:35
 	android:required
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:11:9-32
 	android:name
@@ -114,15 +105,12 @@ uses-permission#android.permission.CHANGE_WIFI_STATE
 ADDED from [:Inspection-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Inspection-release/AndroidManifest.xml:13:5-76
 MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:12:5-14:35
 MERGED from [:WirelessP2p-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/WirelessP2p-release/AndroidManifest.xml:9:5-76
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:12:5-14:35
-MERGED from [:WirelessP2p-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/WirelessP2p-release/AndroidManifest.xml:9:5-76
 	android:required
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:14:9-32
 	android:name
 		ADDED from [:Inspection-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Inspection-release/AndroidManifest.xml:13:22-73
 uses-permission#android.permission.CHANGE_NETWORK_STATE
 ADDED from [:Inspection-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Inspection-release/AndroidManifest.xml:14:5-79
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:18:5-20:35
 MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:18:5-20:35
 	android:required
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:20:9-32
@@ -132,16 +120,12 @@ uses-permission#android.permission.INTERNET
 ADDED from [:Inspection-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Inspection-release/AndroidManifest.xml:15:5-67
 MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:21:5-23:35
 MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:12:5-14:35
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:21:5-23:35
-MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:12:5-14:35
 	android:required
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:23:9-32
 	android:name
 		ADDED from [:Inspection-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Inspection-release/AndroidManifest.xml:15:22-64
 uses-permission#android.permission.ACCESS_NETWORK_STATE
 ADDED from [:Inspection-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Inspection-release/AndroidManifest.xml:16:5-79
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:15:5-17:35
-MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:15:5-17:35
 MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:15:5-17:35
 MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:15:5-17:35
 	android:required
@@ -197,17 +181,12 @@ ADDED from [:Blocks-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velco
 MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:24:5-26:35
 MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:12:5-14:35
 MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:9:5-11:35
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:24:5-26:35
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:12:5-14:35
-MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:9:5-11:35
 	android:required
 		ADDED from [:Blocks-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Blocks-release/AndroidManifest.xml:13:9-32
 	android:name
 		ADDED from [:Blocks-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Blocks-release/AndroidManifest.xml:12:9-65
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
 ADDED from [:Blocks-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Blocks-release/AndroidManifest.xml:14:5-16:35
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:27:5-29:35
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:15:5-17:35
 MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:27:5-29:35
 MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:15:5-17:35
 	android:required
@@ -259,42 +238,34 @@ ADDED from [:Blocks-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velco
 uses-permission#android.permission.WRITE_SETTINGS
 ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:30:5-32:35
 MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:18:5-20:35
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:30:5-32:35
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:18:5-20:35
 	android:required
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:32:9-32
 	android:name
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:31:9-57
 uses-permission#android.permission.WAKE_LOCK
 ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:39:5-41:35
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:39:5-41:35
 	android:required
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:41:9-32
 	android:name
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:40:9-52
 uses-permission#android.permission.CAMERA
 ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:42:5-65
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:42:5-65
 	android:name
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:42:22-62
 uses-feature#android.hardware.usb.accessory
 ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:44:5-67
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:44:5-67
 	android:name
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:44:19-64
 uses-feature#0x00020000
 ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:45:5-54
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:45:5-54
 	android:glEsVersion
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:45:19-51
 uses-feature#android.hardware.camera
 ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:59:5-60
-MERGED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:59:5-60
 	android:name
 		ADDED from [:RobotCore-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/RobotCore-release/AndroidManifest.xml:59:19-57
 activity#com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:27:9-36:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:27:9-36:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:30:13-54
 	android:exported
@@ -309,7 +280,6 @@ ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Ve
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:32:25-118
 activity#com.qualcomm.ftccommon.configuration.FtcLoadFileActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:37:9-47:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:37:9-47:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:41:13-55
 	android:exported
@@ -326,7 +296,6 @@ ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Ve
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:43:25-117
 activity#com.qualcomm.ftccommon.configuration.ConfigureFromTemplateActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:48:9-58:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:48:9-58:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:52:13-70
 	android:exported
@@ -343,7 +312,6 @@ ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Ve
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:54:25-127
 activity#com.qualcomm.ftccommon.ViewLogsActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:59:9-69:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:59:9-69:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:63:13-55
 	android:exported
@@ -360,7 +328,6 @@ ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Ve
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:65:25-100
 activity#com.qualcomm.ftccommon.configuration.FtcConfigurationActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:70:9-74:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:70:9-74:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:73:13-45
 	android:configChanges
@@ -369,7 +336,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:71:13-89
 activity#com.qualcomm.ftccommon.configuration.FtcNewFileActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:75:9-79:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:75:9-79:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:78:13-45
 	android:configChanges
@@ -378,7 +344,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:76:13-83
 activity#com.qualcomm.ftccommon.ConfigWifiDirectActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:80:9-83:73
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:80:9-83:73
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:83:13-70
 	android:exported
@@ -387,7 +352,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:81:13-75
 activity#com.qualcomm.ftccommon.FtcWifiChannelSelectorActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:84:9-93:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:84:9-93:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:87:13-73
 	android:exported
@@ -402,7 +366,6 @@ ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Ve
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:89:25-114
 activity#com.qualcomm.ftccommon.AboutActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:94:9-102:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:94:9-102:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:96:13-51
 	android:name
@@ -415,7 +378,6 @@ ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Ve
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:98:25-111
 activity#com.qualcomm.ftccommon.configuration.EditSwapUsbDevices
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:103:9-108:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:103:9-108:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:106:13-63
 	android:windowSoftInputMode
@@ -426,7 +388,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:104:13-83
 activity#com.qualcomm.ftccommon.configuration.EditMotorControllerActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:109:9-114:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:109:9-114:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:112:13-67
 	android:windowSoftInputMode
@@ -437,7 +398,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:110:13-92
 activity#com.qualcomm.ftccommon.configuration.EditMotorListActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:115:9-120:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:115:9-120:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:118:13-67
 	android:windowSoftInputMode
@@ -448,7 +408,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:116:13-86
 activity#com.qualcomm.ftccommon.configuration.EditServoControllerActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:121:9-126:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:121:9-126:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:124:13-67
 	android:windowSoftInputMode
@@ -459,7 +418,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:122:13-92
 activity#com.qualcomm.ftccommon.configuration.EditServoListActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:127:9-132:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:127:9-132:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:130:13-67
 	android:windowSoftInputMode
@@ -470,7 +428,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:128:13-86
 activity#com.qualcomm.ftccommon.configuration.EditLegacyModuleControllerActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:133:9-138:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:133:9-138:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:136:13-75
 	android:windowSoftInputMode
@@ -481,7 +438,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:134:13-99
 activity#com.qualcomm.ftccommon.configuration.EditMatrixControllerActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:139:9-144:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:139:9-144:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:142:13-68
 	android:windowSoftInputMode
@@ -492,7 +448,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:140:13-93
 activity#com.qualcomm.ftccommon.configuration.EditDeviceInterfaceModuleActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:145:9-150:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:145:9-150:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:148:13-90
 	android:windowSoftInputMode
@@ -503,7 +458,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:146:13-98
 activity#com.qualcomm.ftccommon.configuration.EditPWMDevicesActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:151:9-156:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:151:9-156:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:154:13-62
 	android:windowSoftInputMode
@@ -514,7 +468,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:152:13-87
 activity#com.qualcomm.ftccommon.configuration.EditAnalogInputDevicesActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:157:9-162:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:157:9-162:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:160:13-71
 	android:windowSoftInputMode
@@ -525,7 +478,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:158:13-95
 activity#com.qualcomm.ftccommon.configuration.EditDigitalDevicesActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:163:9-168:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:163:9-168:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:166:13-66
 	android:windowSoftInputMode
@@ -536,7 +488,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:164:13-91
 activity#com.qualcomm.ftccommon.configuration.EditI2cDevicesActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:169:9-174:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:169:9-174:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:172:13-62
 	android:windowSoftInputMode
@@ -547,7 +498,6 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:170:13-87
 activity#com.qualcomm.ftccommon.configuration.EditAnalogOutputDevicesActivity
 ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:175:9-180:20
-MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:175:9-180:20
 	android:label
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:178:13-72
 	android:windowSoftInputMode
@@ -558,6 +508,5 @@ MERGED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/V
 		ADDED from [:FtcCommon-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/FtcCommon-release/AndroidManifest.xml:176:13-96
 uses-library#android.test.runner
 ADDED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:23:9-60
-MERGED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:23:9-60
 	android:name
 		ADDED from [:Analytics-release:] /Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Analytics-release/AndroidManifest.xml:23:23-57

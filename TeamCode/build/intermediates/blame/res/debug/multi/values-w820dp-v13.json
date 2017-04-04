@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "/Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/res/merged/debug/values-w820dp-v13/values-w820dp-v13.xml",
+        "outputFile": "/Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/incremental/mergeDebugResources/merged.dir/values-w820dp-v13/values-w820dp-v13.xml",
         "map": [
             {
                 "to": {
@@ -12,30 +12,6 @@
                 },
                 "from": {
                     "file": "/Users/benorgera/Documents/CHS Robotics/Code/Velcocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Velcocity Vortex 4102/FtcRobotController/unspecified/res/values-w820dp-v13/values-w820dp-v13.xml",
-                    "position": {
-                        "startLine": 2,
-                        "startColumn": 4,
-                        "startOffset": 55,
-                        "endColumn": 57,
-                        "endOffset": 108
-                    }
-                }
-            }
-        ]
-    },
-    {
-        "outputFile": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/incremental/mergeDebugResources/merged.dir/values-w820dp-v13/values-w820dp-v13.xml",
-        "map": [
-            {
-                "to": {
-                    "startLine": 2,
-                    "startColumn": 4,
-                    "startOffset": 55,
-                    "endColumn": 57,
-                    "endOffset": 108
-                },
-                "from": {
-                    "file": "/Users/benorgera/Documents/CHS Robotics/Code/Velocity Vortex 4102/TeamCode/build/intermediates/exploded-aar/Velocity Vortex 4102/FtcRobotController/unspecified/res/values-w820dp-v13/values-w820dp-v13.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 4,

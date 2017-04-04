@@ -48,6 +48,8 @@ public class DriverControlled extends LinearOpMode {
     public void runOpMode() {
         Hardware.init(hardwareMap, this, false, telemetry); //initializes hardware
 
+        Hardware.getButtonPusher();
+        
         lift = Hardware.getLift();
         wheels = Hardware.getWheels();
         intake = Hardware.getIntake();
@@ -150,7 +152,7 @@ public class DriverControlled extends LinearOpMode {
 
         //--------------------------DATA-------------------------------
 
-        telemetry.addData("SHOT", "" + Math.round(shotPower * 100) / 10); //prints out some nice data
+        telemetry.addData("SHOT", "" + Math.round(shotPower * 100) / 10);
         telemetry.addData("MODE", intakeIsFront ? "INTAKE" : "SHOOT");
         if (isSlowMode) telemetry.addData("SLOW MODE", "TRUE");
         telemetry.addData("TIME", getTimeString());
