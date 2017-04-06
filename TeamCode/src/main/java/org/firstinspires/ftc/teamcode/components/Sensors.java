@@ -263,7 +263,7 @@ public class Sensors {
     }
 
     private boolean leftIsRed() {
-        long stop = System.currentTimeMillis() + 500;
+        long stop = System.currentTimeMillis() + 700;
 
         double redTotal = 0,
                  blueTotal = 0;
@@ -278,7 +278,7 @@ public class Sensors {
     }
 
     //translates at a given theta and speed until we reach a white line
-    public boolean driveUntilLineReadingThreshold(double theta, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime, double speed) {
+    public boolean driveUntilLineReadingThreshold(double theta, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime, double speed, double whiteLineSignalThreshold) {
         long time = System.currentTimeMillis();
 
         maxTime += time;    //if greater than this, we are taking to long and should timeout
@@ -287,7 +287,7 @@ public class Sensors {
         if (shouldPollGyro) readyCompensatedTranslate(0);
 
         //drive while we haven't gotten enough readings that meet our threshold, and the time we have been driving is between our min and max time
-        while (Hardware.active() && (!lineSensed() && (time = System.currentTimeMillis()) < maxTime || (time = System.currentTimeMillis()) < minTime))
+        while (Hardware.active() && (!lineSensed(whiteLineSignalThreshold) && (time = System.currentTimeMillis()) < maxTime || (time = System.currentTimeMillis()) < minTime))
             compensatedTranslate(theta, speed);
 
         if (shouldStop) wheels.stop();
@@ -309,11 +309,6 @@ public class Sensors {
         driveByTime(theta, time, shouldStop, compensatedTranslateSpeed);
     }
 
-    public void driveUntilTouchReading(double vel, boolean isRed) {
-        while (Hardware.active() && !touchSensorPressed(isRed))
-            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
-    }
-
     public boolean touchSensorPressed(boolean isIntakeSide) {
         return touchSensors[isIntakeSide ? 1 : 0].isPressed();
     }
@@ -322,17 +317,25 @@ public class Sensors {
         return rangeSensors[isIntakeSide ? 1 : 0].read(0x04, 2)[isUltrasonic ? 0 : 1] & 0xFF;
     }
 
-    private boolean lineSensed() {
-        return Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold;
+    private boolean lineSensed(double threshold) {
+        return Utils.getMaxMagnitude(getLineReadings()) > threshold;
     }
 
-    public boolean driveUntilLineOrTouchOrRange(double vel, boolean isRed) {
-        boolean madeTouch = false;
+    public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, double whiteLineSignalThreshold) {
 
-        while (Hardware.active() && !(madeTouch = touchSensorPressed(isRed)) && !lineSensed() && getRange(isRed, true) > 50)
-            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
+        boolean foundLine = false;
+
+        while (Hardware.active() && !touchSensorPressed(isRed))
+            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), ((foundLine = foundLine || lineSensed(whiteLineSignalThreshold)) || getRange(isRed, true) < 50) ? velClose : velFar);
+
         wheels.stop();
-
-        return madeTouch;
     }
+
+    public void driveUntilOdsThreshold(double theta, double threshold, double speed, long timeout) {
+        timeout += System.currentTimeMillis();
+        while (Hardware.active() && System.currentTimeMillis() < timeout && getOpticalDistance() < threshold)
+            compensatedTranslate(theta, speed);
+        wheels.stop();
+    }
+
 }
