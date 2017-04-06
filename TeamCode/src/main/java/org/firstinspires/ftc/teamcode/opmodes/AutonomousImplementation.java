@@ -30,10 +30,10 @@ public class AutonomousImplementation {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.7); //speeds up the wheels
+        shooter.prepShot(6.57); //speeds up the wheels
 
         Hardware.print("Moving away from wall");
-        sensors.driveByTime(-Math.PI / 2, 200, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
+        sensors.driveByTime(-Math.PI / 2, 270, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
 
         Hardware.getWheels().softStop(300); //stops the robot gently to avoid jerk when launching the balls
         Hardware.sleep(1500); //allows the shooting motors to finish getting to the right speed
