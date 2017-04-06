@@ -75,7 +75,7 @@ public class AutonomousImplementation {
 
     private void driveToLine(boolean intakeForward) {
         Hardware.print("Drive to line");
-        long realignTimeout = 2000;
+        long realignTimeout = 1500;
 
         if (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), false, true, 750, 2000, 0.25, 40)) {
             realignTimeout += 1000;
