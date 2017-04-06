@@ -49,7 +49,7 @@ public class DriverControlled extends LinearOpMode {
         Hardware.init(hardwareMap, this, false, telemetry); //initializes hardware
 
         Hardware.getButtonPusher();
-        
+
         lift = Hardware.getLift();
         wheels = Hardware.getWheels();
         intake = Hardware.getIntake();

@@ -14,6 +14,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -104,6 +107,9 @@ public class Hardware {
         ModernRoboticsI2cColorSensor s = (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor");
         s.setI2cAddress(I2cAddr.create8bit(0x4c));
 
+        I2cDevice liftRange = map.i2cDevice.get("lift-range-sensor"),
+                intakeRange = map.i2cDevice.get("intake-range-sensor");
+
         return sensors == null ? sensors = new Sensors(
                 map.get(BNO055IMU.class, "imu"),
                 map.colorSensor.get("left-color-sensor"),
@@ -114,9 +120,9 @@ public class Hardware {
                         map.touchSensor.get("left-touch-sensor"),
                         map.touchSensor.get("right-touch-sensor")
                 },
-                new ModernRoboticsI2cRangeSensor[] {
-                        (ModernRoboticsI2cRangeSensor) map.touchSensor.get("lift-range-sensor"),
-                        (ModernRoboticsI2cRangeSensor) map.touchSensor.get("intake-range-sensor")
+                new I2cDeviceSynch[] {
+                        new I2cDeviceSynchImpl(liftRange, I2cAddr.create8bit(0x3c), false),
+                        new I2cDeviceSynchImpl(intakeRange, I2cAddr.create8bit(0x28), false)
                 },
                 map.voltageSensor.iterator().next()
         ) : sensors;
@@ -157,7 +163,7 @@ public class Hardware {
             shooter.stop();
 
         if (intake != null)
-            intake.stopElevator();
+            intake.stop();
 
         if (wheels != null)
             wheels.stop();

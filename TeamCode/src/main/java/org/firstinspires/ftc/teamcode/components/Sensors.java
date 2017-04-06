@@ -5,6 +5,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceS
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -33,7 +34,7 @@ public class Sensors {
     private ModernRoboticsI2cColorSensor beaconSensor;
     private VoltageSensor voltage;
     private ButtonPusher buttonPusher;
-    private ModernRoboticsI2cRangeSensor[] rangeSensors;
+    private I2cDeviceSynch[] rangeSensors;
 
 
     private Integrator integrator;
@@ -53,7 +54,7 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor, TouchSensor[] touchSensors, ModernRoboticsI2cRangeSensor[] rangeSensors, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor, TouchSensor[] touchSensors, I2cDeviceSynch[] rangeSensors, VoltageSensor voltage) {
         this.imu = imu;
         this.voltage = voltage;
         this.leftColorSensor = leftColorSensor;
@@ -314,18 +315,21 @@ public class Sensors {
         return touchSensors[isIntakeSide ? 1 : 0].isPressed();
     }
 
-    public double getRange(boolean isIntakeSide) {
-        return rangeSensors[isIntakeSide ? 1 : 0].getDistance(DistanceUnit.INCH);
+    public int ultrasonicDistance(boolean isIntakeSide) {
+        return rangeSensors[isIntakeSide ? 1 : 0].read(0x04, 2)[0] & 0xFF;
     }
 
     private boolean lineSensed() {
         return Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold;
     }
 
-    public void driveUntilLineOrTouchOrRange(double vel, boolean isRed) {
-        while (Hardware.active() && !touchSensorPressed(isRed) && !lineSensed() && getRange(isRed) > 10)
+    public boolean driveUntilLineOrTouchOrRange(double vel, boolean isRed) {
+        boolean madeTouch = false;
+
+        while (Hardware.active() && !(madeTouch = touchSensorPressed(isRed)) && !lineSensed() && ultrasonicDistance(isRed) > 10)
             compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
         wheels.stop();
-    }
 
+        return madeTouch;
+    }
 }

@@ -48,7 +48,7 @@ public class Shooter {
         int count = 0;
 
         //while there's another ball remaining, shoot
-        while (takeShot((count == 1 && Hardware.isAuton()) || count == 2) && Hardware.active()) count++;
+        while (takeShot(count == (Hardware.isAuton() ? 1 : 2)) && Hardware.active()) count++;
 
         //reset stuff
         Hardware.getIntake().stop();
