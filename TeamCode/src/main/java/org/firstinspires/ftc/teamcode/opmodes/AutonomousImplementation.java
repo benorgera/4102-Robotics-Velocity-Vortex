@@ -39,7 +39,7 @@ public class AutonomousImplementation {
         Hardware.sleep(1500); //allows the shooting motors to finish getting to the right speed
 
         Hardware.print("Shooting");
-        shooter.shoot(); //shoots the ball at the same prepshot speed
+        shooter.shoot(1000); //shoots the ball at the same prepshot speed
 
         Hardware.print("Pulling away for turn");
         sensors.driveByTime(-Math.PI / 2, 300, true);

@@ -55,6 +55,9 @@ public class Sensors {
     private Thread gyroPoll;
 
     public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor, TouchSensor[] touchSensors, I2cDeviceSynch[] rangeSensors, VoltageSensor voltage) {
+        for (I2cDeviceSynch i : rangeSensors)
+            i.engage();
+
         this.imu = imu;
         this.voltage = voltage;
         this.leftColorSensor = leftColorSensor;
