@@ -67,7 +67,7 @@ public class AutonomousImplementation {
         }
 
         Hardware.print("Backing up from wall");
-        sensors.driveByTime(0, 500, true, 1);
+        sensors.driveByTime(0, 1000, true, 1);
 
         Hardware.print("Partial Parking");
         sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 1000, true, 1);
@@ -75,10 +75,20 @@ public class AutonomousImplementation {
 
     private void driveToLine(boolean intakeForward) {
         Hardware.print("Drive to line");
-        boolean foundLine = sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), false, true, 750, 2000, 0.25, 40);
+        long realignTimeout = 2000;
+
+        if (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), false, true, 750, 2000, 0.25, 40)) {
+            realignTimeout += 1000;
+            Hardware.print("Initial line drive timeout");
+        }
 
         Hardware.print("Realign on line");
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, foundLine ? 1000 : 2000, 0.12, 90);
+
+        while (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, realignTimeout, 0.12, 90)) {
+            Hardware.print("Realign timeout after " + realignTimeout + " ms");
+            intakeForward = !intakeForward;
+            realignTimeout += 1000;
+        }
     }
 
     private void hugWall() {

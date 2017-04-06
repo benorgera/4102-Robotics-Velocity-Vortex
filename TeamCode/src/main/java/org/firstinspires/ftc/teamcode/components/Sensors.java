@@ -324,9 +324,17 @@ public class Sensors {
     public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, double whiteLineSignalThreshold) {
 
         boolean foundLine = false;
+        long speedTimeout = System.currentTimeMillis() + 4000;
 
-        while (Hardware.active() && !touchSensorPressed(isRed))
+        while (Hardware.active() && !touchSensorPressed(isRed)) {
+            if (System.currentTimeMillis() > speedTimeout) {
+                velClose += 0.03;
+                speedTimeout = System.currentTimeMillis() + 4000;
+                Hardware.print("Speed timeout, upped velClose to " + velClose);
+            }
+
             compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), ((foundLine = foundLine || lineSensed(whiteLineSignalThreshold)) || getRange(isRed, true) < 50) ? velClose : velFar);
+        }
 
         wheels.stop();
     }
