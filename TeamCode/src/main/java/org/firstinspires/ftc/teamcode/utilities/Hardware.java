@@ -147,11 +147,12 @@ public class Hardware {
                         map.servo.get("left-flap"),
                         map.servo.get("right-flap")
                 },
-
                 new CRServo[] {
                         map.crservo.get("left-spinner"),
                         map.crservo.get("right-spinner")
-                }) : intake;
+                },
+                null
+        ) : intake;
     }
 
     public static Lift getLift() {
