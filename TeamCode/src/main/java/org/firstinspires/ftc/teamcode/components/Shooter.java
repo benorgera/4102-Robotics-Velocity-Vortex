@@ -42,13 +42,13 @@ public class Shooter {
         setDiskMotorPowers(speed / 10); //bring motors up to speed by starting the PID
     }
 
-    public void shoot() {
+    public void shoot(long sleep) {
         Hardware.getWheels().stop(); //stop the robot in case its moving
 
         int count = 0;
 
         //while there's another ball remaining, shoot
-        while (takeShot(count == (Hardware.isAuton() ? 1 : 2)) && Hardware.active()) count++;
+        while (takeShot(count == (Hardware.isAuton() ? 1 : 2), sleep) && Hardware.active()) count++;
 
         //reset stuff
         Hardware.getIntake().stop();
@@ -59,10 +59,9 @@ public class Shooter {
 
     //take shot while regulating speed, stopping elevator after first ball passes through
     //return true if another ball remains, and therefore another shot should be taken
-    private boolean takeShot(boolean isLastShot) {
+    private boolean takeShot(boolean isLastShot, long sleep) {
         Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
         Hardware.getIntake().startElevator(); //feed shot through the shooter
-
 
 
         //wait for the next ball to be in position
@@ -71,11 +70,15 @@ public class Shooter {
 
         if (takingAnotherShot) { //about to shoot again
             //supply negative power to stop the elevator quickly
-            Hardware.getIntake().runElevator(-0.3);
-            Hardware.sleep(20);
 
-            Hardware.getIntake().stop(); //stop elevator
-            Hardware.sleep(Hardware.isAuton() ? 1500 : 700); //wait for PID to regain desired velocity
+            //if the shooter is being given time to adjust speed, sleep
+            if (sleep != 0) {
+                Hardware.getIntake().runElevator(-0.3);
+                Hardware.sleep(20);
+                Hardware.getIntake().stop(); //stop elevator
+                Hardware.sleep(sleep); //wait for PID to regain desired velocity
+            }
+
         } else { //no shots remain, stop and return
             Hardware.getIntake().stop();
         }

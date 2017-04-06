@@ -25,13 +25,13 @@ public class DriverControlled extends LinearOpMode {
     private Wheels wheels;
     private Intake intake;
 
-    private double shotPower = 6;
+    private double shotSleep = 700;
 
     private boolean wasPreppingShot = false;
     private boolean wasTogglingDirection = false;
     private boolean wasTogglingSlowMode = false;
-    private boolean wasUppingShotPower = false;
-    private boolean wasDowningShotPower = false;
+    private boolean wasUppingShotSleep = false;
+    private boolean wasDowningShotSleep = false;
     private boolean wasShooting = false;
     private boolean wasTogglingIntake = false;
     private boolean wasDroppingFork = false;
@@ -90,19 +90,19 @@ public class DriverControlled extends LinearOpMode {
 
         //--------------------------SHOOTER-------------------------------
 
-        if (gamepad2.dpad_right && !wasUppingShotPower) //the right dpad button on the second controller allows us to increase the power of our shot
-            shotPower = Utils.trim(0, 10, shotPower + 0.5);
+        if (gamepad2.dpad_right && !wasUppingShotSleep) //the right dpad button on the second controller allows us to increase the power of our shot
+            shotSleep = Utils.trim(0, 1000, shotSleep + 100);
 
-        wasUppingShotPower = gamepad2.dpad_right;
+        wasUppingShotSleep = gamepad2.dpad_right;
 
-        if (gamepad2.dpad_left && !wasDowningShotPower) //the left dpad button on the second controller allows us to decrease the power of our shot
-            shotPower = Utils.trim(0, 10, shotPower - 0.5);
+        if (gamepad2.dpad_left && !wasDowningShotSleep) //the left dpad button on the second controller allows us to decrease the power of our shot
+            shotSleep = Utils.trim(0, 1000, shotSleep - 100);
 
-        wasDowningShotPower = gamepad2.dpad_left;
+        wasDowningShotSleep = gamepad2.dpad_left;
 
         if (gamepad2.y && !wasPreppingShot && !isPreppingShot && !intake.isRunning()) { //y on the second controller starts to get our shot motors up to speed
             isPreppingShot = true;
-            shooter.prepShot(shotPower);
+            shooter.prepShot(6);
         } else if (gamepad2.y && !wasPreppingShot && !intake.isRunning()){ //if y is pressed again, the shooter resets without shooting
             shooter.stop();
             shooter.close();
@@ -112,7 +112,7 @@ public class DriverControlled extends LinearOpMode {
         wasPreppingShot = gamepad2.y;
 
         if (gamepad2.b && !intake.isRunning() && isPreppingShot && !wasShooting) { //we take a shot if b on the second controller is pressed and the intake isn't running, and the shooter has been prepped
-            shooter.shoot();
+            shooter.shoot((long) shotSleep);
             isPreppingShot = false;
         }
 
@@ -152,7 +152,7 @@ public class DriverControlled extends LinearOpMode {
 
         //--------------------------DATA-------------------------------
 
-        telemetry.addData("SHOT", "" + Math.round(shotPower * 100) / 10);
+        telemetry.addData("SHOT SLEEP", "" + shotSleep);
         telemetry.addData("MODE", intakeIsFront ? "INTAKE" : "SHOOT");
         if (isSlowMode) telemetry.addData("SLOW MODE", "TRUE");
         telemetry.addData("TIME", getTimeString());

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.components;
 
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utilities.DelayedAction;
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
+import org.firstinspires.ftc.teamcode.utilities.Utils;
 
 /**
  * Created by benorgera on 11/24/16.
@@ -18,19 +20,24 @@ public class Intake {
     private Servo[] flaps;
     private CRServo[] spinners;
 
+    private ColorSensor ballSensor;
+
     private boolean isRampDown;
 
     private boolean isRunning = false;
 
-    private final double[] rampPositions = {0.03, 0.235, 392}; //down, holding and closed respectively
+    private final double alphaThreshold = 55;
 
-    public Intake(DcMotor intake, Servo ramp, Servo[] flaps, CRServo[] spinners) {
+    private final double[] rampPositions = {0.03, 0.1325, 0.235, 392}; //down, holding 4, holding 3, and closed respectively
+
+    public Intake(DcMotor intake, Servo ramp, Servo[] flaps, CRServo[] spinners, ColorSensor ballSensor) {
         this.intake = intake;
         this.ramp = ramp;
         this.flaps = flaps;
         this.spinners = spinners;
+        this.ballSensor = ballSensor;
 
-        ramp.setPosition(rampPositions[(isRampDown = Hardware.isAuton()) ? 1 : 0]);
+        ramp.setPosition(rampPositions[(isRampDown = Hardware.isAuton()) ? 2 : 0]);
         setFlaps(false);
 
         if (Hardware.isAuton()) {
@@ -56,7 +63,7 @@ public class Intake {
     }
 
     public void stopIntaking() {
-        ramp.setPosition(rampPositions[1]);
+        ramp.setPosition(rampPositions[hasFourthBall() ? 1 : 2]);
         intake.setPower(1); //run intake so it doesn't fight the ramp
 
         isRunning = isRampDown = false;
@@ -67,7 +74,7 @@ public class Intake {
 
     public void moveRampForShot() {
         isRampDown = false;
-        ramp.setPosition(rampPositions[2]);
+        ramp.setPosition(rampPositions[3]);
     }
 
     public void dropRamp(double intakePower) {
@@ -75,7 +82,7 @@ public class Intake {
         isRampDown = true;
         intake.setPower(-1); //run intake backwards so it doesn't fight the ramp
 
-        new Thread(new DelayedAction(intake, 500, intakePower)).start(); //concurrently change intake direction after ramp door drops
+        new Thread(new DelayedAction(intake, 300, intakePower)).start(); //concurrently change intake direction after ramp door drops
     }
 
     public void startElevator() {
@@ -108,6 +115,27 @@ public class Intake {
     public void setFlaps(boolean areOut) {
         flaps[0].setPosition(areOut ? 0 : 0.25);
         flaps[1].setPosition(areOut ? 1 : 0.75);
+    }
+
+    public double getAlpha() {
+        return Utils.getMagnitude(ballSensor.red(), ballSensor.blue());
+    }
+
+    private boolean hasFourthBall() {
+//        long stop = System.currentTimeMillis() + 75; //take readings for 75 ms
+//
+//        double total = 0;
+//        int count = 0;
+//
+//        //average the color sensor readings
+//        while (System.currentTimeMillis() < stop) {
+//            count++;
+//            total += getAlpha();
+//        }
+//
+//        return total / count > alphaThreshold; //return true if our readings were high enough to signify a ball being sensed
+
+        return false;
     }
 
 }
