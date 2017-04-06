@@ -315,8 +315,8 @@ public class Sensors {
         return touchSensors[isIntakeSide ? 1 : 0].isPressed();
     }
 
-    public int ultrasonicDistance(boolean isIntakeSide) {
-        return rangeSensors[isIntakeSide ? 1 : 0].read(0x04, 2)[0] & 0xFF;
+    public int getRange(boolean isIntakeSide, boolean isUltrasonic) {
+        return rangeSensors[isIntakeSide ? 1 : 0].read(0x04, 2)[isUltrasonic ? 0 : 1] & 0xFF;
     }
 
     private boolean lineSensed() {
@@ -326,7 +326,7 @@ public class Sensors {
     public boolean driveUntilLineOrTouchOrRange(double vel, boolean isRed) {
         boolean madeTouch = false;
 
-        while (Hardware.active() && !(madeTouch = touchSensorPressed(isRed)) && !lineSensed() && ultrasonicDistance(isRed) > 10)
+        while (Hardware.active() && !(madeTouch = touchSensorPressed(isRed)) && !lineSensed() && getRange(isRed, true) > 50)
             compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), vel);
         wheels.stop();
 
