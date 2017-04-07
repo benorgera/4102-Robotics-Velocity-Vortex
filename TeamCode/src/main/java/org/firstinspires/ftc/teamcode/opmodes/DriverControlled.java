@@ -123,7 +123,7 @@ public class DriverControlled extends LinearOpMode {
 
         intake.setFlaps(gamepad2.right_bumper);
 
-        if (gamepad2.a && !wasTogglingIntake) //gamepad 2 a toggles the intake on and off
+        if (gamepad2.a && !wasTogglingIntake && !isPreppingShot) //gamepad 2 a toggles the intake on and off
             if (intake.isRunning())
                 intake.stopIntaking();
             else

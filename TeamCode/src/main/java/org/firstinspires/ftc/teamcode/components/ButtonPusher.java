@@ -34,7 +34,7 @@ public class ButtonPusher {
     }
 
     public void push(boolean isLeft) {
-        (isLeft ? left : right).setPosition(0.1);
+        (isLeft ? left : right).setPosition(0.3);
         Hardware.sleep(1000);
         (isLeft ? left : right).setPosition(1);
     }

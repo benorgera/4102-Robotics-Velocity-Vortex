@@ -51,7 +51,7 @@ public class AutonomousImplementation {
         sensors.driveUntilLineOrTouchOrRange(0.2, 0.09, isRed, 40);
 
         Hardware.print("Parallel Parking");
-        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.25, Math.PI / 12, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25);
+        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.3, Math.PI / 12, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25);
 
         hugWall();
 
