@@ -25,7 +25,7 @@ public class DriverControlled extends LinearOpMode {
     private Wheels wheels;
     private Intake intake;
 
-    private double shotSleep = 700;
+    private double shotSleep = 600;
 
     private boolean wasPreppingShot = false;
     private boolean wasTogglingDirection = false;
