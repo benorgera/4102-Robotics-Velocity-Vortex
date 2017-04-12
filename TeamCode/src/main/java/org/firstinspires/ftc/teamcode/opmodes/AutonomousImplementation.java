@@ -13,7 +13,7 @@ public class AutonomousImplementation {
     private Sensors sensors;
     private Shooter shooter;
 
-    private final double thetaToWall = 2 * Math.PI / 11;
+    private final double thetaToWall = Math.PI / 5;
     private final boolean isRed;
 
     public AutonomousImplementation(boolean isRed) { //initializes all of our robot's component, noting our alliance and whether we are running a double push autonomous
@@ -30,7 +30,7 @@ public class AutonomousImplementation {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.57); //speeds up the wheels
+        shooter.prepShot(6.64); //speeds up the wheels
 
         Hardware.print("Moving away from wall");
         sensors.driveByTime(-Math.PI / 2, 270, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
@@ -39,7 +39,7 @@ public class AutonomousImplementation {
         Hardware.sleep(1500); //allows the shooting motors to finish getting to the right speed
 
         Hardware.print("Shooting");
-        shooter.shoot(0); //shoots the ball at the same prepshot speed
+        shooter.shoot(800); //shoots the ball at the same prepshot speed
 
         Hardware.print("Pulling away for turn");
         sensors.driveByTime(-Math.PI / 2, 300, true);
@@ -84,7 +84,7 @@ public class AutonomousImplementation {
 
         Hardware.print("Realign on line");
 
-        while (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, realignTimeout, 0.12, 90)) {
+        while (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, realignTimeout, 0.11, 90)) {
             Hardware.print("Realign timeout after " + realignTimeout + " ms");
             intakeForward = !intakeForward;
             realignTimeout += 1000;
