@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.components;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -11,7 +10,6 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
@@ -28,11 +26,9 @@ public class Sensors {
 
     private TouchSensor[] touchSensors;
     private BNO055IMU imu;
-    private ColorSensor leftColorSensor;
-    private ColorSensor rightColorSensor;
+    private ColorSensor[] lineSensors;
     private ModernRoboticsAnalogOpticalDistanceSensor ods;
-    private ModernRoboticsI2cColorSensor leftBeaconSensor;
-    private ModernRoboticsI2cColorSensor rightBeaconSensor;
+    private ModernRoboticsI2cColorSensor[] beaconSensors;
     private VoltageSensor voltage;
     private ButtonPusher buttonPusher;
     private I2cDeviceSynch[] rangeSensors;
@@ -44,8 +40,6 @@ public class Sensors {
 
     private double initialHeading = 0;
 
-    private final double whiteLineSignalThreshold = 60; //the minimum color sensor reading required to signify finding the white line
-
     private final double compensatedTranslateSpeed = 0.25;
 
     private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1 degrees
@@ -55,21 +49,19 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, TouchSensor[] touchSensors, I2cDeviceSynch[] rangeSensors, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ColorSensor[] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, TouchSensor[] touchSensors, I2cDeviceSynch[] rangeSensors, VoltageSensor voltage) {
         for (I2cDeviceSynch i : rangeSensors)
             i.engage();
 
-        this.imu = imu;
-        this.voltage = voltage;
-        this.leftColorSensor = leftColorSensor;
-        this.rightColorSensor = rightColorSensor;
-        this.ods = ods;
         this.wheels = Hardware.getWheels();
         this.buttonPusher = Hardware.getButtonPusher();
-        this.leftBeaconSensor = beaconSensors[0];
-        this.rightBeaconSensor = beaconSensors[1];
+        this.imu = imu;
+        this.voltage = voltage;
+        this.ods = ods;
         this.rangeSensors = rangeSensors;
         this.touchSensors = touchSensors;
+        this.lineSensors = lineSensors;
+        this.beaconSensors = beaconSensors;
 
         for (ModernRoboticsI2cColorSensor m : beaconSensors)
             m.enableLed(true);
@@ -122,10 +114,10 @@ public class Sensors {
     }
 
     //left then right, the more positive the more red
-    public int[] getBeaconColor() {
+    public int[] getBeaconReadings() {
         return new int[] {
-                leftBeaconSensor.red() - leftBeaconSensor.blue(),
-                rightBeaconSensor.red() - rightBeaconSensor.blue()
+                beaconSensors[0].red() - beaconSensors[0].blue(),
+                beaconSensors[1].red() - beaconSensors[1].blue()
         };
     }
 
@@ -260,18 +252,19 @@ public class Sensors {
 
     public double[] getLineReadings() {
         return new double[] {
-                leftColorSensor.green(), //green is a measure of white
-                rightColorSensor.green()
+                lineSensors[0].green(), //green is a measure of white
+                lineSensors[1].green()
         };
     }
 
     //returns false if beacon was already claimed, so if false is returned and this is the second beacon, we likely have another beacon to claim
     public boolean captureBeacon(boolean isRed) {
-        boolean[] readings = beaconReadings();
-        if (readings[0] != readings[1]) { //the buttons are different, the beacon is unclaimed
+        boolean[] colors = senseBeaconColors();
+        
+        if (colors[0] != colors[1]) { //the buttons are different, the beacon is unclaimed
             Hardware.print("Claiming unclaimed beacon");
-            buttonPusher.push(isRed == readings[0]); //push the proper button
-        } else if (isRed != readings[0]) { //the buttons are the same color, but the beacon is claimed the wrong color
+            buttonPusher.push(isRed == colors[0]); //push the proper button
+        } else if (isRed != colors[0]) { //the buttons are the same color, but the beacon is claimed the wrong color
             Hardware.print("Reversing beacon");
             buttonPusher.push(true); //push both, we just need to reverse the color
             buttonPusher.push(false);
@@ -279,18 +272,19 @@ public class Sensors {
             Hardware.print("Beacon already claimed");
         }
 
-        return readings[0] != readings[1]; //return false if beacon was already claimed
+        return colors[0] != colors[1]; //returns whether the beacon was unclaimed
     }
 
-    private boolean[] beaconReadings() { //left then right, red is true
+    private boolean[] senseBeaconColors() { //left then right, red is true
         long stop = System.currentTimeMillis() + 700;
 
-        double left = 0,
+        int left = 0,
                 right = 0;
 
         while (Hardware.active() && System.currentTimeMillis() < stop) {
-            left += (leftBeaconSensor.red() - leftBeaconSensor.blue());
-            right += (rightBeaconSensor.red() - rightBeaconSensor.blue());
+            int[] readings = getBeaconReadings();
+            left += readings[0];
+            right += readings[1];
             Hardware.sleep(10);
         }
 

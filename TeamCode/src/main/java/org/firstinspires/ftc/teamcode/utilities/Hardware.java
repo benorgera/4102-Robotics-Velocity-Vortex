@@ -117,8 +117,10 @@ public class Hardware {
 
         return sensors == null ? sensors = new Sensors(
                 map.get(BNO055IMU.class, "imu"),
-                map.colorSensor.get("left-color-sensor"),
-                map.colorSensor.get("right-color-sensor"),
+                new ColorSensor[] {
+                        map.colorSensor.get("left-color-sensor"),
+                        map.colorSensor.get("right-color-sensor")
+                },
                 (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
                 beaconSensors,
                 new TouchSensor[] {
