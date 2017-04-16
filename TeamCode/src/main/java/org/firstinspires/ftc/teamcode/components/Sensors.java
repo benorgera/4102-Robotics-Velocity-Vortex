@@ -269,17 +269,17 @@ public class Sensors {
     public boolean captureBeacon(boolean isRed) {
         boolean[] readings = beaconReadings();
         if (readings[0] != readings[1]) { //the buttons are different, the beacon is unclaimed
-            buttonPusher.push(isRed == readings[0]); //push the proper button
             Hardware.print("Claiming unclaimed beacon");
+            buttonPusher.push(isRed == readings[0]); //push the proper button
         } else if (isRed != readings[0]) { //the buttons are the same color, but the beacon is claimed the wrong color
+            Hardware.print("Reversing beacon");
             buttonPusher.push(true); //push both, we just need to reverse the color
             buttonPusher.push(false);
-            Hardware.print("Reversing beacon");
         } else {
             Hardware.print("Beacon already claimed");
         }
 
-        return readings[0] != readings[1];
+        return readings[0] != readings[1]; //return false if beacon was already claimed
     }
 
     private boolean[] beaconReadings() { //left then right, red is true
