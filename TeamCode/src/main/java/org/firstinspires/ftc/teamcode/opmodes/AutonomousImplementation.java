@@ -51,7 +51,7 @@ public class AutonomousImplementation {
         sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.3, Math.PI / 12, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25);
 
         //drive to and capture each beacon
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0, max = 2; i < max; i++) {
             hugWall();
 
             Hardware.print("Finding beacon line"); //drives to the beacon line
@@ -62,7 +62,7 @@ public class AutonomousImplementation {
             Hardware.print("Capturing beacon");
             if (!sensors.captureBeacon(isRed) && i == 1) { //push button
                 Hardware.print("Rediscovered first beacon, running again"); //found the same beacon a second time, run again to claim the second beacon
-                i--;
+                max = 3;
             }
         }
 
