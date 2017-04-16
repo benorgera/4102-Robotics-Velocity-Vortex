@@ -41,9 +41,6 @@ public class AutonomousImplementation {
         Hardware.print("Shooting");
         shooter.shoot(800); //shoots the ball at the same prepshot speed
 
-        Hardware.print("Pulling away for turn");
-        sensors.driveByTime(-Math.PI / 2, 300, true);
-
         Hardware.print("Turning towards wall");
         sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 30, 0.4);
 
@@ -53,17 +50,18 @@ public class AutonomousImplementation {
         Hardware.print("Parallel Parking");
         sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.3, Math.PI / 12, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25);
 
-        hugWall();
-
         //drive to and capture each beacon
         for (int i = 0; i < 2; i++) {
+            hugWall();
+
             Hardware.print("Finding first beacon line"); //drives to the beacon line
             driveToLine((i == 0) == isRed);
 
             hugWall();
 
             Hardware.print("Capturing first beacon");
-            sensors.captureBeacon(isRed); //press proper button
+            if (!sensors.captureBeacon(isRed) && i == 1) //push button
+                i--; //we found the same beacon a second time, run again to claim the second beacon
         }
 
         Hardware.print("Backing up from wall");

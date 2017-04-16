@@ -104,8 +104,13 @@ public class Hardware {
     }
 
     public static Sensors getSensors() {
-        ModernRoboticsI2cColorSensor s = (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor");
-        s.setI2cAddress(I2cAddr.create8bit(0x4c));
+        ModernRoboticsI2cColorSensor[] beaconSensors = new ModernRoboticsI2cColorSensor[]{
+                (ModernRoboticsI2cColorSensor) map.colorSensor.get("left-beacon-color-sensor"),
+                (ModernRoboticsI2cColorSensor) map.colorSensor.get("right-beacon-color-sensor")
+        };
+
+        beaconSensors[0].setI2cAddress(I2cAddr.create8bit(0x4c));
+        beaconSensors[1].setI2cAddress(I2cAddr.create8bit(0x42));
 
         I2cDevice liftRange = map.i2cDevice.get("lift-range-sensor"),
                 intakeRange = map.i2cDevice.get("intake-range-sensor");
@@ -115,7 +120,7 @@ public class Hardware {
                 map.colorSensor.get("left-color-sensor"),
                 map.colorSensor.get("right-color-sensor"),
                 (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
-                s,
+                beaconSensors,
                 new TouchSensor[] {
                         map.touchSensor.get("left-touch-sensor"),
                         map.touchSensor.get("right-touch-sensor")

@@ -31,7 +31,8 @@ public class Sensors {
     private ColorSensor leftColorSensor;
     private ColorSensor rightColorSensor;
     private ModernRoboticsAnalogOpticalDistanceSensor ods;
-    private ModernRoboticsI2cColorSensor beaconSensor;
+    private ModernRoboticsI2cColorSensor leftBeaconSensor;
+    private ModernRoboticsI2cColorSensor rightBeaconSensor;
     private VoltageSensor voltage;
     private ButtonPusher buttonPusher;
     private I2cDeviceSynch[] rangeSensors;
@@ -54,7 +55,7 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor beaconSensor, TouchSensor[] touchSensors, I2cDeviceSynch[] rangeSensors, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ColorSensor leftColorSensor, ColorSensor rightColorSensor, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, TouchSensor[] touchSensors, I2cDeviceSynch[] rangeSensors, VoltageSensor voltage) {
         for (I2cDeviceSynch i : rangeSensors)
             i.engage();
 
@@ -65,11 +66,13 @@ public class Sensors {
         this.ods = ods;
         this.wheels = Hardware.getWheels();
         this.buttonPusher = Hardware.getButtonPusher();
-        this.beaconSensor = beaconSensor;
+        this.leftBeaconSensor = beaconSensors[0];
+        this.rightBeaconSensor = beaconSensors[1];
         this.rangeSensors = rangeSensors;
-
         this.touchSensors = touchSensors;
-        beaconSensor.enableLed(true);
+
+        for (ModernRoboticsI2cColorSensor m : beaconSensors)
+            m.enableLed(true);
     }
 
     public void initImu() {
@@ -118,8 +121,12 @@ public class Sensors {
         return ods.getLightDetected();
     }
 
+    //left then right, the more positive the more red
     public int[] getBeaconColor() {
-        return new int[] {beaconSensor.blue(), beaconSensor.red()};
+        return new int[] {
+                leftBeaconSensor.red() - leftBeaconSensor.blue(),
+                rightBeaconSensor.red() - rightBeaconSensor.blue()
+        };
     }
 
     public void resetIntegrator() {
@@ -258,23 +265,36 @@ public class Sensors {
         };
     }
 
-    public void captureBeacon(boolean isRed) {
-        buttonPusher.push(isRed == leftIsRed());
+    //returns false if beacon was already claimed, so if false is returned and this is the second beacon, we likely have another beacon to claim
+    public boolean captureBeacon(boolean isRed) {
+        boolean[] readings = beaconReadings();
+        if (readings[0] != readings[1]) { //the buttons are different, the beacon is unclaimed
+            buttonPusher.push(isRed == readings[0]); //push the proper button
+            Hardware.print("Claiming unclaimed beacon");
+        } else if (isRed != readings[0]) { //the buttons are the same color, but the beacon is claimed the wrong color
+            buttonPusher.push(true); //push both, we just need to reverse the color
+            buttonPusher.push(false);
+            Hardware.print("Reversing beacon");
+        } else {
+            Hardware.print("Beacon already claimed");
+        }
+
+        return readings[0] != readings[1];
     }
 
-    private boolean leftIsRed() {
+    private boolean[] beaconReadings() { //left then right, red is true
         long stop = System.currentTimeMillis() + 700;
 
-        double redTotal = 0,
-                 blueTotal = 0;
+        double left = 0,
+                right = 0;
 
         while (Hardware.active() && System.currentTimeMillis() < stop) {
-            blueTotal += beaconSensor.blue();
-            redTotal += beaconSensor.red();
+            left += (leftBeaconSensor.red() - leftBeaconSensor.blue());
+            right += (rightBeaconSensor.red() - rightBeaconSensor.blue());
             Hardware.sleep(10);
         }
 
-        return redTotal > blueTotal;
+        return new boolean[] {left > 0, right > 0};
     }
 
     //translates at a given theta and speed until we reach a white line
