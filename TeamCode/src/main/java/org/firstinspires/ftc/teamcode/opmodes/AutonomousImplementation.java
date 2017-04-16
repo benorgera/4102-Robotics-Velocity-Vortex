@@ -54,14 +54,16 @@ public class AutonomousImplementation {
         for (int i = 0; i < 2; i++) {
             hugWall();
 
-            Hardware.print("Finding first beacon line"); //drives to the beacon line
+            Hardware.print("Finding beacon line"); //drives to the beacon line
             driveToLine((i == 0) == isRed);
 
             hugWall();
 
-            Hardware.print("Capturing first beacon");
-            if (!sensors.captureBeacon(isRed) && i == 1) //push button
-                i--; //we found the same beacon a second time, run again to claim the second beacon
+            Hardware.print("Capturing beacon");
+            if (!sensors.captureBeacon(isRed) && i == 1) { //push button
+                Hardware.print("Rediscovered first beacon, running again"); //found the same beacon a second time, run again to claim the second beacon
+                i--;
+            }
         }
 
         Hardware.print("Backing up from wall");
