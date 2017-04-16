@@ -9,12 +9,10 @@ import org.firstinspires.ftc.teamcode.utilities.Hardware;
 
 public class ButtonPusher {
 
-    private Servo left;
-    private Servo right;
+    private Servo[] pushers; //left then right
 
-    public ButtonPusher (Servo left, Servo right) {
-        this.left = left;
-        this.right = right;
+    public ButtonPusher (Servo[] pushers) {
+        this.pushers = pushers;
 
         if (Hardware.isAuton())
             retract();
@@ -23,21 +21,31 @@ public class ButtonPusher {
     }
 
     private void retract() { //retract for auton driving
-        left.setPosition(1);
-        right.setPosition(1);
+        setPositions(1);
     }
 
 
     private void semiextend() { //semiextend for teleop pushing
-        left.setPosition(0.75);
-        right.setPosition(0.75);
+        setPositions(0.75);
     }
 
-    public void push(boolean isLeft) {
-        (isLeft ? left : right).setPosition(0.3);
-        Hardware.sleep(1000);
-        (isLeft ? left : right).setPosition(1);
+    private void setPositions(double position) {
+        for (Servo s : pushers) s.setPosition(position);
     }
+
+
+    public void push(boolean isLeft) {
+        pushers[isLeft ? 0 : 1].setPosition(0.3);
+        Hardware.sleep(1000);
+        retract();
+    }
+
+    public void pushBoth() {
+        setPositions(0.3);
+        Hardware.sleep(1000);
+        retract();
+    }
+
 
 
 }

@@ -116,8 +116,8 @@ public class Sensors {
     //left then right, the more positive the more red
     public int[] getBeaconReadings() {
         return new int[] {
-                beaconSensors[0].red() - beaconSensors[0].blue(),
-                beaconSensors[1].red() - beaconSensors[1].blue()
+                beaconSensors[0].red() - beaconSensors[0].blue(), //left
+                beaconSensors[1].red() - beaconSensors[1].blue() //right
         };
     }
 
@@ -193,7 +193,7 @@ public class Sensors {
 
         wheels.stop();
 
-        initialHeading = (storedHeading + -theta) % (2 * Math.PI);      //sets our heading to was it was initally plus how much we should have turned
+        initialHeading = (storedHeading - theta) % (2 * Math.PI);      //sets our heading to was it was initally plus how much we should have turned
     }
 
     public void parallelPark(double thetaTranslateFinal, double deltaThetaTranslate, double translateSpeed, double deltaTranslateTolerance, double turnTheta, double turnSpeed, double turnTolerance) { //positive is counterclockwise, max turn is PI
@@ -266,13 +266,12 @@ public class Sensors {
             buttonPusher.push(isRed == colors[0]); //push the proper button
         } else if (isRed != colors[0]) { //the buttons are the same color, but the beacon is claimed the wrong color
             Hardware.print("Reversing beacon");
-            buttonPusher.push(true); //push both, we just need to reverse the color
-            buttonPusher.push(false);
+            buttonPusher.pushBoth(); //push both, we just need to reverse the color
         } else {
             Hardware.print("Beacon already claimed");
         }
 
-        return colors[0] != colors[1]; //returns whether the beacon was unclaimed
+        return colors[0] != colors[1]; //returns whether the beacon was previously unclaimed
     }
 
     private boolean[] senseBeaconColors() { //left then right, red is true
@@ -282,8 +281,8 @@ public class Sensors {
 
         while (Hardware.active() && System.currentTimeMillis() < stop) {
             int[] readings = getBeaconReadings();
-            sums[0] += readings[0];
-            sums[1] += readings[1];
+            sums[0] += readings[0]; //left
+            sums[1] += readings[1]; //right
             Hardware.sleep(10);
         }
 

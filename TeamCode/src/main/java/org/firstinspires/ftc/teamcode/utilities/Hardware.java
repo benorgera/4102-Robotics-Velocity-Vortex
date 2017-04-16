@@ -98,8 +98,10 @@ public class Hardware {
 
     public static ButtonPusher getButtonPusher() {
         return buttonPusher == null ? buttonPusher = new ButtonPusher(
-                map.servo.get("left-pusher"),
-                map.servo.get("right-pusher")
+                new Servo[] {
+                        map.servo.get("left-pusher"),
+                        map.servo.get("right-pusher")
+                }
         ) : buttonPusher;
     }
 
@@ -128,8 +130,8 @@ public class Hardware {
                         map.touchSensor.get("right-touch-sensor")
                 },
                 new I2cDeviceSynch[] {
-                        new I2cDeviceSynchImpl(liftRange, I2cAddr.create8bit(0x3c), false),
-                        new I2cDeviceSynchImpl(intakeRange, I2cAddr.create8bit(0x28), false)
+                        new I2cDeviceSynchImpl(liftRange, I2cAddr.create8bit(0x3c), false), //lift range sensor
+                        new I2cDeviceSynchImpl(intakeRange, I2cAddr.create8bit(0x28), false) //intake range sensor
                 },
                 map.voltageSensor.iterator().next()
         ) : sensors;
