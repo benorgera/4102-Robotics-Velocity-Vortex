@@ -282,10 +282,8 @@ public class Sensors {
 
         while (Hardware.active() && System.currentTimeMillis() < stop) {
             int[] readings = getBeaconReadings();
-
-            for (int i = 0; i < 2; i++)
-                sums[i] += readings[i];
-
+            sums[0] += readings[0];
+            sums[1] += readings[1];
             Hardware.sleep(10);
         }
 
