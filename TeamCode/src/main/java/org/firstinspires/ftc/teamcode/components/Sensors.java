@@ -260,7 +260,7 @@ public class Sensors {
     //returns false if beacon was already claimed, so if false is returned and this is the second beacon, we likely have another beacon to claim
     public boolean captureBeacon(boolean isRed) {
         boolean[] colors = senseBeaconColors();
-        
+
         if (colors[0] != colors[1]) { //the buttons are different, the beacon is unclaimed
             Hardware.print("Claiming unclaimed beacon");
             buttonPusher.push(isRed == colors[0]); //push the proper button
@@ -278,17 +278,18 @@ public class Sensors {
     private boolean[] senseBeaconColors() { //left then right, red is true
         long stop = System.currentTimeMillis() + 700;
 
-        int left = 0,
-                right = 0;
+        int[] sums = new int[] {0, 0};
 
         while (Hardware.active() && System.currentTimeMillis() < stop) {
             int[] readings = getBeaconReadings();
-            left += readings[0];
-            right += readings[1];
+
+            for (int i = 0; i < 2; i++)
+                sums[i] += readings[i];
+
             Hardware.sleep(10);
         }
 
-        return new boolean[] {left > 0, right > 0};
+        return new boolean[] {sums[0] > 0, sums[1] > 0};
     }
 
     //translates at a given theta and speed until we reach a white line
