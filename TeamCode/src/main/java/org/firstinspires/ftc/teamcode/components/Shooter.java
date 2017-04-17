@@ -48,21 +48,19 @@ public class Shooter {
         int count = 0;
 
         //while there's another ball remaining, shoot
-        while (takeShot(count == (Hardware.isAuton() ? 1 : 2), sleep) && Hardware.active()) count++;
+        while (takeShot(count == (Hardware.isAuton() ? 1 : Hardware.getIntake().hasFourthBall() ? 3 : 2), sleep) && Hardware.active()) count++;
 
         //reset stuff
-        Hardware.getIntake().stop();
+        Hardware.getIntake().stopShooting();
         stop(); //stop the PID
         close();
-        Hardware.getIntake().dropRamp(0); //reset ramp for next intaking
     }
 
     //take shot while regulating speed, stopping elevator after first ball passes through
     //return true if another ball remains, and therefore another shot should be taken
     private boolean takeShot(boolean isLastShot, long sleep) {
-        Hardware.getIntake().moveRampForShot(); //move ramp out of way of intake
-        Hardware.getIntake().startElevator(); //feed shot through the shooter
 
+        Hardware.getIntake().takeShot(); //feed the particles through
 
         //wait for the next ball to be in position
         //if this command times out, false is returned and no balls remain so no more shots should be taken

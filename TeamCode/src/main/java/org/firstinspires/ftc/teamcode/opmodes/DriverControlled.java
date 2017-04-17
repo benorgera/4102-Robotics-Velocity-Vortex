@@ -27,6 +27,7 @@ public class DriverControlled extends LinearOpMode {
 
     private double shotSleep = 600;
 
+    private boolean wasTogglingHasFourthBall = false;
     private boolean wasPreppingShot = false;
     private boolean wasTogglingDirection = false;
     private boolean wasTogglingSlowMode = false;
@@ -131,6 +132,11 @@ public class DriverControlled extends LinearOpMode {
 
         wasTogglingIntake = gamepad2.a;
 
+        if (gamepad2.start && !wasTogglingHasFourthBall && intake.toggleHasFourthBall() && intake.isRunning()) //toggle has fourth ball, if there is one, and the intakes running, stop the intake and hold four balls
+            intake.stopIntaking();
+
+        wasTogglingHasFourthBall = gamepad2.start;
+
 
 
         //--------------------------LIFT-------------------------------
@@ -155,6 +161,7 @@ public class DriverControlled extends LinearOpMode {
         telemetry.addData("SHOT SLEEP", "" + shotSleep);
         telemetry.addData("MODE", intakeIsFront ? "INTAKE" : "SHOOT");
         if (isSlowMode) telemetry.addData("SLOW MODE", "TRUE");
+        if (intake.hasFourthBall()) telemetry.addData("FOURTH BALL", "TRUE");
         telemetry.addData("TIME", getTimeString());
         telemetry.update();
     }
