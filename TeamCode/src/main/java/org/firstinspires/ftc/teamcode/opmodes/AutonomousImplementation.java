@@ -16,7 +16,7 @@ public class AutonomousImplementation {
     private final double thetaToWall = Math.PI / 5;
     private final boolean isRed;
 
-    public AutonomousImplementation(boolean isRed) { //initializes all of our robot's component, noting our alliance and whether we are running a double push autonomous
+    public AutonomousImplementation(boolean isRed) { //initializes all of our robot's component, noting our alliance
         Hardware.getLift();
         Hardware.getIntake();
         this.sensors = Hardware.getSensors();
@@ -30,7 +30,7 @@ public class AutonomousImplementation {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.64); //speeds up the wheels
+        shooter.prepShot(6.66); //speeds up the wheels
 
         Hardware.print("Moving away from wall");
         sensors.driveByTime(-Math.PI / 2, 270, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
