@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.utilities.Hardware;
  * Created by benorgera on 11/24/16.
  */
 
-@Autonomous(name = "Auton Red", group = "4102")
-public class AutonRed extends LinearOpMode {
+@Autonomous(name = "Auton Red Corner", group = "4102")
+public class AutonRedCorner extends LinearOpMode {
 
     private AutonomousImplementation a; //uses an Autonomous Implementation class
 
@@ -18,7 +18,7 @@ public class AutonRed extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Hardware.init(hardwareMap, this, true, telemetry); //initializes hardware
 
-        a = new AutonomousImplementation(true); //new Autonomous Implementation with isRed being true and isDoublePush being false
+        a = new AutonomousImplementation(true, false); //new Autonomous Implementation with isRed true and isParkingCenter false
 
         waitForStart(); //wait for start to be pressed
 

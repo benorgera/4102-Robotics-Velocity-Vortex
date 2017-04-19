@@ -35,7 +35,7 @@ public class ButtonPusher {
 
 
     public void push(boolean isLeft) {
-        pushers[isLeft ? 0 : 1].setPosition(0.3);
+        pushers[isLeft ? 0 : 1].setPosition(0.17);
         Hardware.sleep(1000);
         retract();
     }

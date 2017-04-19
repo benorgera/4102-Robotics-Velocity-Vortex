@@ -15,13 +15,15 @@ public class AutonomousImplementation {
 
     private final double thetaToWall = Math.PI / 5;
     private final boolean isRed;
+    private final boolean isParkingCenter;
 
-    public AutonomousImplementation(boolean isRed) { //initializes all of our robot's component, noting our alliance
+    public AutonomousImplementation(boolean isRed, boolean isParkingCenter) { //initializes all of our robot's component, noting our alliance
         Hardware.getLift();
         Hardware.getIntake();
         this.sensors = Hardware.getSensors();
         this.shooter = Hardware.getShooter();
         this.isRed = isRed;
+        this.isParkingCenter = isParkingCenter;
 
         sensors.initImu(); //start up the adafruit imu
     }
@@ -45,7 +47,7 @@ public class AutonomousImplementation {
         sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 18, 0.4);
 
         Hardware.print("Driving to wall");
-        sensors.driveUntilLineOrTouchOrRange(0.26, 0.09, isRed, 40, 60);
+        sensors.driveUntilLineOrTouchOrRange(0.26, 0.09, isRed, 40, 65);
 
         Hardware.print("Parallel Parking");
         sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.3, Math.PI / 12, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25);
@@ -66,11 +68,19 @@ public class AutonomousImplementation {
             }
         }
 
-        Hardware.print("Backing up from wall");
-        sensors.driveByTime(0, 1000, true, 1);
+        if (isParkingCenter) {
+            Hardware.print("Turning towards center vortex");
+            sensors.turn(Math.PI / 2, Math.PI / 15, 0.4);
 
-        Hardware.print("Partial Parking");
-        sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 1000, true, 1);
+            Hardware.print("Partial Parking");
+            sensors.driveByTime(-Math.PI / 2, 1000, true, 1);
+        } else {
+            Hardware.print("Backing up from wall");
+            sensors.driveByTime(0, 1000, true, 1);
+
+            Hardware.print("Partial Parking");
+            sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 1000, true, 1);
+        }
     }
 
     private void driveToLine(boolean intakeForward, boolean isFirstBeacon) {
@@ -100,7 +110,7 @@ public class AutonomousImplementation {
 
         //drive the opposite direction (we've presumably drifted past the line), slower and looking for a stronger reading, to ensure alignment
         Hardware.print("Realigning on line");
-        if (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, 1500, 0.12, 90, 3)) {
+        if (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, 1500, 0.12, 90, 5)) {
             Hardware.print("Realign timeout, rerunning drive method");
             driveToLine(isFirstBeacon == isRed, isFirstBeacon);
         }
