@@ -302,7 +302,7 @@ public class Sensors {
         if (shouldPollGyro) readyCompensatedTranslate(0);
 
         //drive while we haven't gotten enough readings which meet our threshold or we haven't driven for long enough, and we haven't driven for too long
-        while (Hardware.active() && (count < readings || (time = System.currentTimeMillis()) < minTime) && time < maxTime) {
+        while (Hardware.active() && ((time = System.currentTimeMillis()) < minTime || count < readings) && time < maxTime) {
             if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold) count++;
             compensatedTranslate(theta, speed);
             Hardware.sleep(sensorLoopLatency);
