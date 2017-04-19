@@ -68,16 +68,16 @@ public class AutonomousImplementation {
             }
         }
 
+        Hardware.print("Backing up from wall");
+        sensors.driveByTime(0, isParkingCenter ? 700 : 1000, true, 1);
+
         if (isParkingCenter) {
             Hardware.print("Turning towards center vortex");
             sensors.turn(Math.PI / 2, Math.PI / 15, 0.4);
 
             Hardware.print("Partial Parking");
-            sensors.driveByTime(-Math.PI / 2, 1000, true, 1);
+            sensors.driveByTime(-Math.PI / 2, 900, true, 1);
         } else {
-            Hardware.print("Backing up from wall");
-            sensors.driveByTime(0, 1000, true, 1);
-
             Hardware.print("Partial Parking");
             sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 1000, true, 1);
         }
