@@ -83,7 +83,7 @@ public class AutonomousImplementation {
         boolean hasTimedOut = false;
 
         //drive to the line until it is found
-        while (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), false, true, minTime, timeout, power, 70, 3)) {
+        while (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), false, true, minTime, timeout, power, 60, 4)) {
             if (hasTimedOut)
                 timeout += 1000;
             else
@@ -98,7 +98,7 @@ public class AutonomousImplementation {
 
         //drive the opposite direction (we've presumably drifted past the line), slower and looking for a stronger reading, to ensure alignment
         Hardware.print("Realigning on line");
-        if (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, 1500, 0.11, 100, 3)) {
+        if (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, 1500, 0.12, 90, 3)) {
             Hardware.print("Realign timeout, rerunning drive method");
             driveToLine(isFirstBeacon == isRed, isFirstBeacon);
         }

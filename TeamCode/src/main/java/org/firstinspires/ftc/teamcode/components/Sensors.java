@@ -40,7 +40,7 @@ public class Sensors {
 
     private double initialHeading = 0;
 
-    private final long sensorLoopLatency = 20;
+    private final long sensorLoopLatency = 0;
 
     private final double compensatedTranslateSpeed = 0.25;
 
@@ -303,7 +303,7 @@ public class Sensors {
 
         //drive while we haven't gotten enough readings which meet our threshold or we haven't driven for long enough, and we haven't driven for too long
         while (Hardware.active() && ((time = System.currentTimeMillis()) < minTime || count < readings) && time < maxTime) {
-            if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold) count++;
+            if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold && time > minTime) count++;
             compensatedTranslate(theta, speed);
             Hardware.sleep(sensorLoopLatency);
         }
