@@ -42,7 +42,7 @@ public class AutonomousImplementation {
         shooter.shoot(800); //shoots the ball at the same prepshot speed
 
         Hardware.print("Turning towards wall");
-        sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 30, 0.4);
+        sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 18, 0.4);
 
         Hardware.print("Driving to wall");
         sensors.driveUntilLineOrTouchOrRange(0.26, 0.09, isRed, 40, 60);
@@ -95,6 +95,8 @@ public class AutonomousImplementation {
             hasTimedOut = true;
             Hardware.print("Line drive timeout, timeout now " + timeout);
         }
+
+        hugWall();
 
         //drive the opposite direction (we've presumably drifted past the line), slower and looking for a stronger reading, to ensure alignment
         Hardware.print("Realigning on line");
