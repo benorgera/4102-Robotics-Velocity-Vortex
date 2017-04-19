@@ -45,7 +45,6 @@ public class Intake {
 
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intake.setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void startIntaking(boolean shouldRunForwards) {

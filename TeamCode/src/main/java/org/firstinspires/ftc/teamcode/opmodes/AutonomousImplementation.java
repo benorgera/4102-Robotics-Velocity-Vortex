@@ -45,7 +45,7 @@ public class AutonomousImplementation {
         sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 30, 0.4);
 
         Hardware.print("Driving to wall");
-        sensors.driveUntilLineOrTouchOrRange(0.2, 0.09, isRed, 40);
+        sensors.driveUntilLineOrTouchOrRange(0.3, 0.09, isRed, 40, 50);
 
         Hardware.print("Parallel Parking");
         sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.3, Math.PI / 12, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25);
@@ -55,7 +55,7 @@ public class AutonomousImplementation {
             hugWall();
 
             Hardware.print("Finding beacon line"); //drives to the beacon line
-            driveToLine((i == 0) == isRed);
+            driveToLine((i == 0) == isRed, i == 1);
 
             hugWall();
 
@@ -73,29 +73,29 @@ public class AutonomousImplementation {
         sensors.driveByTime(Math.PI / 2 * (isRed ? -1 : 1), 1000, true, 1);
     }
 
-    private void driveToLine(boolean intakeForward) {
+    private void driveToLine(boolean intakeForward, boolean isFirstBeacon) {
         Hardware.print("Driving to line");
 
-        long minTime = 750, //a minimum drive time to ensure the previous line isn't rediscovered
-                realignTimeout = 2000;
-        double power = 0.25;
+        long minTime = isFirstBeacon ? 0 : 750, //a minimum drive time to ensure the previous line isn't rediscovered
+                timeout = isFirstBeacon ? 1500 : 2000;
+        double power = 0.21;
 
         //drive to the line until it is found
-        while (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), false, true, minTime, realignTimeout, power, 40)) {
-            power = 0.11; //a timeout occurred, slow down
+        while (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), false, true, minTime, timeout, power, 50, 3)) {
+            power = 0.16; //a timeout occurred, slow down
             minTime = 0; //time has been spent, no need to worry about finding the same line again
-            realignTimeout += 1000; //increase the time allotted to find the line
+            timeout += 1000; //increase the time allotted to find the line
             intakeForward = !intakeForward; //switch direction, the line has likely been overshot
-            Hardware.print("Line drive timeout, timeout now " + realignTimeout);
+            Hardware.print("Line drive timeout, timeout now " + timeout);
         }
 
         //drive the opposite direction (we've presumably drifted past the line), slower and looking for a stronger reading, to ensure alignment
         Hardware.print("Realigning on line");
-        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, 600, 0.11, 90);
+        sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, 1500, 0.11, 90, 3);
     }
 
     private void hugWall() {
-        sensors.driveUntilOdsThreshold(Math.PI, 0.15, 0.5, 500);
+        sensors.driveUntilOdsThreshold(Math.PI, 0.2, 4, 0.5, 1000);
     }
 
 }

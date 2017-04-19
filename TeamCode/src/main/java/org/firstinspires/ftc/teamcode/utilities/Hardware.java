@@ -112,7 +112,7 @@ public class Hardware {
         };
 
         beaconSensors[0].setI2cAddress(I2cAddr.create8bit(0x4c));
-        beaconSensors[1].setI2cAddress(I2cAddr.create8bit(0x32));
+        beaconSensors[1].setI2cAddress(I2cAddr.create8bit(0x1e));
 
         I2cDevice liftRange = map.i2cDevice.get("lift-range-sensor"),
                 intakeRange = map.i2cDevice.get("intake-range-sensor");

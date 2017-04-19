@@ -40,6 +40,8 @@ public class Sensors {
 
     private double initialHeading = 0;
 
+    private final long sensorLoopLatency = 20;
+
     private final double compensatedTranslateSpeed = 0.25;
 
     private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1 degrees
@@ -268,7 +270,7 @@ public class Sensors {
             Hardware.print("Reversing beacon");
             buttonPusher.pushBoth(); //push both, we just need to reverse the color
         } else {
-            Hardware.print("Beacon already claimed");
+            Hardware.print("Beacon already claimed"); //already claimed our color
         }
 
         return colors[0] != colors[1]; //returns whether the beacon was previously unclaimed
@@ -283,24 +285,28 @@ public class Sensors {
             int[] readings = getBeaconReadings();
             sums[0] += readings[0]; //left
             sums[1] += readings[1]; //right
-            Hardware.sleep(10);
+            Hardware.sleep(sensorLoopLatency);
         }
 
         return new boolean[] {sums[0] > 0, sums[1] > 0};
     }
 
     //translates at a given theta and speed until we reach a white line
-    public boolean driveUntilLineReadingThreshold(double theta, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime, double speed, double whiteLineSignalThreshold) {
+    public boolean driveUntilLineReadingThreshold(double theta, boolean shouldPollGyro, boolean shouldStop, long minTime, long maxTime, double speed, double whiteLineSignalThreshold, int readings) {
         long time = System.currentTimeMillis();
+        int count = 0;
 
         maxTime += time;    //if greater than this, we are taking to long and should timeout
         minTime += time;    //if less than this, we haven't gone long enough (maybe we re-read a line we were already on)
 
         if (shouldPollGyro) readyCompensatedTranslate(0);
 
-        //drive while we haven't gotten enough readings that meet our threshold, and the time we have been driving is between our min and max time
-        while (Hardware.active() && (!lineSensed(whiteLineSignalThreshold) && (time = System.currentTimeMillis()) < maxTime || (time = System.currentTimeMillis()) < minTime))
+        //drive while we haven't gotten enough readings which meet our threshold or we haven't driven for long enough, and we haven't driven for too long
+        while (Hardware.active() && (count < readings || (time = System.currentTimeMillis()) < minTime) && time < maxTime) {
+            if (Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold) count++;
             compensatedTranslate(theta, speed);
+            Hardware.sleep(sensorLoopLatency);
+        }
 
         if (shouldStop) wheels.stop();
 
@@ -329,11 +335,7 @@ public class Sensors {
         return rangeSensors[isIntakeSide ? 1 : 0].read(0x04, 2)[isUltrasonic ? 0 : 1] & 0xFF;
     }
 
-    private boolean lineSensed(double threshold) {
-        return Utils.getMaxMagnitude(getLineReadings()) > threshold;
-    }
-
-    public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, double whiteLineSignalThreshold) {
+    public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, double whiteLineSignalThreshold, int rangeThreshold) {
 
         boolean isClose = false;
         long speedTimeout = System.currentTimeMillis() + 4000;
@@ -345,16 +347,23 @@ public class Sensors {
                 Hardware.print("Speed timeout, upped velClose to " + velClose);
             }
 
-            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), ((isClose = isClose || lineSensed(whiteLineSignalThreshold)) || getRange(isRed, true) < 50) ? velClose : velFar);
+            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), ((isClose = isClose || Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold) || getRange(isRed, true) < rangeThreshold) ? velClose : velFar);
+            Hardware.sleep(sensorLoopLatency);
         }
 
         wheels.stop();
     }
 
-    public void driveUntilOdsThreshold(double theta, double threshold, double speed, long timeout) {
+    public void driveUntilOdsThreshold(double theta, double threshold, int readings, double speed, long timeout) {
         timeout += System.currentTimeMillis();
-        while (Hardware.active() && System.currentTimeMillis() < timeout && getOpticalDistance() < threshold)
+
+        int count = 0;
+
+        while (Hardware.active() && System.currentTimeMillis() < timeout && count < readings) {
+            if (getOpticalDistance() > threshold) count++;
             compensatedTranslate(theta, speed);
+            Hardware.sleep(sensorLoopLatency);
+        }
         wheels.stop();
     }
 
