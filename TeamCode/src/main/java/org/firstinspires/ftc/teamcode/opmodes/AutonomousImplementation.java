@@ -55,7 +55,7 @@ public class AutonomousImplementation {
             hugWall();
 
             Hardware.print("Finding beacon line"); //drives to the beacon line
-            driveToLine((i == 0) == isRed, i == 1);
+            driveToLine((i == 0) == isRed, i == 0);
 
             hugWall();
 
