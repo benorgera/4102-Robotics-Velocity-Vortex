@@ -101,7 +101,7 @@ public class Shooter {
             return false; //don't shoot again
         }
 
-        long waitForBall = 1000; //how long the shooter waits to see another ball before assuming none remain
+        long waitForBall = Hardware.isAuton() ? 2000 : 1000; //how long the shooter waits to see another ball before assuming none remain
 
         //continue running the elevator (waiting) until you see a new ball, or you time out
         //waiting will only cease after at least 50ms have passed since last sensing a ball
