@@ -33,7 +33,6 @@ public class Sensors {
     private ButtonPusher buttonPusher;
     private I2cDeviceSynch[] rangeSensors;
 
-
     private Integrator integrator;
 
     private Wheels wheels;
@@ -41,8 +40,6 @@ public class Sensors {
     private double initialHeading = 0;
 
     private final long sensorLoopLatency = 0;
-
-    private final double compensatedTranslateSpeed = 0.25;
 
     private final double headingAccuracyThreshold = 1 * Math.PI / 180; //1 degrees
 
@@ -141,7 +138,7 @@ public class Sensors {
     }
 
     public void compensatedTranslate(double thetaDesired) { //translate robot with rotation compensation (must be called on a loop)
-        compensatedTranslate(thetaDesired, compensatedTranslateSpeed);
+        compensatedTranslate(thetaDesired, 0.25);
     }
 
     public void centerOnZero() {
@@ -321,10 +318,6 @@ public class Sensors {
         while (Hardware.active() && System.currentTimeMillis() < stop)
             compensatedTranslate(theta, speed);
         if (shouldStop) wheels.stop();
-    }
-
-    public void driveByTime(double theta, long time, boolean shouldStop) {
-        driveByTime(theta, time, shouldStop, compensatedTranslateSpeed);
     }
 
     public boolean touchSensorPressed(boolean isIntakeSide) {
