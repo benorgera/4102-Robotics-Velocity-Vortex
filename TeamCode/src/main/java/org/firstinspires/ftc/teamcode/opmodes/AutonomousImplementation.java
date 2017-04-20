@@ -87,17 +87,19 @@ public class AutonomousImplementation {
         Hardware.print("Driving to line");
 
         long minTime = isFirstBeacon ? 0 : 1200, //a minimum drive time to ensure the previous line isn't rediscovered
-                timeout = isFirstBeacon ? 1500 : 5000;
+                timeout = isFirstBeacon ? 1500 : 4000;
         double power = 0.21;
 
         boolean hasTimedOut = false;
 
         //drive to the line until it is found
         while (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), false, true, minTime, timeout, power, 60, 4)) {
-            if (hasTimedOut)
+            if (hasTimedOut) { //multiple timeouts, drive for longer and switch direction
                 timeout += 1000;
-            else
+            } else { //first timeout, start back and forth algorithm with a short timeout
                 timeout = 1500;
+                hugWall();
+            }
             power = 0.16; //a timeout occurred, slow down
             minTime = 0; //time has been spent, no need to worry about finding the same line again
             timeout += 1000; //increase the time allotted to find the line
