@@ -47,7 +47,7 @@ public class AutonomousImplementation {
         sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 18, 0.4);
 
         Hardware.print("Driving to wall");
-        sensors.driveUntilLineOrTouchOrRange(0.26, 0.09, isRed, 40, 65);
+        sensors.driveUntilLineOrTouchOrRange(0.26, 0.09, isRed, 500, 4000, 40, 65);
 
         Hardware.disableRangeSensors(); //range sensors no longer needed
 
