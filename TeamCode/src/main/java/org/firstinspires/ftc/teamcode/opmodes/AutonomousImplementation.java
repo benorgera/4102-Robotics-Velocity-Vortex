@@ -78,7 +78,7 @@ public class AutonomousImplementation {
             sensors.turn(Math.PI / 2, Math.PI / 15, 0.4);
         }
 
-        Hardware.print("Partial Parking");
+        Hardware.print("Partial parking");
         sensors.driveByTime(Math.PI / 2 * (isParkingCenter || isRed ? -1 : 1), 1000, true, 1);
     }
 
@@ -95,7 +95,7 @@ public class AutonomousImplementation {
         while (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? 1 : -1), false, true, minTime, timeout, power, 60, 4)) {
             if (hasTimedOut) { //multiple timeouts, drive for longer and switch direction
                 timeout += 1000;
-            } else { //first timeout, start back and forth algorithm with a short timeout
+            } else { //first timeout, begin back and forth algorithm with a short drive
                 timeout = 1500;
                 hugWall();
             }
