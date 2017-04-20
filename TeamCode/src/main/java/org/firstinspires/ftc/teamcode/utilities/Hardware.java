@@ -14,11 +14,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.I2cController;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.configuration.I2cSensor;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.components.ButtonPusher;
@@ -43,6 +46,7 @@ public class Hardware {
     private static ButtonPusher buttonPusher;
     private static LinearOpMode opMode;
     private static Lift lift;
+    private static I2cDevice[] rangeSensors = new I2cDevice[2];
     private static Wheels wheels;
     private static Sensors sensors;
     private static Shooter shooter;
@@ -114,8 +118,8 @@ public class Hardware {
         beaconSensors[0].setI2cAddress(I2cAddr.create8bit(0x4c));
         beaconSensors[1].setI2cAddress(I2cAddr.create8bit(0x1e));
 
-        I2cDevice liftRange = map.i2cDevice.get("lift-range-sensor"),
-                intakeRange = map.i2cDevice.get("intake-range-sensor");
+        rangeSensors[0] = map.i2cDevice.get("lift-range-sensor");
+        rangeSensors[1] = map.i2cDevice.get("intake-range-sensor");
 
         return sensors == null ? sensors = new Sensors(
                 map.get(BNO055IMU.class, "imu"),
@@ -130,12 +134,22 @@ public class Hardware {
                         map.touchSensor.get("right-touch-sensor")
                 },
                 new I2cDeviceSynch[] {
-                        new I2cDeviceSynchImpl(liftRange, I2cAddr.create8bit(0x3c), false), //lift range sensor
-                        new I2cDeviceSynchImpl(intakeRange, I2cAddr.create8bit(0x28), false) //intake range sensor
+                        new I2cDeviceSynchImpl(rangeSensors[0], I2cAddr.create8bit(0x3c), false), //lift range sensor
+                        new I2cDeviceSynchImpl(rangeSensors[1], I2cAddr.create8bit(0x28), false) //intake range sensor
                 },
                 map.voltageSensor.iterator().next()
         ) : sensors;
     }
+
+    public static void disableRangeSensors() {
+        if (rangeSensors == null) return;
+
+        for (I2cDevice i : rangeSensors)
+            i.getI2cController().deregisterForPortReadyCallback(i.getPort());
+
+        rangeSensors = null;
+    }
+
 
     public static Shooter getShooter() {
         return shooter == null ? shooter = new Shooter(
@@ -198,6 +212,7 @@ public class Hardware {
         t = null;
         isAuton = false;
         output = "\n";
+        rangeSensors = new I2cDevice[2];
         gyroConstant = 1;
     }
 

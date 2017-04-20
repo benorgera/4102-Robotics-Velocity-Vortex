@@ -49,6 +49,8 @@ public class AutonomousImplementation {
         Hardware.print("Driving to wall");
         sensors.driveUntilLineOrTouchOrRange(0.26, 0.09, isRed, 40, 65);
 
+        Hardware.disableRangeSensors(); //range sensors no longer needed
+
         Hardware.print("Parallel Parking");
         sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.3, Math.PI / 12, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25);
 
