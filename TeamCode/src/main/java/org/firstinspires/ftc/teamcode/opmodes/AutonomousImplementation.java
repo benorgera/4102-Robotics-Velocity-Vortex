@@ -38,7 +38,7 @@ public class AutonomousImplementation {
         sensors.driveByTime(-Math.PI / 2, 270, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
 
         Hardware.getWheels().softStop(300); //stops the robot gently to avoid jerk when launching the balls
-        Hardware.sleep(1500); //allows the shooting motors to finish getting to the right speed
+        Hardware.sleep(2000); //allows the shooting motors to finish getting to the right speed
 
         Hardware.print("Shooting");
         shooter.shoot(800); //shoots the ball at the same prepshot speed
@@ -47,7 +47,7 @@ public class AutonomousImplementation {
         sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 18, 0.4);
 
         Hardware.print("Driving to wall");
-        sensors.driveUntilLineOrTouchOrRange(0.26, 0.09, isRed, 500, 4000, 40, 65);
+        sensors.driveUntilLineOrTouchOrRange(0.26, 0.105, isRed, 1000, 4000, 40, 65);
 
         Hardware.disableRangeSensors(); //range sensors no longer needed
 
@@ -80,6 +80,11 @@ public class AutonomousImplementation {
 
         Hardware.print("Partial parking");
         sensors.driveByTime(Math.PI / 2 * (isParkingCenter || isRed ? -1 : 1), 1000, true, 1);
+
+        if (isParkingCenter) {
+            Hardware.print("Partial Park Turn");
+            sensors.turn(Math.PI / 10 * (isRed ? -1 : 1), Math.PI / 90, 1);
+        }
     }
 
     private void driveToLine(boolean intakeForward, boolean isFirstBeacon) {

@@ -25,7 +25,7 @@ public class DriverControlled extends LinearOpMode {
     private Wheels wheels;
     private Intake intake;
 
-    private double shotSleep = 600;
+    private double shotSleep = 200;
 
     private boolean wasTogglingHasFourthBall = false;
     private boolean wasPreppingShot = false;
@@ -76,7 +76,7 @@ public class DriverControlled extends LinearOpMode {
 
         //--------------------------DRIVING-------------------------------
 
-        wheels.drive((isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, (isSlowMode ? slowModeConstant : 1) * gamepad1.right_stick_x, !isSlowMode); //drives according to the left and right joysticks– left joystick drives, and right joystick rotates. if in slowmode, the robot can drive at lower speeds, and if not in front intake mode, the joysticks have opposite effects
+        drive(); //send joystick commands to wheels
 
         if (gamepad1.a && !wasTogglingDirection)
             intakeIsFront = !intakeIsFront; //a on the first gamepad toggles which side of the robot is the front so we can adjust for shooting vs intaking
@@ -132,7 +132,7 @@ public class DriverControlled extends LinearOpMode {
 
         wasTogglingIntake = gamepad2.a;
 
-        if (gamepad2.start && !wasTogglingHasFourthBall && intake.toggleHasFourthBall() && intake.isRunning()) //toggle has fourth ball, if there is one, and the intakes running, stop the intake and hold four balls
+        if (gamepad2.start && !wasTogglingHasFourthBall && intake.toggleHasFourthBall() && intake.isRunning()) //toggle has fourth ball, if there is one, and the intake's running, stop the intake and hold four balls
             intake.stopIntaking();
 
         wasTogglingHasFourthBall = gamepad2.start;
@@ -172,5 +172,10 @@ public class DriverControlled extends LinearOpMode {
                 seconds = deltaSeconds % 60;
 
         return "" + deltaMin + ":" + (("" + seconds).length() == 1 ? "0" + seconds : seconds) + (seconds <= 30 && deltaMin == 0 ? "  END GAME" : "");
+    }
+
+    public void drive() {
+        //drives according to the left and right joysticks– left joystick drives, and right joystick rotates. if in slowmode, the robot can drive at lower speeds, and if not in front intake mode, the joysticks have opposite effects
+        wheels.drive((isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? 1 : -1) * gamepad1.left_stick_x, (isSlowMode ? slowModeConstant : 1) * (intakeIsFront ? -1 : 1) * gamepad1.left_stick_y, (isSlowMode ? slowModeConstant : 1) * gamepad1.right_stick_x, !isSlowMode); //dr
     }
 }
