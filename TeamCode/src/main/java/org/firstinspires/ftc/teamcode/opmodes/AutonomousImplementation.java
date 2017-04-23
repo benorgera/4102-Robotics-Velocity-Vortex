@@ -43,7 +43,7 @@ public class AutonomousImplementation {
         sensors.driveByTime(-Math.PI / 2, 400, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
 
         Hardware.getWheels().softStop(300); //stops the robot gently to avoid jerk when launching the balls
-        Hardware.sleep(2000); //allows the shooting motors to finish getting to the right speed
+        Hardware.sleep(2500); //allows the shooting motors to finish getting to the right speed
 
         Hardware.print("Shooting");
         shooter.shoot(700); //shoots the ball at the same prepshot speed
