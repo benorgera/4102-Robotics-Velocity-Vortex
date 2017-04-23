@@ -25,48 +25,53 @@ public class AutonomousImplementation {
         this.isRed = isRed;
         this.isParkingCenter = isParkingCenter;
 
+
+        long start = System.currentTimeMillis();
+
+        Hardware.print("Starting fruit");
         sensors.initImu(); //start up the adafruit imu
+        Hardware.print("Stopping fruit, init in " + (System.currentTimeMillis() - start));
     }
 
     public void run() {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.66); //speeds up the wheels
+        shooter.prepShot(6.72); //speeds up the wheels
 
         Hardware.print("Moving away from wall");
-        sensors.driveByTime(-Math.PI / 2, 270, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
+        sensors.driveByTime(-Math.PI / 2, 400, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
 
         Hardware.getWheels().softStop(300); //stops the robot gently to avoid jerk when launching the balls
         Hardware.sleep(2000); //allows the shooting motors to finish getting to the right speed
 
         Hardware.print("Shooting");
-        shooter.shoot(800); //shoots the ball at the same prepshot speed
+        shooter.shoot(700); //shoots the ball at the same prepshot speed
 
         Hardware.print("Turning towards wall");
         sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 18, 0.4);
 
         Hardware.print("Driving to wall");
-        sensors.driveUntilLineOrTouchOrRange(0.26, 0.105, isRed, 1000, 4000, 40, 65);
+        sensors.driveUntilLineOrTouchOrRange(0.26, 0.105, isRed, 1500, 3500, 7000, 40, 65);
 
         Hardware.disableRangeSensors(); //range sensors no longer needed
 
         Hardware.print("Parallel Parking");
-        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.3, Math.PI / 12, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25);
+        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.3, Math.PI / 12, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25, 2500);
 
         //drive to and capture each beacon
         for (int i = 0, max = 2; i < max; i++) {
             hugWall();
 
             Hardware.print("Finding beacon line"); //drives to the beacon line
-            driveToLine((i == 0) == isRed, i == 0);
+            driveToLine((i == 0 || i == 3) == isRed, i == 0);
 
             hugWall();
 
             Hardware.print("Capturing beacon");
-            if (!sensors.captureBeacon(isRed) && i == 1) { //push button
+            if (!sensors.captureBeacon(isRed) && i > 0) { //push button
                 Hardware.print("Rediscovered first beacon, running again"); //found the same beacon a second time, run again to claim the second beacon
-                max = 3;
+                max++;
             }
         }
 
@@ -75,15 +80,17 @@ public class AutonomousImplementation {
 
         if (isParkingCenter) {
             Hardware.print("Turning towards center vortex");
-            sensors.turn(Math.PI / 2, Math.PI / 15, 0.4);
+            sensors.turn(Math.PI / 2 + (2 * Math.PI / 17 * (isRed ? 1 : -1)), Math.PI / 10, 0.6);
         }
 
-        Hardware.print("Partial parking");
+        Hardware.print(isParkingCenter ? "Knocking Cap Ball" : "Partial parking");
         sensors.driveByTime(Math.PI / 2 * (isParkingCenter || isRed ? -1 : 1), 1000, true, 1);
 
         if (isParkingCenter) {
-            Hardware.print("Partial Park Turn");
-            sensors.turn(Math.PI / 10 * (isRed ? -1 : 1), Math.PI / 90, 1);
+            Hardware.print("Partial Parking");
+            sensors.turn(Math.PI / 15 * (isRed ? -1 : 1), Math.PI / 90, 1);
+
+            sensors.driveByTime(-Math.PI / 2, 550, true, 1);
         }
     }
 
@@ -123,7 +130,7 @@ public class AutonomousImplementation {
     }
 
     private void hugWall() {
-        sensors.driveUntilOdsThreshold(Math.PI, 0.18, 4, 0.5, 1000);
+        sensors.driveUntilOdsThreshold(Math.PI, 0.32, 4, 0.5, 1000);
     }
 
 }

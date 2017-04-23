@@ -23,7 +23,7 @@ public class Intake {
     private boolean hasFourthBall = false;
     private boolean isRunning = false;
 
-    private final double[] rampPositions = {0.03, 0.13, 0.235, 392}; //down, holding 4, holding 3, and closed respectively
+    private final double[] rampPositions = {0.06, 0.13, 0.235, 392}; //down, holding 4, holding 3, and closed respectively
 
     public Intake(DcMotor intake, Servo ramp, Servo[] flaps, CRServo[] spinners, ColorSensor ballSensor) {
         this.intake = intake;

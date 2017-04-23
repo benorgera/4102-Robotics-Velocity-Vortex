@@ -63,7 +63,7 @@ public class Sensors {
         this.beaconSensors = beaconSensors;
 
         for (ModernRoboticsI2cColorSensor m : beaconSensors)
-            m.enableLed(true);
+            m.enableLed(false);
     }
 
     public void initImu() {
@@ -195,7 +195,7 @@ public class Sensors {
         initialHeading = (storedHeading - theta) % (2 * Math.PI);      //sets our heading to was it was initally plus how much we should have turned
     }
 
-    public void parallelPark(double thetaTranslateFinal, double deltaThetaTranslate, double translateSpeed, double deltaTranslateTolerance, double turnTheta, double turnSpeed, double turnTolerance) { //positive is counterclockwise, max turn is PI
+    public void parallelPark(double thetaTranslateFinal, double deltaThetaTranslate, double translateSpeed, double deltaTranslateTolerance, double turnTheta, double turnSpeed, double turnTolerance, long speedTimeout) { //positive is counterclockwise, max turn is PI
 
         boolean isCounterClockwise = turnTheta > 0;
 
@@ -210,8 +210,16 @@ public class Sensors {
 
         resetHeading();
 
+        speedTimeout += System.currentTimeMillis();
+
         //while we haven't reached our threshold yet, or its been too little time (<300 ms), turn towards the threshold
         while (Hardware.active() && ((thetaRemaining = Utils.difference(-getHeading(), threshold, !isCounterClockwise)) > 0 || System.currentTimeMillis() - start < 300)) {
+            if (System.currentTimeMillis() > speedTimeout) {
+                translateSpeed += 0.043;
+                turnSpeed += 0.043;
+                speedTimeout += 1500;
+                Hardware.print("Speed timeout, upped translate/turn speed to " + translateSpeed);
+            }
             double proportionRemaining = Math.abs(thetaRemaining / threshold),
                     translateTheta = thetaTranslateFinal - deltaThetaTranslate * proportionRemaining;
 
@@ -264,7 +272,9 @@ public class Sensors {
             Hardware.print("Claiming unclaimed beacon");
             buttonPusher.push(isRed == colors[0]); //push the proper button
         } else if (isRed != colors[0]) { //the buttons are the same color, but the beacon is claimed the wrong color
-            Hardware.print("Reversing beacon");
+            Hardware.print("Reclaiming beacon, but must wait 5s first");
+            Hardware.sleep(5000);
+            Hardware.print("Reclaiming beacon");
             buttonPusher.pushBoth(); //push both, we just need to reverse the color
         } else {
             Hardware.print("Beacon already claimed"); //already claimed our color
@@ -328,18 +338,19 @@ public class Sensors {
         return rangeSensors[isIntakeSide ? 1 : 0].read(0x04, 2)[isUltrasonic ? 0 : 1] & 0xFF;
     }
 
-    public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, long minTime, long speedTimeout, double whiteLineSignalThreshold, int rangeThreshold) {
+    public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, long minTime, long speedTimeout, long maxTime, double whiteLineSignalThreshold, int rangeThreshold) {
 
         boolean isClose = false;
 
+        maxTime += System.currentTimeMillis();
         minTime += System.currentTimeMillis();
         speedTimeout += System.currentTimeMillis();
         long time; //since I've seen your smile (-Chance the Rapper)
 
         while (Hardware.active() && !touchSensorPressed(isRed)) {
-            if ((time = System.currentTimeMillis()) > speedTimeout) {
-                velClose += 0.03;
-                speedTimeout += 2000;
+            if ((time = System.currentTimeMillis()) > speedTimeout && time < maxTime) {
+                velClose += 0.043;
+                speedTimeout += 1500;
                 Hardware.print("Speed timeout, upped velClose to " + velClose);
             }
 

@@ -35,13 +35,13 @@ public class ButtonPusher {
 
 
     public void push(boolean isLeft) {
-        pushers[isLeft ? 0 : 1].setPosition(0.17);
+        pushers[isLeft ? 0 : 1].setPosition(0.0);
         Hardware.sleep(1000);
         retract();
     }
 
     public void pushBoth() {
-        setPositions(0.3);
+        setPositions(0.0);
         Hardware.sleep(1000);
         retract();
     }
