@@ -338,7 +338,7 @@ public class Sensors {
         return rangeSensors[isIntakeSide ? 1 : 0].read(0x04, 2)[isUltrasonic ? 0 : 1] & 0xFF;
     }
 
-    public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, long minTime, long speedTimeout, long maxTime, double whiteLineSignalThreshold, int rangeThreshold) {
+    public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, long minTime, long speedTimeout, long maxTime, double whiteLineSignalThreshold, int rangeThresholdFar, int rangeThresholdTouching, int readings) {
 
         boolean isClose = false;
 
@@ -347,14 +347,19 @@ public class Sensors {
         speedTimeout += System.currentTimeMillis();
         long time; //since I've seen your smile (-Chance the Rapper)
 
-        while (Hardware.active() && !touchSensorPressed(isRed)) {
+        int count = 0;
+
+        while (Hardware.active() && !touchSensorPressed(isRed) && count < readings) {
             if ((time = System.currentTimeMillis()) > speedTimeout && time < maxTime) {
                 velClose += 0.043;
                 speedTimeout += 1500;
                 Hardware.print("Speed timeout, upped velClose to " + velClose);
             }
 
-            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), ((isClose = time > minTime && (isClose || Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold) || getRange(isRed, true) < rangeThreshold)) ? velClose : velFar);
+            if (time > minTime && getRange(isRed, true) < rangeThresholdTouching)
+                count++;
+
+            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), ((isClose = time > minTime && (isClose || Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold) || getRange(isRed, true) < rangeThresholdFar)) ? velClose : velFar);
             Hardware.sleep(sensorLoopLatency);
         }
 

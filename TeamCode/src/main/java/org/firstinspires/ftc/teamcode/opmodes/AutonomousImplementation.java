@@ -13,7 +13,7 @@ public class AutonomousImplementation {
     private Sensors sensors;
     private Shooter shooter;
 
-    private final double thetaToWall = Math.PI / 5;
+    private final double thetaToWall = 2 * Math.PI / 9;
     private final boolean isRed;
     private final boolean isParkingCenter;
 
@@ -36,22 +36,22 @@ public class AutonomousImplementation {
         Hardware.print("Color is " + (isRed ? "red" : "blue"));
 
         Hardware.print("Prepping for shot");
-        shooter.prepShot(6.72); //speeds up the wheels
+        shooter.prepShot(6.4); //speeds up the wheels
 
         Hardware.print("Moving away from wall");
-        sensors.driveByTime(-Math.PI / 2, 400, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
+        sensors.driveByTime(-Math.PI / 2, 650, false, 0.3); //drives a short distance from the wall so our intake is not slowed by hitting the wall
 
         Hardware.getWheels().softStop(300); //stops the robot gently to avoid jerk when launching the balls
         Hardware.sleep(2500); //allows the shooting motors to finish getting to the right speed
 
         Hardware.print("Shooting");
-        shooter.shoot(700); //shoots the ball at the same prepshot speed
+        shooter.shoot(1000); //shoots the ball at the same prepshot speed
 
         Hardware.print("Turning towards wall");
-        sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 18, 0.4);
+        sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 20 : Math.PI / 10, 0.4);
 
         Hardware.print("Driving to wall");
-        sensors.driveUntilLineOrTouchOrRange(0.26, 0.105, isRed, 1100, 3500, 7000, 40, 65);
+        sensors.driveUntilLineOrTouchOrRange(0.26, 0.105, isRed, 1100, 3500, 7000, 40, 65, 20, 5);
 
         Hardware.disableRangeSensors(); //range sensors no longer needed
 
@@ -79,7 +79,7 @@ public class AutonomousImplementation {
 
         if (isParkingCenter) {
             Hardware.print("Turning towards center vortex");
-            sensors.turn(Math.PI / 2 + (2 * Math.PI / 17 * (isRed ? 1 : -1)), Math.PI / 10, 0.6);
+            sensors.turn(Math.PI / 2 + (2 * Math.PI / 17 * (isRed ? 1 : -1)), isRed ? Math.PI / 7 : Math.PI / 10, 0.6);
         }
 
         Hardware.print(isParkingCenter ? "Knocking Cap Ball" : "Partial parking");
@@ -87,9 +87,9 @@ public class AutonomousImplementation {
 
         if (isParkingCenter) {
             Hardware.print("Partial Parking");
-            sensors.turn(Math.PI / 15 * (isRed ? -1 : 1), Math.PI / 90, 1);
+            sensors.turn(Math.PI / 13 * (isRed ? -1 : 1), Math.PI / 90, 1);
 
-            sensors.driveByTime(-Math.PI / 2, 550, true, 1);
+            sensors.driveByTime(-Math.PI / 2, 300, true, 1);
         }
     }
 
@@ -97,7 +97,7 @@ public class AutonomousImplementation {
         Hardware.print("Driving to line");
 
         long minTime = isFirstBeacon ? 0 : 1200, //a minimum drive time to ensure the previous line isn't rediscovered
-                timeout = isFirstBeacon ? 1500 : 4000;
+                timeout = isFirstBeacon ? 2000 : 4000;
         double power = 0.21;
 
         boolean hasTimedOut = false;
@@ -110,7 +110,7 @@ public class AutonomousImplementation {
                 timeout = 1500;
                 hugWall();
             }
-            power = 0.175; //a timeout occurred, slow down
+            power = 0.18; //a timeout occurred, slow down
             minTime = 0; //time has been spent, no need to worry about finding the same line again
             timeout += 1000; //increase the time allotted to find the line
             intakeForward = !intakeForward; //switch direction, the line has likely been overshot
@@ -122,7 +122,7 @@ public class AutonomousImplementation {
 
         //drive the opposite direction (we've presumably drifted past the line), slower and looking for a stronger reading, to ensure alignment
         Hardware.print("Realigning on line");
-        if (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, 1600, 0.12, 90, 4)) {
+        if (!sensors.driveUntilLineReadingThreshold(Math.PI / 2 * (intakeForward ? -1 : 1), false, true, 200, 1600, 0.13, 90, 4)) {
             Hardware.print("Realign timeout, rerunning drive method");
             driveToLine(isFirstBeacon == isRed, isFirstBeacon);
         }

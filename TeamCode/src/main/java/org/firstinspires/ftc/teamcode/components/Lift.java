@@ -15,7 +15,7 @@ public class Lift {
     private DcMotor lift;
     private Servo forkLatch;
 
-    private final double[] latchPositions = {0.935, 0}; //latched and unlatched respectively
+    private final double[] latchPositions = {0.91, 0}; //latched and unlatched respectively
 
     public Lift(DcMotor lift, Servo forkLatch) {
         this.lift = lift;
