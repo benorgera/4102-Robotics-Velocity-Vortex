@@ -130,7 +130,7 @@ public class AutonomousImplementation {
     }
 
     private void hugWall() {
-        sensors.driveUntilOdsThreshold(Math.PI, 0.32, 4, 0.5, 1000);
+        sensors.driveUntilOdsThreshold(Math.PI, 0.3, 4, 0.5, 1000);
     }
 
 }
