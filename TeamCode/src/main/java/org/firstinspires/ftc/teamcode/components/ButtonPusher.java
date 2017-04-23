@@ -26,7 +26,7 @@ public class ButtonPusher {
 
 
     private void semiextend() { //semiextend for teleop pushing
-        setPositions(0.75);
+        setPositions(0.4);
     }
 
     private void setPositions(double position) {

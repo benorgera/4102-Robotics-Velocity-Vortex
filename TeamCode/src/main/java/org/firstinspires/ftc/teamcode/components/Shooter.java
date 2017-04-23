@@ -20,7 +20,8 @@ public class Shooter {
 
     private final double[] doorPositions = {0.3, 1}; //open and closed respectively
 
-    private final double alphaThreshold = 55;
+    private final double alphaThresholdLeaving = 70;
+    private final double alphaThresholdEntering = 55;
 
     public Shooter(DcMotor[] disks, Servo door, ColorSensor ballSensor) {
         this.door = door;
@@ -91,7 +92,7 @@ public class Shooter {
 
         long started = System.currentTimeMillis();
 
-        while (hasBall() && Hardware.active()); //wait for the ball currently being shot to pass through
+        while (hasBall(true) && Hardware.active()); //wait for the ball currently being shot to pass through
 
         long lastHadBall = System.currentTimeMillis();
 
@@ -107,7 +108,7 @@ public class Shooter {
 
         //continue running the elevator (waiting) until you see a new ball, or you time out
         //waiting will only cease after at least 50ms have passed since last sensing a ball
-        while (Hardware.active() && !hasBall() && (System.currentTimeMillis() - lastHadBall) < waitForBall || System.currentTimeMillis() - lastHadBall < 150);
+        while (Hardware.active() && !hasBall(false) && (System.currentTimeMillis() - lastHadBall) < waitForBall || System.currentTimeMillis() - lastHadBall < 150);
 
         Hardware.print("Waited " + (System.currentTimeMillis() - lastHadBall) + "ms for next ball");
         return System.currentTimeMillis() - lastHadBall < waitForBall; //return true unless no additional balls were found
@@ -119,8 +120,8 @@ public class Shooter {
     }
 
     //returns true if a ball is sensed in the elevator, ready to be shot
-    private boolean hasBall() {
-        long stop = System.currentTimeMillis() + 75; //take readings for 75 ms
+    private boolean hasBall(boolean isLeaving) {
+        long stop = System.currentTimeMillis() + 50; //take readings for 75 ms
 
         double total = 0;
         int count = 0;
@@ -131,7 +132,7 @@ public class Shooter {
             total += getAlpha();
         }
 
-        return total / count > alphaThreshold; //return true if our readings were high enough to signify a ball being sensed
+        return total / count > (isLeaving ? alphaThresholdLeaving : alphaThresholdEntering); //return true if our readings were high enough to signify a ball being sensed
     }
 
     public void stop() {

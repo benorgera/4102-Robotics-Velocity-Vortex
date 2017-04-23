@@ -51,7 +51,7 @@ public class AutonomousImplementation {
         sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 20 : Math.PI / 10, 0.4);
 
         Hardware.print("Driving to wall");
-        sensors.driveUntilLineOrTouchOrRange(0.26, 0.105, isRed, 1100, 3500, 7000, 40, 65, 20, 5);
+        sensors.driveUntilLineOrTouchOrRange(0.26, 0.105, isRed, 1100, 3500, 7000, 40, 45, 20, 5);
 
         Hardware.disableRangeSensors(); //range sensors no longer needed
 
@@ -68,7 +68,7 @@ public class AutonomousImplementation {
             hugWall();
 
             Hardware.print("Capturing beacon");
-            if (!sensors.captureBeacon(isRed) && i > 0) { //push button
+            if (!sensors.captureBeacon(isRed, true, this) && i > 0) { //push button
                 Hardware.print("Rediscovered first beacon, running again"); //found the same beacon a second time, run again to claim the second beacon
                 max++;
             }
@@ -128,7 +128,7 @@ public class AutonomousImplementation {
         }
     }
 
-    private void hugWall() {
+    public void hugWall() {
         sensors.driveUntilOdsThreshold(Math.PI, 0.3, 4, 0.5, 1000);
     }
 

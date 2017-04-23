@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.teamcode.opmodes.AutonomousImplementation;
 import org.firstinspires.ftc.teamcode.utilities.GyroPoll;
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
 import org.firstinspires.ftc.teamcode.utilities.Utils;
@@ -265,17 +266,22 @@ public class Sensors {
     }
 
     //returns false if beacon was already claimed, so if false is returned and this is the second beacon, we likely have another beacon to claim
-    public boolean captureBeacon(boolean isRed) {
+    public boolean captureBeacon(boolean isRed, boolean isFirstRun, AutonomousImplementation a) {
         boolean[] colors = senseBeaconColors();
+
+        if (colors[0] != colors[1] || isRed != colors[0]) //this is the check to be sure, and we have run twice and haven't claimed, lets hug wall
+            a.hugWall();
 
         if (colors[0] != colors[1]) { //the buttons are different, the beacon is unclaimed
             Hardware.print("Claiming unclaimed beacon");
             buttonPusher.push(isRed == colors[0]); //push the proper button
+            captureBeacon(isRed, false, a); //make sure the beacon has been claimed
         } else if (isRed != colors[0]) { //the buttons are the same color, but the beacon is claimed the wrong color
             Hardware.print("Reclaiming beacon, but must wait 5s first");
             Hardware.sleep(5000);
             Hardware.print("Reclaiming beacon");
             buttonPusher.pushBoth(); //push both, we just need to reverse the color
+            captureBeacon(isRed, false, a); //make sure the beacon has been claimed
         } else {
             Hardware.print("Beacon already claimed"); //already claimed our color
         }
@@ -284,7 +290,7 @@ public class Sensors {
     }
 
     private boolean[] senseBeaconColors() { //left then right, red is true
-        long stop = System.currentTimeMillis() + 700;
+        long stop = System.currentTimeMillis() + 600;
 
         int[] sums = new int[] {0, 0};
 
