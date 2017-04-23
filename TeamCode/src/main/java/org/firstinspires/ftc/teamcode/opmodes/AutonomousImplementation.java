@@ -28,9 +28,8 @@ public class AutonomousImplementation {
 
         long start = System.currentTimeMillis();
 
-        Hardware.print("Starting fruit");
         sensors.initImu(); //start up the adafruit imu
-        Hardware.print("Stopping fruit, init in " + (System.currentTimeMillis() - start));
+        Hardware.print("IMU init in " + (System.currentTimeMillis() - start));
     }
 
     public void run() {

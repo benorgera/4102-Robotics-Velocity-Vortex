@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.utilities.Hardware;
  * Created by benorgera on 11/24/16.
  */
 
-@Autonomous(name = "Auton Blue [ ]", group = "4102")
+@Autonomous(name = "Blue [  ]", group = "4102")
 public class AutonBlueCenter extends LinearOpMode {
 
     private AutonomousImplementation a; //uses an Autonomous Implementation class
