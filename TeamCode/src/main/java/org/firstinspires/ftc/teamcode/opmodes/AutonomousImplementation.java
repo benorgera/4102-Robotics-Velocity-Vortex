@@ -111,7 +111,7 @@ public class AutonomousImplementation {
                 timeout = 1500;
                 hugWall();
             }
-            power = 0.16; //a timeout occurred, slow down
+            power = 0.175; //a timeout occurred, slow down
             minTime = 0; //time has been spent, no need to worry about finding the same line again
             timeout += 1000; //increase the time allotted to find the line
             intakeForward = !intakeForward; //switch direction, the line has likely been overshot
