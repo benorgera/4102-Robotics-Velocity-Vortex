@@ -56,7 +56,7 @@ public class AutonomousImplementation {
         Hardware.disableRangeSensors(); //range sensors no longer needed
 
         Hardware.print("Parallel Parking");
-        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.3, Math.PI / 12, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25, 2500);
+        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.3, Math.PI / 15, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 25, 2500);
 
         //drive to and capture each beacon
         for (int i = 0, max = 2; i < max; i++) {
