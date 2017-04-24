@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.components;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.opmodes.DriverControlled;
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
 import org.firstinspires.ftc.teamcode.utilities.Utils;
 
@@ -104,7 +102,7 @@ public class Shooter {
             return false; //don't shoot again
         }
 
-        long waitForBall = Hardware.isAuton() ? 2500 : 1000; //how long the shooter waits to see another ball before assuming none remain
+        long waitForBall = Hardware.isAuton() ? 2500 : 1500; //how long the shooter waits to see another ball before assuming none remain
 
         //continue running the elevator (waiting) until you see a new ball, or you time out
         //waiting will only cease after at least 50ms have passed since last sensing a ball

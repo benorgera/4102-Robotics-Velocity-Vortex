@@ -49,8 +49,6 @@ public class Test extends LinearOpMode {
         wheels = Hardware.getWheels();
         sensors = Hardware.getSensors();
 
-        sensors.resetHeading();
-
         waitForStart();
 
         sensors.initImu();

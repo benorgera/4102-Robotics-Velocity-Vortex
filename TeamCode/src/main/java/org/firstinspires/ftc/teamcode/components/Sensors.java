@@ -5,6 +5,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceS
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -32,7 +33,7 @@ public class Sensors {
     private ModernRoboticsI2cColorSensor[] beaconSensors;
     private VoltageSensor voltage;
     private ButtonPusher buttonPusher;
-    private I2cDeviceSynch[] rangeSensors;
+    private I2cDeviceSynchImpl[] rangeSensors;
 
     private Integrator integrator;
 
@@ -49,7 +50,7 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor[] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, TouchSensor[] touchSensors, I2cDeviceSynch[] rangeSensors, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ColorSensor[] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, TouchSensor[] touchSensors, I2cDeviceSynchImpl[] rangeSensors, VoltageSensor voltage) {
         for (I2cDeviceSynch i : rangeSensors)
             i.engage();
 
@@ -383,6 +384,11 @@ public class Sensors {
             Hardware.sleep(sensorLoopLatency);
         }
         wheels.stop();
+    }
+
+    public void disableRangeSensors() {
+        for (I2cDeviceSynch i : rangeSensors)
+            i.disengage();
     }
 
 }
