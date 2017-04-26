@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.utilities.Hardware;
 public class Test2 extends LinearOpMode {
 
     public void runOpMode() {
-        Hardware.init(hardwareMap, this, true,telemetry);
+        Hardware.init(hardwareMap, this, true, false, telemetry);
         Hardware.getIntake();
 
         waitForStart();
@@ -26,14 +26,14 @@ public class Test2 extends LinearOpMode {
 
         Hardware.print("semiextend");
         Hardware.clean();
-        Hardware.init(hardwareMap, this, false, telemetry);
+        Hardware.init(hardwareMap, this, false, false, telemetry);
         Hardware.getButtonPusher();
 
         Hardware.sleep(3000);
 
         Hardware.print("push left");
         Hardware.clean();
-        Hardware.init(hardwareMap, this, true, telemetry);
+        Hardware.init(hardwareMap, this, true, false, telemetry);
         Hardware.getButtonPusher();
 
         Hardware.sleep(3000);

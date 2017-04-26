@@ -47,7 +47,7 @@ public class DriverControlled extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Hardware.init(hardwareMap, this, false, telemetry); //initializes hardware
+        Hardware.init(hardwareMap, this, false, false, telemetry); //initializes hardware
 
         Hardware.getButtonPusher();
 

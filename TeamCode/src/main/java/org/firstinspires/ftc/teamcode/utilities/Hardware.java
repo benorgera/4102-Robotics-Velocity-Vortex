@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.utilities;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -44,6 +45,8 @@ public class Hardware {
     private static Telemetry t;
     private static String output = "\n";
 
+    private static boolean isRed;
+
     public static void sleep(long ms) {
         opMode.sleep(ms);
     }
@@ -53,8 +56,9 @@ public class Hardware {
     }
 
 
-    public static void init(HardwareMap map, LinearOpMode opMode, boolean isAuton, Telemetry t) {
+    public static void init(HardwareMap map, LinearOpMode opMode, boolean isAuton, boolean isRed, Telemetry t) {
         clean();
+        Hardware.isRed = isRed;
         Hardware.opMode = opMode;
         Hardware.isAuton = isAuton;
         Hardware.map = map;
@@ -120,12 +124,7 @@ public class Hardware {
                         map.touchSensor.get("left-touch-sensor"),
                         map.touchSensor.get("right-touch-sensor")
                 },
-                new I2cDeviceSynchImpl[] {
-                        //boolean represents whether the i2c device should be closed after the opMode ends
-                        //true could help with issues
-                        new I2cDeviceSynchImpl(map.i2cDevice.get("lift-range-sensor"), I2cAddr.create8bit(0x3c), false), //lift range sensor
-                        new I2cDeviceSynchImpl(map.i2cDevice.get("intake-range-sensor"), I2cAddr.create8bit(0x28), false) //intake range sensor
-                },
+                map.get(ModernRoboticsI2cRangeSensor.class, isRed ? "intake-range-sensor" : "lift-range-sensor"),
                 map.voltageSensor.iterator().next()
         ) : sensors;
     }

@@ -44,7 +44,7 @@ public class Test extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Hardware.init(hardwareMap, this, false, telemetry);
+        Hardware.init(hardwareMap, this, false, true, telemetry);
 
         wheels = Hardware.getWheels();
         sensors = Hardware.getSensors();
@@ -171,8 +171,7 @@ public class Test extends LinearOpMode {
 
             telemetry.addData("ballSensor", Hardware.getShooter().getAlpha());
             telemetry.addData("touch i | l", sensors.touchSensorPressed(true) + " | " + sensors.touchSensorPressed(false));
-            telemetry.addData("range i | l", sensors.getRange(true, true) + " | " + sensors.getRange(false, true));
-            telemetry.addData("range ods i | l", sensors.getRange(true, false) + " | " + sensors.getRange(false, false));
+            telemetry.addData("range", sensors.getRange());
             telemetry.addData("rH | iH | head", Utils.toString(Utils.toDegrees(sensors.getRawHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getInitialHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getHeading())));
             telemetry.addData("ng | strafe", Utils.toString(sensors.getNgConstant()) + " | " + Utils.toString(sensors.getStrafeConstant()));
             telemetry.addData("left | right | ods",  Utils.toString(sensors.getBeaconReadings()[0]) + " | " + Utils.toString(sensors.getBeaconReadings()[1]) + " | " + Utils.toString(sensors.getOpticalDistance()));

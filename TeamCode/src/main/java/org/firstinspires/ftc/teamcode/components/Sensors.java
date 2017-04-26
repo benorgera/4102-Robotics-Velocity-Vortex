@@ -3,14 +3,14 @@ package org.firstinspires.ftc.teamcode.components;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
@@ -33,7 +33,7 @@ public class Sensors {
     private ModernRoboticsI2cColorSensor[] beaconSensors;
     private VoltageSensor voltage;
     private ButtonPusher buttonPusher;
-    private I2cDeviceSynchImpl[] rangeSensors;
+    private ModernRoboticsI2cRangeSensor rangeSensor;
 
     private Integrator integrator;
 
@@ -50,16 +50,13 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor[] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, TouchSensor[] touchSensors, I2cDeviceSynchImpl[] rangeSensors, VoltageSensor voltage) {
-        for (I2cDeviceSynch i : rangeSensors)
-            i.engage();
-
+    public Sensors(BNO055IMU imu, ColorSensor[] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, TouchSensor[] touchSensors, ModernRoboticsI2cRangeSensor rangeSensor, VoltageSensor voltage) {
         this.wheels = Hardware.getWheels();
         this.buttonPusher = Hardware.getButtonPusher();
         this.imu = imu;
         this.voltage = voltage;
         this.ods = ods;
-        this.rangeSensors = rangeSensors;
+        this.rangeSensor = rangeSensor;
         this.touchSensors = touchSensors;
         this.lineSensors = lineSensors;
         this.beaconSensors = beaconSensors;
@@ -341,8 +338,8 @@ public class Sensors {
         return touchSensors[isIntakeSide ? 1 : 0].isPressed();
     }
 
-    public int getRange(boolean isIntakeSide, boolean isUltrasonic) {
-        return rangeSensors[isIntakeSide ? 1 : 0].read(0x04, 2)[isUltrasonic ? 0 : 1] & 0xFF;
+    public int getRange() {
+        return (int) rangeSensor.getDistance(DistanceUnit.CM);
     }
 
     public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, long minTime, long speedTimeout, long maxTime, double whiteLineSignalThreshold, int rangeThresholdFar, int rangeThresholdTouching, int readings) {
@@ -363,10 +360,10 @@ public class Sensors {
                 Hardware.print("Speed timeout, upped velClose to " + velClose);
             }
 
-            if (time > minTime && getRange(isRed, true) < rangeThresholdTouching)
+            if (time > minTime && getRange() < rangeThresholdTouching)
                 count++;
 
-            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), ((isClose = time > minTime && (isClose || Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold) || getRange(isRed, true) < rangeThresholdFar)) ? velClose : velFar);
+            compensatedTranslate(Math.PI / 2 * (isRed ? 1 : -1), ((isClose = time > minTime && (isClose || Utils.getMaxMagnitude(getLineReadings()) > whiteLineSignalThreshold) || getRange() < rangeThresholdFar)) ? velClose : velFar);
             Hardware.sleep(sensorLoopLatency);
         }
 
@@ -385,10 +382,4 @@ public class Sensors {
         }
         wheels.stop();
     }
-
-    public void disableRangeSensors() {
-        for (I2cDeviceSynch i : rangeSensors)
-            i.disengage();
-    }
-
 }

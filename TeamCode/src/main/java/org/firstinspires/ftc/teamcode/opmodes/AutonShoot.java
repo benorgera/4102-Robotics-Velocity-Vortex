@@ -13,7 +13,7 @@ public class AutonShoot extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Hardware.init(hardwareMap, this, true, telemetry); //initializes hardware
+        Hardware.init(hardwareMap, this, true, false, telemetry); //initializes hardware
         Hardware.getLift();
         Hardware.getShooter();
         Hardware.getWheels();

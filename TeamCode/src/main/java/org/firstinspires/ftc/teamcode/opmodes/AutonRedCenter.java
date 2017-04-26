@@ -16,7 +16,7 @@ public class AutonRedCenter extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Hardware.init(hardwareMap, this, true, telemetry); //initializes hardware
+        Hardware.init(hardwareMap, this, true, true, telemetry); //initializes hardware
 
         a = new AutonomousImplementation(true, true); //new Autonomous Implementation with isRed true and isParkingCenter true
 

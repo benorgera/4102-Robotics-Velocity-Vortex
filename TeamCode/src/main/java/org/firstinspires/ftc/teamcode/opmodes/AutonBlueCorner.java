@@ -15,7 +15,7 @@ public class AutonBlueCorner extends LinearOpMode {
     
     @Override
     public void runOpMode() throws InterruptedException {
-        Hardware.init(hardwareMap, this, true, telemetry); //initializes hardware
+        Hardware.init(hardwareMap, this, true, false, telemetry); //initializes hardware
 
         telemetry.update();
 
