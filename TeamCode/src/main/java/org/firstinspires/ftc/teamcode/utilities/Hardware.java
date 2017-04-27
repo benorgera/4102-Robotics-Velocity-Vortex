@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -132,7 +133,7 @@ public class Hardware {
                 },
                 (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
                 beaconSensors,
-                map.get(ModernRoboticsI2cRangeSensor.class, isRed ? "intake-range-sensor" : "lift-range-sensor"),
+                new I2cDeviceSynchImpl(map.i2cDevice.get(isRed ? "intake-range-sensor" : "lift-range-sensor"), I2cAddr.create8bit(isRed ? 0x28 : 0x3c), false), //lift range sensor
                 map.voltageSensor.iterator().next()
         ) : sensors;
     }

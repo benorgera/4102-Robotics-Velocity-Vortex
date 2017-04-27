@@ -6,6 +6,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -30,7 +31,7 @@ public class Sensors {
     private ModernRoboticsI2cColorSensor[] beaconSensors;
     private VoltageSensor voltage;
     private ButtonPusher buttonPusher;
-    private ModernRoboticsI2cRangeSensor rangeSensor;
+    private I2cDeviceSynchImpl rangeSensor;
 
     private Integrator integrator;
 
@@ -49,7 +50,7 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ModernRoboticsI2cGyro gyro, ColorSensor[] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, ModernRoboticsI2cRangeSensor rangeSensor, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ModernRoboticsI2cGyro gyro, ColorSensor[] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, I2cDeviceSynchImpl rangeSensor, VoltageSensor voltage) {
         this.wheels = Hardware.getWheels();
         this.buttonPusher = Hardware.getButtonPusher();
         this.voltage = voltage;
@@ -58,6 +59,8 @@ public class Sensors {
         this.lineSensors = lineSensors;
         this.beaconSensors = beaconSensors;
         this.gyro = gyro;
+
+        rangeSensor.engage();
 
         for (ModernRoboticsI2cColorSensor m : beaconSensors)
             m.enableLed(false);
@@ -359,8 +362,8 @@ public class Sensors {
         if (shouldStop) wheels.stop();
     }
 
-    public double getRange() {
-        return rangeSensor.getDistance(DistanceUnit.CM);
+    public int getRange() {
+        return rangeSensor.read(0x04, 2)[0] & 0xFF;
     }
 
     public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, long minTime, long speedTimeout, long maxTime, double whiteLineSignalThreshold, int rangeThresholdFar, int rangeThresholdTouching, int readings) {
