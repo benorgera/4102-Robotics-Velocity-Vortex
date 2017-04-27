@@ -70,7 +70,7 @@ public class Sensors {
         } else {
             Hardware.closeIMU();
             gyro.calibrate();
-            gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
+//            gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
             this.gyro = gyro;
         }
 
@@ -127,9 +127,9 @@ public class Sensors {
     public double getRawHeading() {
         if (gyro instanceof BNO055IMU) {
             angles = ((BNO055IMU) gyro).getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-            return -AngleUnit.RADIANS.normalize(AngleUnit.RADIANS.fromUnit(angles.angleUnit, angles.firstAngle));
+            return AngleUnit.RADIANS.normalize(AngleUnit.RADIANS.fromUnit(angles.angleUnit, angles.firstAngle));
         } else {
-            return ((ModernRoboticsI2cGyro) gyro).getHeading();
+            return (((ModernRoboticsI2cGyro) gyro).getHeading() * Math.PI / 180) % (2 * Math.PI);
         }
     }
 
