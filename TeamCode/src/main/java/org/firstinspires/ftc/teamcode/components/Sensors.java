@@ -70,7 +70,6 @@ public class Sensors {
         } else {
             Hardware.closeIMU();
             gyro.calibrate();
-//            gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
             this.gyro = gyro;
         }
 
@@ -127,9 +126,9 @@ public class Sensors {
     public double getRawHeading() {
         if (gyro instanceof BNO055IMU) {
             angles = ((BNO055IMU) gyro).getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-            return AngleUnit.RADIANS.normalize(AngleUnit.RADIANS.fromUnit(angles.angleUnit, angles.firstAngle));
+            return -AngleUnit.RADIANS.normalize(AngleUnit.RADIANS.fromUnit(angles.angleUnit, angles.firstAngle));
         } else {
-            return (((ModernRoboticsI2cGyro) gyro).getHeading() * Math.PI / 180) % (2 * Math.PI);
+            return -(((ModernRoboticsI2cGyro) gyro).getHeading() * Math.PI / 180) % (2 * Math.PI);
         }
     }
 
@@ -242,7 +241,7 @@ public class Sensors {
             if (System.currentTimeMillis() > speedTimeout) {
                 translateSpeed += 0.043;
                 turnSpeed += 0.043;
-                speedTimeout += 1500;
+                speedTimeout += 1000;
                 Hardware.print("Speed timeout, upped translate/turn speed to " + translateSpeed);
             }
             double proportionRemaining = Math.abs(thetaRemaining / threshold),

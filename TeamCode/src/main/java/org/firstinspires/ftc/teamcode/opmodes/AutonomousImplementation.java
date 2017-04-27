@@ -24,11 +24,6 @@ public class AutonomousImplementation {
         this.shooter = Hardware.getShooter();
         this.isRed = isRed;
         this.isParkingCenter = isParkingCenter;
-
-
-        long start = System.currentTimeMillis();
-
-        Hardware.print("IMU init in " + (System.currentTimeMillis() - start));
     }
 
     public void run() {
@@ -50,7 +45,7 @@ public class AutonomousImplementation {
         sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 20 : Math.PI / 10, 0.4);
 
         Hardware.print("Driving to wall");
-        sensors.driveUntilLineOrTouchOrRange(0.26, 0.105, isRed, 1100, 3500, 7000, 40, 45, 20, 5);
+        sensors.driveUntilLineOrTouchOrRange(0.26, 0.105, isRed, 1400, 3500, 7000, 40, 45, 20, 5);
 
 //        sensors.disableRangeSensors(); //range sensors no longer needed
 
