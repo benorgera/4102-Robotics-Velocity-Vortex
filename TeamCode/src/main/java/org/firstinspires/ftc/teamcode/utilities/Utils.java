@@ -68,7 +68,7 @@ public class Utils {
 
     public static double angleDifference(double a, double b) { //finds signed difference between two angles [-π,π]
         double dif = a - b;
-        return dif < -Math.PI ? dif + 2 * Math.PI : dif > Math.PI ? dif - Math.PI * 2 : dif;
+        return (dif < -Math.PI ? dif + 2 * Math.PI : dif > Math.PI ? dif - Math.PI * 2 : dif) % (2 * Math.PI);
     }
 
     public static double toDegrees(double rads) {

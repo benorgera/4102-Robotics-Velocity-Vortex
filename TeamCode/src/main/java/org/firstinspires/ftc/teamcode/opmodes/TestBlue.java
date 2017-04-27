@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.components.Wheels;
  * Created by benorgera on 12/1/16.
  */
 
-@TeleOp (name = "Test Red", group = "4102")
-public class Test extends LinearOpMode {
+@TeleOp (name = "Test Blue", group = "4102")
+public class TestBlue extends LinearOpMode {
 
     private final double whiteLineSignalThreshold = 70;
 
@@ -44,7 +44,7 @@ public class Test extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Hardware.init(hardwareMap, this, false, true, telemetry);
+        Hardware.init(hardwareMap, this, false, false, telemetry);
 
         wheels = Hardware.getWheels();
         sensors = Hardware.getSensors();
@@ -63,7 +63,7 @@ public class Test extends LinearOpMode {
             gamePad2XState = gamepad1.a;
 
             if (gamepad2.y && !gamepad2YState && !gamepad1.y)
-                    softMotionTime -= 50;
+                softMotionTime -= 50;
 
 
             if (gamepad1.b) wheels.stop();
@@ -149,9 +149,9 @@ public class Test extends LinearOpMode {
 
             if (gamepad2.left_bumper && !isDroppingNgConstant)
                 sensors.setNgConstant(sensors.getNgConstant() - 0.01);
-            
+
             isDroppingNgConstant = gamepad2.left_bumper;
-            
+
             if (gamepad2.start && !isUppingStrafeConstant)
                 sensors.setStrafeConstant(sensors.getStrafeConstant() + 0.01);
 

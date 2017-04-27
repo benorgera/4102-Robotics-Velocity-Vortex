@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.components;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -12,8 +13,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.teamcode.opmodes.AutonomousImplementation;
 import org.firstinspires.ftc.teamcode.utilities.GyroPoll;
 import org.firstinspires.ftc.teamcode.utilities.Hardware;
@@ -26,8 +25,6 @@ public class Sensors {
 
     private Orientation angles;
 
-    private TouchSensor[] touchSensors;
-    private BNO055IMU imu;
     private ColorSensor[] lineSensors;
     private ModernRoboticsAnalogOpticalDistanceSensor ods;
     private ModernRoboticsI2cColorSensor[] beaconSensors;
@@ -38,6 +35,8 @@ public class Sensors {
     private Integrator integrator;
 
     private Wheels wheels;
+
+    private Object gyro; //either the adafruit bno055 imu or the modern robotics i2C gyro
 
     private double initialHeading = 0;
 
@@ -50,40 +49,68 @@ public class Sensors {
 
     private Thread gyroPoll;
 
-    public Sensors(BNO055IMU imu, ColorSensor[] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, TouchSensor[] touchSensors, ModernRoboticsI2cRangeSensor rangeSensor, VoltageSensor voltage) {
+    public Sensors(BNO055IMU imu, ModernRoboticsI2cGyro gyro, ColorSensor[] lineSensors, ModernRoboticsAnalogOpticalDistanceSensor ods, ModernRoboticsI2cColorSensor[] beaconSensors, ModernRoboticsI2cRangeSensor rangeSensor, VoltageSensor voltage) {
         this.wheels = Hardware.getWheels();
         this.buttonPusher = Hardware.getButtonPusher();
-        this.imu = imu;
         this.voltage = voltage;
         this.ods = ods;
         this.rangeSensor = rangeSensor;
-        this.touchSensors = touchSensors;
         this.lineSensors = lineSensors;
         this.beaconSensors = beaconSensors;
+        this.gyro = gyro;
 
         for (ModernRoboticsI2cColorSensor m : beaconSensors)
             m.enableLed(false);
+
+        if (initIMU(imu)) {
+            this.gyro = imu;
+        } else {
+            Hardware.closeIMU();
+            gyro.calibrate();
+            gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARTESIAN);
+            this.gyro = gyro;
+        }
+
+        Hardware.print("Gyro is " + (this.gyro instanceof BNO055IMU ? "adafruit" : "MR"));
+
+        Hardware.sleep(200);
+        resetHeading();
     }
 
-    public void initImu() {
+    public boolean initIMU(BNO055IMU imu) {
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.mode                = BNO055IMU.SensorMode.NDOF;
-        parameters.angleUnit           = BNO055IMU.AngleUnit.RADIANS;
-        parameters.temperatureUnit     = BNO055IMU.TempUnit.CELSIUS;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        try {
+
+            long start = System.currentTimeMillis();
+
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            parameters.mode = BNO055IMU.SensorMode.NDOF;
+            parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+            parameters.temperatureUnit = BNO055IMU.TempUnit.CELSIUS;
+            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
 //        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = integrator = new Integrator();
+            parameters.loggingEnabled = true;
+            parameters.loggingTag = "IMU";
+            parameters.accelerationIntegrationAlgorithm = integrator = new Integrator();
 
-        imu.initialize(parameters);
+            imu.initialize(parameters);
 
-        //remap the axes to the orientation the imu is mounted in
-        imu.write8(BNO055IMU.Register.AXIS_MAP_CONFIG, 0x21);
-        imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN, 0x01);
+            Hardware.print("IMU init in " + (System.currentTimeMillis() - start) + " ms");
 
-        resetHeading();
+            Hardware.sleep(200);
+
+            Hardware.print("IMU system status: " + imu.getSystemStatus().toShortString());
+
+            if (imu.getSystemStatus() != BNO055IMU.SystemStatus.RUNNING_FUSION && imu.getSystemStatus() != BNO055IMU.SystemStatus.RUNNING_NO_FUSION) {
+                return false;
+            }
+
+        } catch (Exception e) {
+            Hardware.print("IMU init error: " + e.getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     public double getHeading() { // [-π, π]
@@ -95,16 +122,12 @@ public class Sensors {
     }
 
     public double getRawHeading() {
-        angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-        return -AngleUnit.RADIANS.normalize(AngleUnit.RADIANS.fromUnit(angles.angleUnit, angles.firstAngle));
-    }
-
-    public Velocity getVelocity() {
-        return imu.getVelocity();
-    }
-
-    public Position getPosition() {
-        return imu.getPosition();
+        if (gyro instanceof BNO055IMU) {
+            angles = ((BNO055IMU) gyro).getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+            return -AngleUnit.RADIANS.normalize(AngleUnit.RADIANS.fromUnit(angles.angleUnit, angles.firstAngle));
+        } else {
+            return ((ModernRoboticsI2cGyro) gyro).getHeading();
+        }
     }
 
     public double getOpticalDistance() {
@@ -247,8 +270,10 @@ public class Sensors {
     }
 
     private void readyCompensatedTranslate(long softStartTime) {
+        if (gyro instanceof ModernRoboticsI2cGyro) return;
+
         wheels.readyCompensatedTranslate(softStartTime);
-        (gyroPoll = new Thread(new GyroPoll(imu))).start();
+        (gyroPoll = new Thread(new GyroPoll((BNO055IMU) gyro))).start();
     }
 
     private void stopCompensatedTranslate() {
@@ -334,12 +359,8 @@ public class Sensors {
         if (shouldStop) wheels.stop();
     }
 
-    public boolean touchSensorPressed(boolean isIntakeSide) {
-        return touchSensors[isIntakeSide ? 1 : 0].isPressed();
-    }
-
-    public int getRange() {
-        return (int) rangeSensor.getDistance(DistanceUnit.CM);
+    public double getRange() {
+        return rangeSensor.getDistance(DistanceUnit.CM);
     }
 
     public void driveUntilLineOrTouchOrRange(double velFar, double velClose, boolean isRed, long minTime, long speedTimeout, long maxTime, double whiteLineSignalThreshold, int rangeThresholdFar, int rangeThresholdTouching, int readings) {
@@ -353,7 +374,7 @@ public class Sensors {
 
         int count = 0;
 
-        while (Hardware.active() && !touchSensorPressed(isRed) && count < readings) {
+        while (Hardware.active() && count < readings) {
             if ((time = System.currentTimeMillis()) > speedTimeout && time < maxTime) {
                 velClose += 0.043;
                 speedTimeout += 1500;

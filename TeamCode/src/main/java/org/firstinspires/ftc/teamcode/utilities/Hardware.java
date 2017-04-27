@@ -3,16 +3,16 @@ package org.firstinspires.ftc.teamcode.utilities;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -44,6 +44,7 @@ public class Hardware {
     private static Intake intake;
     private static Telemetry t;
     private static String output = "\n";
+    private static DeviceInterfaceModule imuDIM;
 
     private static boolean isRed;
 
@@ -74,6 +75,14 @@ public class Hardware {
         t.addData("H", output);
         t.update();
     }
+
+    public static void closeIMU() {
+        if (imuDIM == null)
+            return;
+
+        imuDIM.close();
+    }
+
 
     public static void clearLog() {
         output = "\n";
@@ -112,18 +121,17 @@ public class Hardware {
         beaconSensors[0].setI2cAddress(I2cAddr.create8bit(0x4c));
         beaconSensors[1].setI2cAddress(I2cAddr.create8bit(0x1e));
 
+        imuDIM = map.deviceInterfaceModule.get("IMU DIM");
+
         return sensors == null ? sensors = new Sensors(
                 map.get(BNO055IMU.class, "imu"),
+                map.get(ModernRoboticsI2cGyro.class, "gyro"),
                 new ColorSensor[] {
                         map.colorSensor.get("left-color-sensor"),
                         map.colorSensor.get("right-color-sensor")
                 },
                 (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
                 beaconSensors,
-                new TouchSensor[] {
-                        map.touchSensor.get("left-touch-sensor"),
-                        map.touchSensor.get("right-touch-sensor")
-                },
                 map.get(ModernRoboticsI2cRangeSensor.class, isRed ? "intake-range-sensor" : "lift-range-sensor"),
                 map.voltageSensor.iterator().next()
         ) : sensors;
@@ -184,6 +192,7 @@ public class Hardware {
         lift = null;
         wheels = null;
         sensors = null;
+        imuDIM = null;
         shooter = null;
         intake = null;
         opMode = null;

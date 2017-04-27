@@ -28,7 +28,6 @@ public class AutonomousImplementation {
 
         long start = System.currentTimeMillis();
 
-        sensors.initImu(); //start up the adafruit imu
         Hardware.print("IMU init in " + (System.currentTimeMillis() - start));
     }
 
