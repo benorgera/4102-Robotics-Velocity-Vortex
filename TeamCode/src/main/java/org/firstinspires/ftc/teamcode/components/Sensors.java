@@ -4,6 +4,7 @@ import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -57,8 +58,9 @@ public class Sensors {
         this.wheels = Hardware.getWheels();
         this.buttonPusher = Hardware.getButtonPusher();
         this.beaconSensor = beaconSensor;
+
         this.touchSensors = touchSensors;
-        beaconSensor.enableLed(false);
+        beaconSensor.enableLed(true);
     }
 
     public void initImu() {
@@ -397,7 +399,7 @@ public class Sensors {
         driveUntilTouchReading(0.6, isRed);
     }
 
-    private boolean touchSensorPressed() {
+    public boolean touchSensorPressed() {
         return touchSensors[0].isPressed() || touchSensors[1].isPressed();
     }
 

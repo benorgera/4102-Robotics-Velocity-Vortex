@@ -172,10 +172,10 @@ public class Test extends LinearOpMode {
             if (gamepad1.a) sensors.centerOnZero();
 
             telemetry.addData("ballSensor", Hardware.getShooter().getAlpha());
-            telemetry.addData("sst", softMotionTime);
+            telemetry.addData("touch", sensors.touchSensorPressed());
             telemetry.addData("rH | iH | head", Utils.toString(Utils.toDegrees(sensors.getRawHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getInitialHeading())) + " | " + Utils.toString(Utils.toDegrees(sensors.getHeading())));
             telemetry.addData("ng | strafe", Utils.toString(sensors.getNgConstant()) + " | " + Utils.toString(sensors.getStrafeConstant()));
-            telemetry.addData("blue | red | ods",  Utils.toString(sensors.getBeaconColor()[0]) + " | " + Utils.toString(sensors.getBeaconColor()[1]) + Utils.toString(sensors.getOpticalDistance()));
+            telemetry.addData("blue | red | ods",  Utils.toString(sensors.getBeaconColor()[0]) + " | " + Utils.toString(sensors.getBeaconColor()[1]) + " | " + Utils.toString(sensors.getOpticalDistance()));
             telemetry.addData("line readings", sensors.getLineReadings()[0] + ", " + sensors.getLineReadings()[1]);
 
             telemetry.update();

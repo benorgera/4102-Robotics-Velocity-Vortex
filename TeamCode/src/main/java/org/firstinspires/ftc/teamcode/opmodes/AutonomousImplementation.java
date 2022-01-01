@@ -14,6 +14,7 @@ public class AutonomousImplementation {
     private Sensors sensors;
     private Shooter shooter;
 
+    private final double thetaToWall = 2 * Math.PI / 9;
     private final boolean isRed;
 
     private final double whiteLineSignalThreshold = 60; //the minimum color sensor reading required to signify finding the white line
@@ -47,13 +48,13 @@ public class AutonomousImplementation {
         sensors.driveByTime(-Math.PI / 2, 300, true);
 
         Hardware.print("Turning towards wall");
-        sensors.turn(Math.PI / 4 * (isRed ? -3 : 1), isRed ? Math.PI / 13 : Math.PI / 30, 0.4);
+        sensors.turn(isRed ? thetaToWall - Math.PI : -thetaToWall, isRed ? Math.PI / 13 : Math.PI / 30, 0.4);
 
         Hardware.print("Driving to wall");
         sensors.driveUntilTouchReading(0.6, isRed);
 
         Hardware.print("Parallel Parking");
-        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), Math.PI / 4 * (isRed ? 1 : -1), 0.25, Math.PI / 20, Math.PI / 4 * (isRed ? -1 : 1), 0.4, Math.PI / 30);
+        sensors.parallelPark(Math.PI / 2 * (isRed ? 1 : -1), thetaToWall * (isRed ? 1 : -1), 0.25, Math.PI / 20, thetaToWall * (isRed ? -1 : 1), 0.3, Math.PI / 30);
 
         //drive to and capture each beacon
         for (int i = 0; i < 2; i++) {

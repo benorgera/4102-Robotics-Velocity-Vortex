@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.components;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utilities.DelayedAction;
+import org.firstinspires.ftc.teamcode.utilities.Hardware;
 
 /**
  * Created by benorgera on 11/24/16.
@@ -14,15 +16,15 @@ public class Intake {
     private DcMotor intake;
     private Servo ramp;
     private Servo[] flaps;
-    private Servo[] spinners;
+    private CRServo[] spinners;
 
     private boolean isRampDown;
 
     private boolean isRunning = false;
 
-    private final double[] rampPositions = {0.49, 0.77, 0.9}; //down, holding and closed respectively
+    private final double[] rampPositions = {0, 0.235, 392}; //down, holding and closed respectively
 
-    public Intake(DcMotor intake, Servo ramp, boolean isAuton, Servo[] flaps, Servo[] spinners) {
+    public Intake(DcMotor intake, Servo ramp, boolean isAuton, Servo[] flaps, CRServo[] spinners) {
         this.intake = intake;
         this.ramp = ramp;
         this.flaps = flaps;
@@ -32,8 +34,9 @@ public class Intake {
         setFlaps(false);
         runSpinners(); //run spinners to free them
 
-        for (Servo s : spinners) //stop spinners in one second
-            (new Thread(new DelayedAction(s, 1000, 0.5))).start();
+        Hardware.sleep(1000);
+
+        stopSpinners();
 
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -91,13 +94,13 @@ public class Intake {
     }
 
     private void runSpinners() {
-        spinners[0].setPosition(1);
-        spinners[1].setPosition(0);
+        spinners[0].setPower(1);
+        spinners[1].setPower(-1);
     }
 
     private void stopSpinners() {
-        for (Servo s : spinners)
-            s.setPosition(0.5);
+        for (CRServo s : spinners)
+            s.setPower(0);
     }
 
     public void setFlaps(boolean areOut) {

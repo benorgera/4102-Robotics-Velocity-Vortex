@@ -24,23 +24,23 @@ public class ButtonPusher {
     }
 
     private void retract() { //retract for auton driving
-        left.setPosition(0);
+        left.setPosition(1);
         right.setPosition(1);
     }
 
 
     private void semiextend() { //semiextend for teleop pushing
-        left.setPosition(0.25);
+        left.setPosition(0.75);
         right.setPosition(0.75);
     }
 
     public void push(boolean isLeft) {
         if (isLeft) {
-            left.setPosition(0.5);
-            (new Thread(new DelayedAction(left, 400, 0))).start();
+            left.setPosition(0.4);
+            (new Thread(new DelayedAction(left, 500, 1))).start();
         } else {
-            right.setPosition(0.5);
-            (new Thread(new DelayedAction(right, 400, 1))).start();
+            right.setPosition(0.4);
+            (new Thread(new DelayedAction(right, 500, 1))).start();
         }
     }
 

@@ -7,9 +7,12 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsAnalogOpticalDistanceS
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsUsbDcMotorController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -87,18 +90,21 @@ public class Hardware {
     public static ButtonPusher getButtonPusher() {
         return buttonPusher == null ? buttonPusher = new ButtonPusher(
                 isAuton,
-                map.servo.get("pusher-left"),
-                map.servo.get("pusher-right")
+                map.servo.get("left-pusher"),
+                map.servo.get("right-pusher")
         ) : buttonPusher;
     }
 
     public static Sensors getSensors() {
+        ModernRoboticsI2cColorSensor s = (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor");
+        s.setI2cAddress(I2cAddr.create8bit(0x4c));
+
         return sensors == null ? sensors = new Sensors(
                 map.get(BNO055IMU.class, "imu"),
                 map.colorSensor.get("left-color-sensor"),
                 map.colorSensor.get("right-color-sensor"),
                 (ModernRoboticsAnalogOpticalDistanceSensor) map.opticalDistanceSensor.get("ods"),
-                (ModernRoboticsI2cColorSensor) map.colorSensor.get("beacon-color-sensor"),
+                s,
                 new TouchSensor[] {
                         map.touchSensor.get("left-touch-sensor"),
                         map.touchSensor.get("right-touch-sensor")
@@ -128,9 +134,9 @@ public class Hardware {
                         map.servo.get("right-flap")
                 },
 
-                new Servo[] {
-                        map.servo.get("left-spinner"),
-                        map.servo.get("right-spinner")
+                new CRServo[] {
+                        map.crservo.get("left-spinner"),
+                        map.crservo.get("right-spinner")
                 }) : intake;
     }
 
@@ -156,7 +162,7 @@ public class Hardware {
         return opMode.opModeIsActive() && !opMode.isStopRequested();
     }
 
-    private static void clean() {
+    public static void clean() {
         buttonPusher = null;
         output = null;
         map = null;
